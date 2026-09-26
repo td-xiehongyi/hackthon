@@ -504,17 +504,32 @@ function ImportModal({
   );
 }
 
-function CaImportModal({ onClose, onPreview }: { onClose: () => void; onPreview: (preview: ImportPreview) => void }) {
+function CaImportModal({
+  onClose,
+  onChooseFile,
+  onPreview,
+}: {
+  onClose: () => void;
+  onChooseFile: () => void;
+  onPreview: (preview: ImportPreview) => void;
+}) {
   const [source, setSource] = useState('');
   const [error, setError] = useState('');
+  const dialogRef = useRef<HTMLElement>(null);
+  useDialogFocus(dialogRef, onClose);
   return (
     <div className="modal-backdrop" role="presentation">
-      <section className="import-modal ca-import-modal" role="dialog" aria-modal="true" aria-labelledby="ca-import-title">
+      <section ref={dialogRef} className="import-modal ca-import-modal" role="dialog" aria-modal="true" aria-labelledby="ca-import-title" tabIndex={-1}>
         <header><div><span className="modal-kicker">教务系统辅助导入</span><h2 id="ca-import-title">从 CSU 教务系统带入课表</h2></div><button className="icon-button" type="button" aria-label="关闭" onClick={onClose}>×</button></header>
         <div className="ca-import-body">
           <p>先打开官方统一认证并由你本人完成登录，再进入网上办事大厅的教务服务，打开“我的课表”。目前学校没有提供可供本页面跨站直接读取的公开接口，因此请复制课表表格内容粘贴到这里，或下载 CSV 后使用下方的文件导入。我们不会读取或保存账号、密码，也不会代替你登录。</p>
           <button className="secondary-button" type="button" onClick={() => { if (!openCsuSchedulePage()) setError('浏览器阻止了新标签页，请手动打开教务系统。'); }}>打开 CSU 教务系统</button>
           <a href={CSU_CA_SCHEDULE_URL} target="_blank" rel="noreferrer">打开 https://ca.csu.edu.cn/（官方登录页）</a>
+          <div className="ca-import-file-action">
+            <strong>已经下载课表文件？</strong>
+            <button className="secondary-button" type="button" onClick={onChooseFile}>选择 CSV / TSV / HTML 文件</button>
+            <small>Excel 文件请先在教务系统中另存为 CSV；本页不会上传文件。</small>
+          </div>
           <label><span>粘贴课表内容</span><textarea rows={9} value={source} onChange={(event) => { setSource(event.target.value); setError(''); }} placeholder="可粘贴网页表格、复制的 TSV/CSV 或课程信息文本" /></label>
           {error && <p className="form-error" role="alert">{error}</p>}
         </div>
@@ -690,11 +705,14 @@ export default function TeachingPage({ onBack }: { onBack: () => void }) {
     }
     try {
       const text = await file.text();
-      const preview = parseScheduleCsv(text, { existingCourses: courses });
+      const preview = parseCsuScheduleText(text, {
+        existingCourses: courses,
+        sourceLabel: file.name,
+      });
       setImportFilename(file.name);
       setImportPreview(preview);
     } catch {
-      setToast('无法读取文件，请使用 UTF-8 编码的 CSV。');
+      setToast('无法读取文件，请使用 UTF-8 编码的 CSV、TSV 或 HTML。');
     } finally {
       if (fileInput.current) fileInput.current.value = '';
     }
@@ -949,10 +967,10 @@ export default function TeachingPage({ onBack }: { onBack: () => void }) {
         </section>
       )}
 
-      <input ref={fileInput} className="visually-hidden" type="file" accept=".csv,text/csv" onChange={(event) => void handleFile(event.target.files?.[0])} />
+      <input ref={fileInput} className="visually-hidden" type="file" accept=".csv,.tsv,.txt,.html,.htm,text/csv,text/tab-separated-values,text/plain,text/html" onChange={(event) => void handleFile(event.target.files?.[0])} />
       {editing !== undefined && <CourseFormModal editing={editing} onClose={() => setEditing(undefined)} onSubmit={handleCourseSubmit} />}
       {importPreview && <ImportModal preview={importPreview} filename={importFilename} onClose={() => setImportPreview(null)} onConfirm={confirmImport} />}
-      {caImportOpen && <CaImportModal onClose={() => setCaImportOpen(false)} onPreview={acceptCaPreview} />}
+      {caImportOpen && <CaImportModal onClose={() => setCaImportOpen(false)} onChooseFile={() => fileInput.current?.click()} onPreview={acceptCaPreview} />}
       {toast && <div className="toast" role="status"><span>✓</span>{toast}</div>}
     </main>
   );
