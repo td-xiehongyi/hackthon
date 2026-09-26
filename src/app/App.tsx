@@ -2,9 +2,14 @@ import { useCallback, useEffect, useState } from 'react';
 import TeachingPage from '../features/teaching/TeachingPage';
 import MapViewport from '../game/MapViewport';
 import TimetableEditor from '../features/teaching/TimetableEditor';
+import DormitoryPage from '../features/dormitory/DormitoryPage';
 
 export default function App() {
-  const [page, setPage] = useState<'campus' | 'teaching'>(() => window.location.hash === '#teaching' ? 'teaching' : 'campus');
+  const [page, setPage] = useState<'campus' | 'teaching' | 'dormitory'>(() => {
+    if (window.location.hash === '#teaching') return 'teaching';
+    if (window.location.hash === '#dormitory') return 'dormitory';
+    return 'campus';
+  });
   const openTeaching = useCallback(() => {
     if (window.location.hash !== '#teaching') {
       window.history.pushState({ csuView: 'teaching' }, '', '#teaching');
@@ -20,8 +25,28 @@ export default function App() {
     setPage('campus');
   }, []);
 
+  const openDormitory = useCallback(() => {
+    if (window.location.hash !== '#dormitory') {
+      window.history.pushState({ csuView: 'dormitory' }, '', '#dormitory');
+    }
+    setPage('dormitory');
+  }, []);
+
+  const returnFromDormitory = useCallback(() => {
+    if (window.history.state?.csuView === 'dormitory') {
+      window.history.back();
+      return;
+    }
+    window.history.replaceState({}, '', `${window.location.pathname}${window.location.search}`);
+    setPage('campus');
+  }, []);
+
   useEffect(() => {
-    const handleHistory = () => setPage(window.location.hash === '#teaching' ? 'teaching' : 'campus');
+    const handleHistory = () => {
+      if (window.location.hash === '#teaching') setPage('teaching');
+      else if (window.location.hash === '#dormitory') setPage('dormitory');
+      else setPage('campus');
+    };
     window.addEventListener('popstate', handleHistory);
     return () => window.removeEventListener('popstate', handleHistory);
   }, []);
@@ -68,14 +93,15 @@ export default function App() {
             <div><span>03</span>潇湘校区</div>
           </div>
           <div className="preview-note">
-            <strong>教学楼群已开放</strong>
-            <p>在地图南部找到“课”标记</p>
+            <strong>教学楼群已开放 · 升华公寓群聊</strong>
+            <p>教学楼群与升华公寓群聊已开放</p>
             <button type="button" onClick={openTeaching}>进入课表与蹭课中心</button>
+            <button type="button" className="dormitory-entry-button" onClick={openDormitory}>进入升华公寓群聊 <span aria-hidden="true">↗</span></button>
             <button type="button" className="sidebar-timetable" onClick={openQuickTimetable}>快速录入个人课表 <span aria-hidden="true">↗</span></button>
           </div>
           <a className="original-link" href="/maps/campus-final-v9.png" target="_blank" rel="noreferrer">查看完整原图 <span aria-hidden="true">↗</span></a>
         </aside>
-        <MapViewport active={page === 'campus'} onOpenTeaching={openTeaching} />
+        <MapViewport active={page === 'campus'} onOpenTeaching={openTeaching} onOpenDormitory={openDormitory} />
       </div>
       {timetableOpen && page === 'campus' && (
         <div className="timetable-overlay" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) closeTimetable(); }}>
@@ -91,6 +117,7 @@ export default function App() {
       )}
     </main>
     {page === 'teaching' && <TeachingPage onBack={returnToCampus} />}
+    {page === 'dormitory' && <DormitoryPage onBack={returnFromDormitory} />}
     </>
   );
 }
