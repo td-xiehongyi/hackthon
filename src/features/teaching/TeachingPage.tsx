@@ -456,7 +456,7 @@ function ImportModal({
       <section ref={dialogRef} className="import-modal" role="dialog" aria-modal="true" aria-labelledby="import-title" tabIndex={-1}>
         <header>
           <div>
-            <span className="modal-kicker">CSV 导入预览</span>
+            <span className="modal-kicker">课表导入预览</span>
             <h2 id="import-title">{filename}</h2>
           </div>
           <button className="icon-button" type="button" aria-label="关闭" onClick={onClose}>×</button>
@@ -521,7 +521,7 @@ function CaImportModal({
       <section ref={dialogRef} className="import-modal ca-import-modal" role="dialog" aria-modal="true" aria-labelledby="ca-import-title" tabIndex={-1}>
         <header><div><span className="modal-kicker">教务系统辅助导入</span><h2 id="ca-import-title">从 CSU 教务系统带入课表</h2></div><button className="icon-button" type="button" aria-label="关闭" onClick={onClose}>×</button></header>
         <div className="ca-import-body">
-          <p>先打开官方统一认证并由你本人完成登录，再进入网上办事大厅的教务服务，打开“我的课表”。目前学校没有提供可供本页面跨站直接读取的公开接口，因此请复制课表表格内容粘贴到这里，或下载 CSV 后使用下方的文件导入。我们不会读取或保存账号、密码，也不会代替你登录。</p>
+          <p>先打开官方统一认证并由你本人完成登录，再进入网上办事大厅的教务服务，打开“我的课表”。目前学校没有提供可供本页面跨站直接读取的公开接口，因此请复制课表表格内容粘贴到这里，或下载 CSV、TSV、HTML 等课表文件后使用下方的文件导入。我们不会读取或保存账号、密码，也不会代替你登录。</p>
           <button className="secondary-button" type="button" onClick={() => { if (!openCsuSchedulePage()) setError('浏览器阻止了新标签页，请手动打开教务系统。'); }}>打开 CSU 教务系统</button>
           <a href={CSU_CA_SCHEDULE_URL} target="_blank" rel="noreferrer">打开 https://ca.csu.edu.cn/（官方登录页）</a>
           <div className="ca-import-file-action">
