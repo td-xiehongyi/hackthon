@@ -10,7 +10,6 @@ import {
   exportScheduleCsv,
   formatWeekExpression,
   loadCourses,
-  parseScheduleCsv,
   saveCourses,
   type Course,
   type CourseDraft,
@@ -709,6 +708,10 @@ export default function TeachingPage({ onBack }: { onBack: () => void }) {
         existingCourses: courses,
         sourceLabel: file.name,
       });
+      // The file picker is also reachable from the CSU helper dialog. Close
+      // that dialog before showing the shared preview so two modal backdrops
+      // cannot remain stacked after a successful file selection.
+      setCaImportOpen(false);
       setImportFilename(file.name);
       setImportPreview(preview);
     } catch {

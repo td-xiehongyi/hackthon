@@ -1,0 +1,88 @@
+/* C：体育场功能页样式（临时，接入公共样式体系后由 A 统一收敛） */
+
+.stadium-panel {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 20px;
+  color: #2b2b2b;
+  font-family: system-ui, -apple-system, 'Segoe UI', 'Microsoft YaHei', sans-serif;
+}
+
+.sp-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 14px;
+  border-bottom: 2px solid #e6e9e2;
+}
+.sp-eyebrow { margin: 0; font-size: 12px; letter-spacing: 2px; color: #7a8470; text-transform: uppercase; }
+.sp-header h1 { margin: 4px 0 0; font-size: 24px; }
+.sp-back {
+  padding: 8px 16px;
+  border: 1px solid #c8cfc2;
+  background: #fff;
+  border-radius: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.sp-back:hover { background: #f3f6ee; }
+
+.sp-tabs { display: flex; gap: 8px; margin: 16px 0; }
+.sp-tab {
+  padding: 8px 16px;
+  border: 1px solid #c8cfc2;
+  background: #fff;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.sp-tab.is-active { background: #2f5d3a; color: #fff; border-color: #2f5d3a; }
+
+.sp-state, .sp-empty { padding: 24px; color: #7a8470; text-align: center; }
+.sp-error { color: #b3402f; }
+
+.sp-body { margin-top: 4px; }
+.sp-filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+.sp-filters input, .sp-filters select {
+  padding: 8px 10px;
+  border: 1px solid #d3d9cd;
+  border-radius: 6px;
+  font-size: 14px;
+}
+.sp-filters input[type='search'] { flex: 1; min-width: 200px; }
+
+.sp-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+.sp-card {
+  border: 1px solid #e0e5db;
+  border-radius: 8px;
+  padding: 14px 16px;
+  background: #fff;
+}
+.sp-card-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.sp-card-head h3 { margin: 0; font-size: 17px; }
+.sp-badge {
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  background: #eef1ea;
+  color: #5c6652;
+  white-space: nowrap;
+}
+.sp-status-ended { background: #f3e2df; color: #a33a28; }
+.sp-status-ongoing { background: #e2f0e5; color: #2f6b42; }
+.sp-status-upcoming { background: #e7edf6; color: #34568f; }
+
+.sp-summary { margin: 8px 0 0; color: #3c4038; font-size: 14px; line-height: 1.6; }
+.sp-meta { margin: 6px 0 0; color: #6b7266; font-size: 13px; }
+.sp-venue { color: #2f5d3a; font-weight: 600; }
+
+.sp-links { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 8px; }
+.sp-links a { color: #2f5d3a; font-size: 13px; }
+
+.sp-gallery-placeholder {
+  padding: 48px;
+  text-align: center;
+  color: #8a917f;
+  border: 1px dashed #c8cfc2;
+  border-radius: 8px;
+}

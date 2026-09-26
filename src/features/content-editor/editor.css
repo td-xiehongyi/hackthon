@@ -1,0 +1,101 @@
+/* C：内容编辑器样式（临时） */
+
+.ce-panel {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 20px;
+  color: #2b2b2b;
+  font-family: system-ui, -apple-system, 'Segoe UI', 'Microsoft YaHei', sans-serif;
+}
+
+.ce-state { padding: 32px; text-align: center; color: #7a8470; }
+.ce-error { color: #b3402f; }
+
+.ce-header { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; padding-bottom: 14px; border-bottom: 2px solid #e6e9e2; }
+.ce-eyebrow { margin: 0; font-size: 12px; letter-spacing: 2px; color: #7a8470; text-transform: uppercase; }
+.ce-header h1 { margin: 4px 0 0; font-size: 24px; }
+
+.ce-actions { display: flex; gap: 8px; align-items: center; }
+.ce-actions button, .ce-import {
+  padding: 8px 14px;
+  border: 1px solid #c8cfc2;
+  background: #fff;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+}
+.ce-actions button:hover, .ce-import:hover { background: #f3f6ee; }
+.ce-actions button:disabled { opacity: 0.5; cursor: not-allowed; }
+.ce-import { position: relative; display: inline-flex; }
+.ce-import input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+
+.ce-statusbar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 12px 0;
+  font-size: 13px;
+  color: #6b7266;
+  flex-wrap: wrap;
+}
+.ce-status { font-weight: 600; }
+.ce-saved { color: #2f6b42; }
+.ce-error { color: #b3402f; }
+.ce-message { color: #34568f; }
+
+.ce-errors {
+  margin: 8px 0;
+  padding: 10px 14px;
+  background: #fdf0ee;
+  border: 1px solid #f0c9c2;
+  border-radius: 6px;
+  color: #a33a28;
+  font-size: 13px;
+  list-style: none;
+}
+.ce-errors code { background: #f7e2de; padding: 0 4px; border-radius: 3px; }
+
+.ce-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+@media (max-width: 800px) { .ce-columns { grid-template-columns: 1fr; } }
+
+.ce-section { border: 1px solid #e0e5db; border-radius: 8px; padding: 14px; background: #fbfcf9; }
+.ce-section-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.ce-section-head h2 { margin: 0; font-size: 16px; }
+.ce-section-head button { padding: 6px 12px; border: 1px solid #c8cfc2; background: #fff; border-radius: 6px; cursor: pointer; font-size: 13px; }
+
+.ce-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.ce-list li { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 10px; background: #fff; border: 1px solid #e6e9e2; border-radius: 6px; }
+.ce-list-main { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.ce-list-main strong { font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ce-tag { padding: 1px 8px; border-radius: 999px; font-size: 12px; background: #eef1ea; color: #5c6652; white-space: nowrap; }
+.ce-list-actions { display: flex; gap: 6px; flex-shrink: 0; }
+.ce-list-actions button { padding: 4px 10px; font-size: 13px; border: 1px solid #c8cfc2; background: #fff; border-radius: 6px; cursor: pointer; }
+.ce-danger { color: #a33a28; border-color: #e6c1ba !important; }
+
+.ce-form { display: grid; gap: 10px; margin-bottom: 14px; padding: 12px; background: #fff; border: 1px solid #d8ded2; border-radius: 8px; }
+.ce-form label { display: grid; gap: 4px; font-size: 13px; color: #4a4f44; }
+.ce-form input, .ce-form select, .ce-form textarea {
+  padding: 7px 10px;
+  border: 1px solid #d3d9cd;
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: inherit;
+}
+.ce-form textarea { min-height: 60px; resize: vertical; }
+.ce-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+.ce-campus { border: none; padding: 0; display: flex; gap: 14px; }
+.ce-campus legend { font-size: 13px; color: #4a4f44; margin-bottom: 4px; }
+.ce-check { display: flex !important; align-items: center; gap: 4px; font-size: 13px; }
+
+.ce-links { display: grid; gap: 6px; }
+.ce-links-label { font-size: 13px; color: #4a4f44; }
+.ce-link-row { display: grid; grid-template-columns: 1fr 2fr auto; gap: 6px; }
+.ce-link-row button, .ce-links > button { padding: 5px 10px; font-size: 13px; border: 1px solid #c8cfc2; background: #fff; border-radius: 6px; cursor: pointer; }
+
+.ce-form-actions { display: flex; gap: 8px; }
+.ce-form-actions button { padding: 8px 14px; border: 1px solid #c8cfc2; background: #fff; border-radius: 6px; cursor: pointer; }
+.ce-form-actions button[type='submit'] { background: #2f5d3a; color: #fff; border-color: #2f5d3a; }
+
+.ce-footer-actions { display: flex; gap: 8px; margin-top: 14px; }
+.ce-footer-actions button { padding: 8px 14px; border: 1px solid #c8cfc2; background: #fff; border-radius: 6px; cursor: pointer; }
