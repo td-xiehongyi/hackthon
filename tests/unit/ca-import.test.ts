@@ -66,7 +66,6 @@ describe('CSU CA 教务课表导入适配器', () => {
       '周次：1-16周',
     ].join('\n');
     const preview = parseCsuSchedule(labelled);
-    console.log('LABELLED PREVIEW', preview);
     expect(preview.status).toBe('ready');
     expect(preview.courses[0]).toMatchObject({ name: '大学英语', weekday: 5, startPeriod: 5, endPeriod: 6 });
 
