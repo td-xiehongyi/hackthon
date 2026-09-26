@@ -314,6 +314,16 @@ h2 { font-size: 35px; line-height: 1.55; font-weight: 600; margin: 17px 0 13px; 
 .ca-import-file-action small { grid-column: 1 / -1; color: #788877; font-size: 9px; line-height: 1.5; }
 .ca-import-body label { display: grid; gap: 6px; color: #5c705f; font-size: 10px; font-weight: 700; }
 .ca-import-body textarea { width: 100%; padding: 10px; border: 1px solid #cbd5c5; background: #fbfcf5; font-size: 12px; resize: vertical; }
+.ical-export-body { padding: 22px 24px 0; display: grid; gap: 15px; }
+.ical-export-body > p { margin: 0; color: #5e705f; font-size: 11px; line-height: 1.8; }
+.ical-export-body label { display: grid; gap: 6px; color: #5c705f; font-size: 10px; font-weight: 700; }
+.ical-export-body label > span { display: flex; align-items: baseline; gap: 3px; }
+.ical-export-body label b { color: #a0503d; }
+.ical-export-body input, .ical-export-body select { width: 100%; min-height: 42px; padding: 10px; border: 1px solid #cbd5c5; border-radius: 2px; background: #fbfcf5; font-size: 12px; }
+.ical-export-body small { color: #879286; font-size: 9px; line-height: 1.5; }
+.ical-export-summary { padding: 12px 14px; display: flex; align-items: baseline; gap: 8px; border: 1px solid #c6d8c8; background: #edf5ed; color: #315b43; }
+.ical-export-summary strong { font-size: 22px; }
+.ical-export-summary span { font-size: 10px; }
 .text-button { width: 100%; margin-top: 10px; padding: 0; border: 0; background: none; color: #56745d; font-size: 10px; text-decoration: underline; }
 .browser-storage-note { margin-top: 20px; padding-top: 17px; display: flex; gap: 10px; border-top: 1px solid #dfe4da; }
 .browser-storage-note > i { width: 9px; height: 12px; margin-top: 2px; border: 2px solid #77917b; border-radius: 1px; box-shadow: inset 0 3px 0 #e0e9dd; }
@@ -462,6 +472,7 @@ h2 { font-size: 35px; line-height: 1.55; font-weight: 600; margin: 17px 0 13px; 
   .import-panel { display: block; }
   .import-illustration { margin-inline: auto; }
   .ca-import-body { padding-inline: 16px; }
+  .ical-export-body { padding-inline: 16px; }
   .ca-import-file-action { grid-template-columns: 1fr; }
   .ca-import-file-action .secondary-button { width: 100%; }
   .ca-import-file-action small { grid-column: auto; }

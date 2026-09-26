@@ -701,7 +701,10 @@ export const parseCsuScheduleJson = (input: string, options: CaScheduleImportOpt
   const items = findJsonCourseItems(parsed);
   if (!items) return null;
 
-  const rows: string[][] = [['课程名称', '星期', '开始节数', '结束节数', '老师', '地点', '周数', '单双周']];
+  const rows: string[][] = [[
+    '课程名称', '星期', '开始节数', '结束节数', '老师', '地点', '周数', '单双周',
+    '楼座ID', '楼座', '标签', '备注',
+  ]];
   let skippedRows = 0;
   const jsonIssues: ImportIssue[] = [];
   for (const [itemIndex, item] of items.entries()) {
@@ -751,18 +754,23 @@ export const parseCsuScheduleJson = (input: string, options: CaScheduleImportOpt
     const rawCourseId = raw.id ?? raw.kcid ?? raw.courseId;
     const hasStructuredSchedule = Boolean(
       value('星期', '上课星期', '节次', '上课节次', '周次', '教学周') ||
-      raw.weekday || raw.periods || raw.weeks,
+      raw.weekday || raw.day || raw.periods || raw.sections || raw.weeks || raw.week,
     );
+    const jsonName = jsonText(raw.kcmc) || jsonText(raw.courseName) || jsonText(raw.subject);
     const name = explicitName || (
-      jsonText(raw.kcmc) && (hasStructuredSchedule || rawCourseId !== undefined)
-        ? jsonText(raw.kcmc)
+      jsonName && (hasStructuredSchedule || rawCourseId !== undefined)
+        ? jsonName
         : ''
     );
-    const teacher = jsonText(raw.teacher) || value('上课教师', '教师', '老师');
-    const location = jsonText(raw.location) || value('上课地点', '地点', '教室');
-    const weeks = jsonText(raw.weeks) || value('周次', '教学周');
-    const parity = jsonText(raw.weekParity) || value('单双周');
-    const recordText = [title, name, jsonText(raw.kcmc)].filter(Boolean).join('\n');
+    // AISchedule/WakeUp adapters commonly call these fields `position`,
+    // `day`, `sections`, and `week`; accept those aliases while preserving the
+    // strict canonical validator below. This is deliberately field-limited:
+    // arbitrary JSON values are never copied into the preview.
+    const teacher = jsonText(raw.teacher) || jsonText(raw.instructor) || value('上课教师', '教师', '老师');
+    const location = jsonText(raw.location) || jsonText(raw.position) || jsonText(raw.classroom) || value('上课地点', '地点', '教室');
+    const weeks = jsonText(raw.weeks) || jsonText(raw.week) || value('周次', '教学周');
+    const parity = jsonText(raw.weekParity) || jsonText(raw.parity) || value('单双周');
+    const recordText = [title, name, jsonName].filter(Boolean).join('\n');
     if (JSON_FREE_TIME.test(recordText)) {
       skippedRows += 1;
       jsonIssues.push({
@@ -782,12 +790,17 @@ export const parseCsuScheduleJson = (input: string, options: CaScheduleImportOpt
     const mappedXq = Number.isInteger(rawXq) && rawXq >= 1 && rawXq <= 7
       ? String(((rawXq + 5) % 7) + 1)
       : '';
-    const dayRaw = labelledWeekday || jsonText(raw.weekday) || mappedXq;
+    const dayRaw = labelledWeekday || jsonText(raw.weekday) || jsonText(raw.day) || mappedXq;
     // `jc` in the CSU payload is often only the first period; the title's
     // labelled range (for example `03-04`) contains the complete span.
     const labelledPeriods = value('节次', '上课节次');
     const titlePeriodParts = periodPartsIn(labelledPeriods);
-    const rawPeriodParts = periodPartsIn(jsonText(raw.periods) || jsonText(raw.jc));
+    const rawPeriodValue = jsonText(raw.periods)
+      || jsonText(raw.sections)
+      || jsonText(raw.section)
+      || [jsonText(raw.startSection), jsonText(raw.endSection)].filter(Boolean).join('-')
+      || jsonText(raw.jc);
+    const rawPeriodParts = periodPartsIn(rawPeriodValue);
     // A complete range in `title` is authoritative (some exports retain a
     // stale `jc` start value). If title has only an end section, combine it
     // with the single `jc` start; otherwise use `jc` as a one-period fallback.
@@ -809,7 +822,22 @@ export const parseCsuScheduleJson = (input: string, options: CaScheduleImportOpt
       });
       continue;
     }
-    rows.push([name, weekday, periodParts[0] ?? '', periodParts[1] ?? periodParts[0] ?? '', teacher, location, weeks, parity]);
+    const tags = jsonText(raw.tags) || jsonText(raw.interests) || jsonText(raw.category);
+    const notes = jsonText(raw.notes) || jsonText(raw.remark);
+    rows.push([
+      name,
+      weekday,
+      periodParts[0] ?? '',
+      periodParts[1] ?? periodParts[0] ?? '',
+      teacher,
+      location,
+      weeks,
+      parity,
+      jsonText(raw.buildingId),
+      jsonText(raw.buildingName) || jsonText(raw.building),
+      tags,
+      notes,
+    ]);
   }
   if (rows.length === 1) {
     const error: ImportIssue = {

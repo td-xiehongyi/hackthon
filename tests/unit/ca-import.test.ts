@@ -140,6 +140,31 @@ describe('CSU CA 教务课表导入适配器', () => {
     });
   });
 
+  test('兼容 GitHub AISchedule/WakeUp 风格的 day、sections、position 字段', () => {
+    const payload = JSON.stringify({ courses: [{
+      name: '人工智能导论',
+      teacher: '周老师',
+      position: '新校区 A203',
+      day: 2,
+      weeks: [1, 3, 5, 7],
+      sections: [7, 8],
+      tags: ['人工智能', '计算机'],
+    }] });
+    const preview = parseCaScheduleText(payload);
+
+    expect(preview.status).toBe('ready');
+    expect(preview.acceptedRows).toBe(1);
+    expect(preview.courses[0]).toMatchObject({
+      name: '人工智能导论',
+      weekday: 2,
+      startPeriod: 7,
+      endPeriod: 8,
+      weeks: [1, 3, 5, 7],
+      location: '新校区 A203',
+      tags: ['人工智能', '计算机'],
+    });
+  });
+
   test('只打开官方 CA 地址，不附加账号、密码或查询参数', () => {
     let opened = '';
     expect(openCsuSchedulePage((url) => {

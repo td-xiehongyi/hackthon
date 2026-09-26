@@ -28,6 +28,7 @@ import {
 } from './community';
 import { CSU_CA_SCHEDULE_URL, openCsuSchedulePage, parseCsuScheduleText } from './caImport';
 import { readCsuExtensionMessage } from './csuExtensionBridge';
+import { exportScheduleIcal } from './ical';
 
 type TeachingTab = 'schedule' | 'discover' | 'manage';
 type SaveState = { kind: 'saved' | 'saving' | 'error'; message: string };
@@ -50,6 +51,7 @@ type CourseFormState = {
 const TERM_ID = 'current-term';
 const SELECTED_WEEK_KEY = 'csu-campus-selected-week';
 const INTERESTS_KEY = 'csu-campus-schedule-interests';
+const TERM_START_DATE_KEY = 'csu-campus-term-start-monday';
 const range = (count: number) => Array.from({ length: count }, (_, index) => index + 1);
 const weekdays = range(7) as Weekday[];
 const periods = range(DEFAULT_MAX_PERIOD);
@@ -504,6 +506,74 @@ function ImportModal({
   );
 }
 
+function IcalExportModal({
+  courses,
+  onClose,
+  onExport,
+}: {
+  courses: readonly Course[];
+  onClose: () => void;
+  onExport: (semesterStart: string, alarmMinutes: number | null) => void;
+}) {
+  const [semesterStart, setSemesterStart] = useState(() => {
+    try { return window.localStorage.getItem(TERM_START_DATE_KEY) ?? ''; } catch { return ''; }
+  });
+  const [alarm, setAlarm] = useState('15');
+  const [error, setError] = useState('');
+  const dialogRef = useRef<HTMLElement>(null);
+  useDialogFocus(dialogRef, onClose);
+
+  const submit = (event: FormEvent) => {
+    event.preventDefault();
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(semesterStart)) {
+      setError('请填写 YYYY-MM-DD 格式的日期。');
+      return;
+    }
+    try {
+      // The exporter performs the calendar/date validation, including the
+      // Monday check, so the same rule is used by every entry point.
+      const alarmMinutes = alarm === 'none' ? null : Number(alarm);
+      exportScheduleIcal(courses, { semesterStart, alarmMinutes });
+      onExport(semesterStart, alarmMinutes);
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : '无法生成日历文件。');
+    }
+  };
+
+  return (
+    <div className="modal-backdrop" role="presentation">
+      <section ref={dialogRef} className="import-modal ical-export-modal" role="dialog" aria-modal="true" aria-labelledby="ical-export-title" tabIndex={-1}>
+        <header>
+          <div><span className="modal-kicker">日历备份</span><h2 id="ical-export-title">导出到日历应用</h2></div>
+          <button className="icon-button" type="button" aria-label="关闭" onClick={onClose}>×</button>
+        </header>
+        <form onSubmit={submit}>
+          <div className="ical-export-body">
+            <p>会在当前浏览器生成一个 .ics 文件，可导入 Apple 日历、Google 日历或系统日历。课程数据不会上传。</p>
+            <label>
+              <span>第 1 周周一日期 <b>*</b></span>
+              <input data-dialog-initial-focus type="date" required value={semesterStart} onChange={(event) => { setSemesterStart(event.target.value); setError(''); }} />
+              <small>必须是周一，例如 2026-09-07；学校校历未绑定，请按本学期实际日期填写。</small>
+            </label>
+            <label>
+              <span>课前提醒</span>
+              <select value={alarm} onChange={(event) => setAlarm(event.target.value)}>
+                <option value="none">不设置提醒</option>
+                <option value="5">提前 5 分钟</option>
+                <option value="15">提前 15 分钟</option>
+                <option value="30">提前 30 分钟</option>
+              </select>
+            </label>
+            <div className="ical-export-summary"><strong>{courses.length}</strong><span>门课程 · 按实际周次展开</span></div>
+            {error && <p className="form-error" role="alert">{error}</p>}
+          </div>
+          <footer><p>单双周和自定义周次会分别生成对应日期。</p><div><button className="secondary-button" type="button" onClick={onClose}>取消</button><button className="primary-button" type="submit">生成 .ics 文件</button></div></footer>
+        </form>
+      </section>
+    </div>
+  );
+}
+
 function CaImportModal({
   onClose,
   onChooseFile,
@@ -590,6 +660,7 @@ export default function TeachingPage({ onBack }: { onBack: () => void }) {
   const [caImportOpen, setCaImportOpen] = useState(false);
   const [extensionStatus, setExtensionStatus] = useState<'idle' | 'waiting' | 'received'>('idle');
   const [extensionError, setExtensionError] = useState('');
+  const [icalExportOpen, setIcalExportOpen] = useState(false);
   const [toast, setToast] = useState('');
   const fileInput = useRef<HTMLInputElement>(null);
   const mainElement = useRef<HTMLElement>(null);
@@ -820,6 +891,22 @@ export default function TeachingPage({ onBack }: { onBack: () => void }) {
     triggerDownload('\uFEFF课程名称,星期,开始节数,结束节数,老师,地点,周数,兴趣标签\r\n', 'WakeUp-兼容课表模板.csv');
   };
 
+  const handleIcalExport = (semesterStart: string, alarmMinutes: number | null) => {
+    try {
+      const ical = exportScheduleIcal(courses, {
+        semesterStart,
+        alarmMinutes,
+        calendarName: '中南大学像素校园课表',
+      });
+      try { window.localStorage.setItem(TERM_START_DATE_KEY, semesterStart); } catch { /* storage is optional */ }
+      triggerDownload(ical, '我的课表.ics', 'text/calendar;charset=utf-8');
+      setIcalExportOpen(false);
+      setToast('日历文件已生成，可导入系统日历。');
+    } catch (reason) {
+      setToast(reason instanceof Error ? reason.message : '无法生成日历文件。');
+    }
+  };
+
   return (
     <main ref={mainElement} className="teaching-page" tabIndex={-1}>
       <header className="teaching-header">
@@ -992,6 +1079,7 @@ export default function TeachingPage({ onBack }: { onBack: () => void }) {
               <button className="secondary-button" type="button" onClick={() => fileInput.current?.click()}>导入 CSV</button>
               <button className="secondary-button" type="button" onClick={() => setCaImportOpen(true)}>从教务系统导入</button>
               <button className="secondary-button" type="button" disabled={courses.length === 0} onClick={() => triggerDownload(exportScheduleCsv(courses), '我的课表.csv')}>导出备份</button>
+              <button className="secondary-button" type="button" disabled={courses.length === 0} onClick={() => setIcalExportOpen(true)}>导出日历</button>
             </div>
           </div>
 
@@ -1021,6 +1109,7 @@ export default function TeachingPage({ onBack }: { onBack: () => void }) {
               <ol><li><span>1</span>选择 CSV，或打开教务系统</li><li><span>2</span>查看错误与未匹配地点</li><li><span>3</span>确认追加或替换</li></ol>
               <button className="primary-button full-button" type="button" onClick={() => fileInput.current?.click()}>选择 CSV 文件</button>
               <button className="secondary-button full-button" type="button" onClick={() => setCaImportOpen(true)}>从 CSU 教务系统导入</button>
+              <button className="secondary-button full-button" type="button" disabled={courses.length === 0} onClick={() => setIcalExportOpen(true)}>导出 .ics 日历</button>
               <button className="text-button" type="button" onClick={downloadTemplate}>下载空白模板</button>
               <div className="browser-storage-note"><i /> <div><strong>浏览器自动保存</strong><p>个人课表保存在当前浏览器。换设备或清理网站数据前，请先导出备份。</p></div></div>
             </aside>
@@ -1031,6 +1120,7 @@ export default function TeachingPage({ onBack }: { onBack: () => void }) {
       <input ref={fileInput} className="visually-hidden" type="file" accept=".csv,.tsv,.txt,.html,.htm,.json,text/csv,text/tab-separated-values,text/plain,text/html,application/json" onChange={(event) => void handleFile(event.target.files?.[0])} />
       {editing !== undefined && <CourseFormModal editing={editing} onClose={() => setEditing(undefined)} onSubmit={handleCourseSubmit} />}
       {importPreview && <ImportModal preview={importPreview} filename={importFilename} onClose={() => setImportPreview(null)} onConfirm={confirmImport} />}
+      {icalExportOpen && <IcalExportModal courses={courses} onClose={() => setIcalExportOpen(false)} onExport={handleIcalExport} />}
       {caImportOpen && <CaImportModal
         onClose={() => setCaImportOpen(false)}
         onChooseFile={() => fileInput.current?.click()}
