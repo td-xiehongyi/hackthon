@@ -410,7 +410,12 @@ export function parseWeekExpression(
     return { weeks, parity: 'all', label: formatWeekExpression(weeks) };
   }
 
-  const compact = original.replace(/\s+/g, '');
+  let compact = original.replace(/\s+/g, '');
+  // CSU exports may describe an open-ended range as “从第3周开始” (with
+  // optional “单周/双周” suffix). Normalize it to the same bounded range
+  // understood by the rest of the parser, using the configured semester
+  // maximum as the end week.
+  compact = compact.replace(/(?:从)?第?(\d+)周(?:开始|起)/g, '$1-' + normalizedMaxWeek + '周');
   const segments = compact.split(/[,，、;；]+/).filter(Boolean);
   let weeks: number[] = [];
 
@@ -770,7 +775,11 @@ const HEADER_ALIASES: Record<CsvField, readonly string[]> = {
   weekday: ['星期', '星期几', '周几', '上课星期', 'weekday', 'day'],
   startPeriod: ['开始节次', '开始节数', '开始节', '起始节次', 'startperiod', 'startsection', 'start'],
   endPeriod: ['结束节次', '结束节数', '结束节', '终止节次', 'endperiod', 'endsection', 'end'],
-  periods: ['节次', '节数', '上课节次', '时间段', 'periods', 'sections'],
+  // CA exports often call the section column “上课时间” even when the
+  // value is a numbered range such as “第1-2节”. Treat it as a combined
+  // periods field so direct CSV imports follow the same path as the CA
+  // adapter's canonicalization.
+  periods: ['节次', '节数', '上课节次', '时间段', '上课时间', '上课时段', '时间', 'periods', 'sections'],
   weeks: ['周次', '周数', '上课周次', 'weeks', 'week'],
   parity: ['单双周', '周类型', '周次类型', 'parity'],
   location: ['地点', '上课地点', '教室', 'location', 'classroom', 'room'],
@@ -802,7 +811,21 @@ const cellAt = (
 };
 
 const parsePeriods = (value: string): [number, number] | null => {
-  const matches = value.normalize('NFKC').match(/\d+/g);
+  const normalized = value.normalize('NFKC');
+  // A clock range is not a section range. Without this guard `08:00-09:40`
+  // would be interpreted as sections 8–0 and could silently produce a bad
+  // course depending on downstream coercion.
+  if (/\b\d{1,2}\s*:\s*\d{2}\b/.test(normalized)) return null;
+  const compact = normalized.match(/(?<!\d)((?:\d{2}){2,})(?!\d)/);
+  if (compact) {
+    const parts = compact[1].match(/\d{2}/g) ?? [];
+    if (parts.length >= 2) {
+      const first = parts[0] ?? '';
+      const last = parts[parts.length - 1] ?? first;
+      return [Number.parseInt(first, 10), Number.parseInt(last, 10)];
+    }
+  }
+  const matches = normalized.match(/\d+/g);
   if (!matches?.length) return null;
   const start = Number.parseInt(matches[0], 10);
   const end = Number.parseInt(matches[1] ?? matches[0], 10);
