@@ -76,7 +76,14 @@ async function readSingleFile(
     }
   } catch (err) {
     if (err instanceof ApiError) throw err;
-    throw new ApiError(413, 'FILE_TOO_LARGE', '图片超过大小限制');
+    const code = (err as { code?: string }).code;
+    if (code === 'FST_REQ_FILE_TOO_LARGE') {
+      throw new ApiError(413, 'FILE_TOO_LARGE', '图片超过大小限制');
+    }
+    if (code === 'FST_PARTS_LIMIT' || code === 'FST_FILES_LIMIT' || code === 'FST_FIELDS_LIMIT') {
+      throw new ApiError(400, 'INVALID_REQUEST', 'multipart 字段或文件数量超出限制');
+    }
+    throw new ApiError(400, 'INVALID_REQUEST', 'multipart 请求解析失败或连接中断');
   }
   if (fileCount !== 1 || !buffer) {
     throw new ApiError(400, 'INVALID_REQUEST', '需要恰好一个名为 file 的图片文件');
@@ -276,10 +283,20 @@ export function buildApp(config: ServerConfig): FastifyInstance {
       return reply.status(err.status).send(body);
     }
     const anyErr = err as { statusCode?: number; code?: string };
-    if (anyErr.statusCode === 400 || anyErr.code?.startsWith('FST_ERR_CTP_')) {
+    if (anyErr.code === 'FST_ERR_CTP_BODY_TOO_LARGE') {
+      return reply.status(413).send({ error: { code: 'INVALID_REQUEST', message: '请求体超过大小限制' } });
+    }
+    if (anyErr.code === 'FST_ERR_CTP_INVALID_JSON_BODY' || anyErr.code === 'FST_ERR_CTP_EMPTY_JSON_BODY') {
       return reply.status(400).send({ error: { code: 'INVALID_REQUEST', message: '请求体不是合法 JSON' } });
     }
-    req.log.error(err);
+    if (anyErr.code === 'FST_ERR_CTP_INVALID_MEDIA_TYPE') {
+      return reply.status(415).send({ error: { code: 'INVALID_REQUEST', message: '不支持的请求内容类型' } });
+    }
+    if (typeof anyErr.statusCode === 'number' && anyErr.statusCode >= 400 && anyErr.statusCode < 500) {
+      return reply.status(anyErr.statusCode).send({ error: { code: 'INVALID_REQUEST', message: '请求不合法' } });
+    }
+    // logger 关闭时 req.log 不输出，这里直接写 stderr，保证 500 可排查。
+    console.error(`[campus-server] ${req.method} ${req.url} 未处理异常：`, err);
     return reply.status(500).send({ error: { code: 'STORAGE_WRITE_FAILED', message: '服务内部错误' } });
   });
 

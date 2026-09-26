@@ -17,21 +17,42 @@ export interface ServerConfig {
   maxAlbumCount: number | null;
 }
 
-const DEFAULT_ALLOWED_ORIGINS = ['http://127.0.0.1:5173', 'http://127.0.0.1:8787'];
+const DEFAULT_ALLOWED_ORIGINS = [
+  'http://127.0.0.1:5173',
+  'http://127.0.0.1:8787',
+  'http://localhost:5173',
+  'http://localhost:8787',
+];
+
+/** 项目根目录（server/ 的上一级），数据目录默认固定在此，不随启动时的工作目录变化。 */
+const PROJECT_ROOT = path.resolve(import.meta.dirname, '..');
+
+function parsePositiveInt(name: string, raw: string | undefined, fallback: number): number;
+function parsePositiveInt(name: string, raw: string | undefined, fallback: null): number | null;
+function parsePositiveInt(name: string, raw: string | undefined, fallback: number | null): number | null {
+  if (raw === undefined || raw.trim() === '') return fallback;
+  const value = Number(raw);
+  if (!Number.isSafeInteger(value) || value <= 0) {
+    throw new Error(`环境变量 ${name} 须为正整数，当前值：${raw}`);
+  }
+  return value;
+}
 
 export function loadConfig(env: NodeJS.ProcessEnv = process.env): ServerConfig {
   const host = env.CAMPUS_HOST ?? '127.0.0.1';
-  const port = Number(env.CAMPUS_PORT ?? 8787);
-  const dataRoot = path.resolve(env.CAMPUS_DATA_ROOT ?? 'data');
+  const port = parsePositiveInt('CAMPUS_PORT', env.CAMPUS_PORT, 8787);
+  const dataRoot = env.CAMPUS_DATA_ROOT
+    ? path.resolve(PROJECT_ROOT, env.CAMPUS_DATA_ROOT)
+    : path.join(PROJECT_ROOT, 'data');
 
   // 图片政策：格式/大小/容量未由用户确认，正式保持 pending；
   // 仅当显式设置 CAMPUS_IMAGE_POLICY=dev 时才作为“开发测试配置”启用。
   const imagePolicy: ImagePolicyStatus = env.CAMPUS_IMAGE_POLICY === 'dev' ? 'configured' : 'pending';
 
   const acceptedMimeTypes = ['image/png', 'image/jpeg', 'image/webp', 'image/gif'];
-  const maxFileBytes = Number(env.CAMPUS_MAX_FILE_BYTES ?? 10 * 1024 * 1024);
-  const maxAlbumBytes = env.CAMPUS_MAX_ALBUM_BYTES ? Number(env.CAMPUS_MAX_ALBUM_BYTES) : null;
-  const maxAlbumCount = env.CAMPUS_MAX_ALBUM_COUNT ? Number(env.CAMPUS_MAX_ALBUM_COUNT) : null;
+  const maxFileBytes = parsePositiveInt('CAMPUS_MAX_FILE_BYTES', env.CAMPUS_MAX_FILE_BYTES, 10 * 1024 * 1024);
+  const maxAlbumBytes = parsePositiveInt('CAMPUS_MAX_ALBUM_BYTES', env.CAMPUS_MAX_ALBUM_BYTES, null);
+  const maxAlbumCount = parsePositiveInt('CAMPUS_MAX_ALBUM_COUNT', env.CAMPUS_MAX_ALBUM_COUNT, null);
 
   const allowedOrigins = env.CAMPUS_ALLOWED_ORIGINS
     ? env.CAMPUS_ALLOWED_ORIGINS.split(',').map((s) => s.trim()).filter(Boolean)

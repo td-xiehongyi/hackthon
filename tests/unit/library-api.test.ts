@@ -236,3 +236,44 @@ describe('相册上传与读取', () => {
     expect(badPhoto.json().error.code).toBe('PHOTO_NOT_FOUND');
   });
 });
+
+describe('请求错误映射', () => {
+  test('非法 JSON 返回 400，超大请求体返回 413', async () => {
+    const app = makeApp();
+    const bad = await app.inject({
+      method: 'PUT',
+      url: '/api/v1/public-content',
+      headers: { 'content-type': 'application/json', ...ORIGIN },
+      payload: '{not json',
+    });
+    expect(bad.statusCode).toBe(400);
+    expect(bad.json().error.code).toBe('INVALID_REQUEST');
+
+    const huge = await app.inject({
+      method: 'PUT',
+      url: '/api/v1/public-content',
+      headers: { 'content-type': 'application/json', ...ORIGIN },
+      payload: JSON.stringify({ expectedRevision: 0, content: { clubs: [], activities: [], pad: 'x'.repeat(3 * 1024 * 1024) } }),
+    });
+    expect(huge.statusCode).toBe(413);
+  });
+
+  test('损坏的 multipart 返回 400 而非 FILE_TOO_LARGE', async () => {
+    const app = makeApp();
+    const res = await app.inject({
+      method: 'POST',
+      url: '/api/v1/places/xiaoxiang_library/photos',
+      headers: {
+        'content-type': 'multipart/form-data; boundary=----campusTestBoundary',
+        'idempotency-key': UUID_A,
+        ...ORIGIN,
+      },
+      // 截断的 multipart：缺少结束边界，模拟连接中断
+      payload:
+        '------campusTestBoundary\r\nContent-Disposition: form-data; name="file"; filename="a.png"\r\n' +
+        'Content-Type: image/png\r\n\r\nPNGDATA',
+    });
+    expect(res.statusCode).toBe(400);
+    expect(res.json().error.code).toBe('INVALID_REQUEST');
+  });
+});
