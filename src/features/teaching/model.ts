@@ -347,8 +347,11 @@ const range = (start: number, end: number): number[] =>
 export function inferWeekParity(weeks: readonly number[]): WeekParity {
   const normalized = sortUniqueNumbers(weeks);
   if (normalized.length === 0) return 'custom';
-  if (normalized.every((week) => week % 2 === 1)) return 'odd';
-  if (normalized.every((week) => week % 2 === 0)) return 'even';
+  const paritySequence = normalized.every(
+    (week, index) => index === 0 || week === normalized[index - 1] + 2,
+  );
+  if (paritySequence && normalized.every((week) => week % 2 === 1)) return 'odd';
+  if (paritySequence && normalized.every((week) => week % 2 === 0)) return 'even';
   const consecutive = normalized.every(
     (week, index) => index === 0 || week === normalized[index - 1] + 1,
   );

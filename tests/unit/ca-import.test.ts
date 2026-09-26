@@ -101,9 +101,22 @@ describe('CSU CA 教务课表导入适配器', () => {
     expect(preview.status).toBe('ready');
     expect(preview.source).toBe('json');
     expect(preview.courses[0]).toMatchObject({
-      name: '数据结构', weekday: 2, startPeriod: 3, endPeriod: 4,
+      name: '数据结构', weekday: 1, startPeriod: 3, endPeriod: 4,
       weeks: [1, 3, 5, 7, 9, 11, 13, 15], teacher: '刘老师', location: '教学楼 A201',
     });
+  });
+
+  test('解码 CSU 连续节次并跳过没有课程名称的备注对象', () => {
+    const payload = JSON.stringify([
+      { jc: 1, xq: 2, title: '课程名称：高等数学\n周次：1-16(周)\n星期：星期一\n节次：0708节\n上课地点：A101' },
+      { jc: 7, xq: 1, title: '本学期实践教学安排；此行不是课程' },
+    ]);
+    const preview = parseCaScheduleText(payload);
+
+    expect(preview.status).toBe('ready');
+    expect(preview.acceptedRows).toBe(1);
+    expect(preview.skippedRows).toBe(1);
+    expect(preview.courses[0]).toMatchObject({ name: '高等数学', weekday: 1, startPeriod: 7, endPeriod: 8 });
   });
 
   test('只打开官方 CA 地址，不附加账号、密码或查询参数', () => {

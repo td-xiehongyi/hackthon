@@ -89,7 +89,8 @@ const nonEmptyRows = (rows: readonly string[][]): string[][] =>
     .filter((row) => row.some((cell) => cell !== ''));
 
 /** Labels that identify login/account panels rather than course rows. */
-const SENSITIVE_LABEL = /(?:密码|password|登录密码|验证码|captcha|用户名|username|登录名|账号登录)/i;
+// Match login-field labels, not ordinary course names such as “密码学”.
+const SENSITIVE_LABEL = /^(?:登录)?(?:密码|验证码|用户名|登录名|账号登录)(?:\s*[:：=].*)?$|^(?:password|captcha|username)(?:\s*[:：=].*)?$/i;
 
 const rowLooksSensitive = (row: readonly string[]): boolean =>
   row.some((cell) => SENSITIVE_LABEL.test(cell));
@@ -388,6 +389,17 @@ const firstPeriodsIn = (value: string): string => {
   return numbers.length > 1 ? `${numbers[0]}-${numbers[1]}` : numbers[0];
 };
 
+/** Decode CSU's compact section notation such as `0708节` or `0304`. */
+const periodPartsIn = (value: string): string[] => {
+  const normalized = value.normalize('NFKC');
+  const explicit = normalized.match(/(?:第\s*)?(\d{1,2})\s*[-~～—–至到、，,]\s*(\d{1,2})/);
+  if (explicit) return [explicit[1], explicit[2]];
+  const compact = normalized.match(/(?<!\d)(\d{4})(?!\d)/);
+  if (compact) return [String(Number(compact[1].slice(0, 2))), String(Number(compact[1].slice(2)))];
+  const numbers = normalized.match(/\d{1,2}/g) ?? [];
+  return numbers;
+};
+
 const valueFor = (row: readonly string[], mapping: HeaderMapping, field: keyof HeaderMapping): string =>
   cellAt(row, mapping[field]);
 
@@ -581,8 +593,12 @@ const parseCsuJson = (input: string, options: CaScheduleImportOptions): CaSchedu
   }
   const items = Array.isArray(parsed)
     ? parsed
-    : parsed && typeof parsed === 'object' && Array.isArray((parsed as { courses?: unknown[] }).courses)
-      ? (parsed as { courses: unknown[] }).courses
+    : parsed && typeof parsed === 'object'
+      ? (['courses', 'data', 'rows'] as const).reduce<unknown[] | null>((found, key) => {
+          if (found) return found;
+          const candidate = (parsed as Record<string, unknown>)[key];
+          return Array.isArray(candidate) ? candidate : null;
+        }, null)
       : null;
   if (!items) return null;
 
@@ -603,20 +619,23 @@ const parseCsuJson = (input: string, options: CaScheduleImportOptions): CaSchedu
       }
       return '';
     };
-    const name = typeof raw.name === 'string' ? raw.name.trim() : value('课程名称', '课程名');
-    const teacher = typeof raw.teacher === 'string' ? raw.teacher.trim() : value('上课教师', '教师', '老师');
-    const location = typeof raw.location === 'string' ? raw.location.trim() : value('上课地点', '地点', '教室');
-    const weeks = typeof raw.weeks === 'string' ? raw.weeks.trim() : value('周次', '教学周');
-    const parity = typeof raw.weekParity === 'string' ? raw.weekParity.trim() : value('单双周');
-    const dayRaw = raw.weekday ?? raw.xq ?? value('星期', '上课星期');
+    const name = value('课程名称', '课程名') || (typeof raw.name === 'string' ? raw.name.trim() : '') || (typeof raw.kcmc === 'string' ? raw.kcmc.trim() : '');
+    const teacher = (typeof raw.teacher === 'string' && raw.teacher.trim()) || value('上课教师', '教师', '老师');
+    const location = (typeof raw.location === 'string' && raw.location.trim()) || value('上课地点', '地点', '教室');
+    const weeks = (typeof raw.weeks === 'string' && raw.weeks.trim()) || value('周次', '教学周');
+    const parity = (typeof raw.weekParity === 'string' && raw.weekParity.trim()) || value('单双周');
+    const labelledWeekday = value('星期', '上课星期');
+    const dayRaw = labelledWeekday || raw.weekday || (typeof raw.xq === 'number' || typeof raw.xq === 'string'
+      ? ((Number(raw.xq) + 5) % 7) + 1
+      : '');
     // `jc` in the CSU payload is often only the first period; the title's
     // labelled range (for example `03-04`) contains the complete span.
     const labelledPeriods = value('节次', '上课节次');
-    const periodRaw = raw.periods ?? (labelledPeriods || raw.jc || '');
+    const periodRaw = (typeof raw.periods === 'string' && raw.periods.trim()) || labelledPeriods || raw.jc || '';
     const weekday = typeof dayRaw === 'number' ? String(dayRaw) : String(dayRaw ?? '');
     const periodText = String(periodRaw ?? '');
-    const periodParts = periodText.match(/\d+/g) ?? [];
-    if (!name && !title) {
+    const periodParts = periodPartsIn(periodText);
+    if (!name) {
       skippedRows += 1;
       continue;
     }
@@ -624,7 +643,7 @@ const parseCsuJson = (input: string, options: CaScheduleImportOptions): CaSchedu
   }
   if (rows.length === 1) return null;
   const parsedPreview = parseMatrix({ rows, source: 'json', tableCount: 0, skippedRows }, options);
-  return { ...parsedPreview, source: 'json', skippedRows: parsedPreview.skippedRows + skippedRows, sourceLabel: options.sourceLabel };
+  return { ...parsedPreview, source: 'json', sourceLabel: options.sourceLabel };
 };
 
 /** Parse a rendered `Document`/`Element` from the official CA page. */
