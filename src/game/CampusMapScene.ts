@@ -4,6 +4,7 @@ type MapCallbacks = {
   onReady: () => void;
   onError: () => void;
   onZoom: (zoom: number) => void;
+  onOpenTeaching: () => void;
 };
 
 export class CampusMapScene extends Phaser.Scene {
@@ -27,6 +28,7 @@ export class CampusMapScene extends Phaser.Scene {
     this.mapWidth = source.width;
     this.mapHeight = source.height;
     this.add.image(0, 0, 'campus').setOrigin(0);
+    this.createTeachingHotspot();
     this.cameras.main.setBounds(0, 0, this.mapWidth, this.mapHeight);
     this.ready = true;
     this.fitToWindow();
@@ -50,6 +52,42 @@ export class CampusMapScene extends Phaser.Scene {
       this.scale.off('resize', this.fitToWindow, this);
     });
     this.callbacks.onReady();
+  }
+
+  private createTeachingHotspot() {
+    // Source-image coordinates for the labelled teaching group on the current map.
+    // This is a discoverability hotspot, not a verified character entrance/return point.
+    const halo = this.add.circle(0, 0, 44, 0xf5cf65, 0.32)
+      .setStrokeStyle(3, 0xfff4b8, 0.92);
+    const marker = this.add.circle(0, 0, 27, 0x173f35, 1)
+      .setStrokeStyle(3, 0xfdf9dd, 1);
+    const glyph = this.add.text(0, -1, '课', {
+      color: '#fffbea',
+      fontFamily: '"Microsoft YaHei", "PingFang SC", sans-serif',
+      fontSize: '20px',
+      fontStyle: 'bold',
+    }).setOrigin(0.5);
+    const label = this.add.text(0, -59, '课表 · 蹭课', {
+      backgroundColor: '#fffbea',
+      color: '#173f35',
+      fontFamily: '"Microsoft YaHei", "PingFang SC", sans-serif',
+      fontSize: '14px',
+      fontStyle: 'bold',
+      padding: { x: 9, y: 6 },
+    }).setOrigin(0.5).setStroke('#173f35', 1);
+
+    const hotspot = this.add.container(506, 1267, [halo, marker, glyph, label]);
+    hotspot.setSize(152, 126).setInteractive({ useHandCursor: true });
+    hotspot.on('pointerover', () => {
+      halo.setScale(1.14);
+      label.setBackgroundColor('#f5cf65');
+    });
+    hotspot.on('pointerout', () => {
+      halo.setScale(1);
+      label.setBackgroundColor('#fffbea');
+    });
+    hotspot.on('pointerup', () => this.callbacks.onOpenTeaching());
+
   }
 
   fitToWindow() {

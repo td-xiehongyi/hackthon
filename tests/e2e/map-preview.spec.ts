@@ -25,7 +25,7 @@ test('地图可加载、缩放、拖动并恢复全图', async ({ page }) => {
   await page.getByRole('button', { name: '适应窗口' }).click();
   await expect(zoom).toHaveText(fittedZoom);
   await expect.poll(async () => (await canvas.screenshot()).equals(before)).toBe(true);
-  await expect(page.getByText('角色移动与地点交互待接入')).toBeVisible();
+  await expect(page.getByText('教学楼群已开放')).toBeVisible();
   expect(errors).toEqual([]);
 });
 

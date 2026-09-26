@@ -2,7 +2,12 @@ import { useEffect, useRef, useState } from 'react';
 import * as Phaser from 'phaser';
 import { CampusMapScene } from './CampusMapScene';
 
-export default function MapViewport() {
+type MapViewportProps = {
+  active?: boolean;
+  onOpenTeaching: () => void;
+};
+
+export default function MapViewport({ active = true, onOpenTeaching }: MapViewportProps) {
   const host = useRef<HTMLDivElement>(null);
   const scene = useRef<CampusMapScene | null>(null);
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
@@ -15,6 +20,7 @@ export default function MapViewport() {
       onReady: () => mounted && setStatus('ready'),
       onError: () => mounted && setStatus('error'),
       onZoom: (value) => mounted && setZoom(value),
+      onOpenTeaching,
     });
     scene.current = map;
     let game: Phaser.Game | undefined;
@@ -39,7 +45,13 @@ export default function MapViewport() {
       scene.current = null;
       game?.destroy(true);
     };
-  }, []);
+  }, [onOpenTeaching]);
+
+  useEffect(() => {
+    if (!active) return;
+    const frame = window.requestAnimationFrame(() => scene.current?.fitToWindow());
+    return () => window.cancelAnimationFrame(frame);
+  }, [active]);
 
   return (
     <section className="map-panel" aria-label="地图预览">
@@ -49,6 +61,13 @@ export default function MapViewport() {
           <span role="status" aria-label="地图加载状态">{status === 'ready' ? '地图已加载' : status === 'loading' ? '正在加载地图…' : '地图未加载'}</span>
         </div>
         <div className="map-controls" aria-label="地图浏览控件">
+          <button
+            className="place-entry-button"
+            disabled={status !== 'ready'}
+            onClick={onOpenTeaching}
+          >
+            进入教学楼群
+          </button>
           <button aria-label="缩小地图" disabled={status !== 'ready'} onClick={() => scene.current?.changeZoom(1 / 1.25)}>−</button>
           <output aria-label="当前缩放">{status === 'ready' ? `${Math.round(zoom * 100)}%` : '—'}</output>
           <button aria-label="放大地图" disabled={status !== 'ready'} onClick={() => scene.current?.changeZoom(1.25)}>+</button>
@@ -66,7 +85,7 @@ export default function MapViewport() {
           </div>
         )}
       </div>
-      <div className="map-footer"><span>拖动浏览 · 滚轮缩放</span><span>1041 × 1511 · 原始地图</span></div>
+      <div className="map-footer"><span>拖动浏览 · 滚轮缩放 · 点击“课”进入教学楼</span><span>1041 × 1511 · 原始地图</span></div>
     </section>
   );
 }
