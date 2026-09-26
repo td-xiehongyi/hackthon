@@ -11,6 +11,7 @@ describe('CSU 浏览器插件消息边界', () => {
         source: 'csu-browser-extension',
         type: 'CSU_SCHEDULE_CAPTURE',
         payload: {
+          source: 'csu-browser-extension',
           capturedAt: '2026-09-26T00:00:00.000Z',
           pageUrl: 'http://csujwc.its.csu.edu.cn/jsxsd/kbxx/toKbcx.do',
           courses: [{
@@ -31,7 +32,7 @@ describe('CSU 浏览器插件消息边界', () => {
     const base = {
       source: 'csu-browser-extension',
       type: 'CSU_SCHEDULE_CAPTURE',
-      payload: { courses: [{ title: '课程名称：数学' }] },
+      payload: { source: 'csu-browser-extension', courses: [{ title: '课程名称：数学' }] },
     };
     const makeEvent = (data: unknown, origin = 'http://127.0.0.1:5173') => ({ origin, source, data } as unknown as MessageEvent<unknown>);
 

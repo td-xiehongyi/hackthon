@@ -140,6 +140,7 @@ test('浏览器插件抓取结果进入统一导入预览', async ({ page }) => 
       source: 'csu-browser-extension',
       type: 'CSU_SCHEDULE_CAPTURE',
       payload: {
+        source: 'csu-browser-extension',
         capturedAt: '2026-09-26T00:00:00.000Z',
         pageTitle: '我的课表',
         courses: [{
