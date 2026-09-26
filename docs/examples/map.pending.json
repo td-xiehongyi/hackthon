@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "mapId": "csu-campus-v9",
-  "imagePath": "/maps/campus-final-v9.png",
-  "imageSha256": "7c47e74e4002fbe12c998f838ae7d8a1dff937863412380d6101b6f7b8eec745",
+  "mapId": "csu-campus-v20",
+  "imagePath": "/maps/campus-v20.png",
+  "imageSha256": "2502f84dbbc3d15940ac42c7d07a7e3b319bb1804c71a955cc95b61306f0f410",
   "widthPx": 1041,
   "heightPx": 1511,
   "coordinateSystem": "image-pixels-top-left",

@@ -4,7 +4,7 @@
  * 在 A 落地 Panel 宿主与 dev preview 之前，用它独立查看 StadiumPanel 与 ContentEditor。
  * 接入 A 宿主后，本目录整体删除。所用 props 为开发替身，不代表真实地图会话。
  */
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import type { PlaceIdentity } from '../types';
 import { createMockPublicContentApi } from '../../content-editor/mockPublicContentApi';
 import { sampleSnapshot } from './sample-data';
@@ -23,9 +23,16 @@ export default function PreviewApp() {
   const api = useMemo(() => createMockPublicContentApi({ initial: sampleSnapshot(), latencyMs: 200 }), []);
   const [view, setView] = useState<'stadium' | 'editor'>('stadium');
 
-  const onRequestClose = () => setView('stadium');
+  const closeGuard = useRef<(() => boolean | Promise<boolean>) | null>(null);
+  const onRequestClose = async () => {
+    if (closeGuard.current && !(await closeGuard.current())) return;
+    setView('stadium');
+  };
   const onLocate = async () => ({ status: 'unmapped', message: '开发预览：地图定位尚未接入' } as const);
-  const registerCloseGuard = () => () => {};
+  const registerCloseGuard = useCallback((guard: () => boolean | Promise<boolean>) => {
+    closeGuard.current = guard;
+    return () => { if (closeGuard.current === guard) closeGuard.current = null; };
+  }, []);
 
   return (
     <div className="pv-root">

@@ -2,7 +2,7 @@
  * C：体育场（副场）地点功能页 —— 社团目录 + 活动查询 + 地点相册入口。
  *
  * 接收统一 PlacePanelProps（外加用于注入 API 的 api 属性）。
- * 相册部分依赖 D 的 PlaceGallery，暂以占位呈现，接入后替换。
+ * 相册复用 D 的 PlaceGallery，公共数据 API 由 A 的页面宿主注入。
  */
 import { useEffect, useMemo, useState } from 'react';
 import type {
@@ -22,6 +22,7 @@ import {
   uniqueCategories,
 } from './domain';
 import './stadium.css';
+import PlaceGallery from '../../shared/gallery/PlaceGallery';
 
 export interface StadiumPanelProps extends PlacePanelProps {
   api: PublicContentApi;
@@ -48,6 +49,8 @@ export default function StadiumPanel(props: StadiumPanelProps) {
   const [loadState, setLoadState] = useState<'loading' | 'ready' | 'error'>('loading');
   const [errorMessage, setErrorMessage] = useState('');
   const [tab, setTab] = useState<Tab>('clubs');
+  const [uploading, setUploading] = useState(false);
+  useEffect(() => uploading ? props.registerCloseGuard(() => false) : undefined, [uploading, props.registerCloseGuard]);
   const [now, setNow] = useState(() => new Date());
   const [clubFilter, setClubFilter] = useState({ keyword: '', category: '', campusId: '' as CampusId | '' });
   const [activityFilter, setActivityFilter] = useState({
@@ -106,8 +109,8 @@ export default function StadiumPanel(props: StadiumPanelProps) {
       </header>
 
       <nav className="sp-tabs" role="tablist">
-        <TabButton active={tab === 'clubs'} onClick={() => setTab('clubs')}>社团目录</TabButton>
-        <TabButton active={tab === 'activities'} onClick={() => setTab('activities')}>活动查询</TabButton>
+        <TabButton active={tab === 'clubs'} onClick={() => { if (!uploading) setTab('clubs'); }}>社团目录</TabButton>
+        <TabButton active={tab === 'activities'} onClick={() => { if (!uploading) setTab('activities'); }}>活动查询</TabButton>
         <TabButton active={tab === 'gallery'} onClick={() => setTab('gallery')}>地点相册</TabButton>
       </nav>
 
@@ -137,9 +140,7 @@ export default function StadiumPanel(props: StadiumPanelProps) {
             />
           )}
           {tab === 'gallery' && (
-            <div className="sp-gallery-placeholder">
-              <p>地点相册（待接入 D 的 PlaceGallery 组件，placeId = {place.placeId}）</p>
-            </div>
+            <PlaceGallery placeId={place.placeId} onActivityChange={setUploading} />
           )}
         </>
       )}

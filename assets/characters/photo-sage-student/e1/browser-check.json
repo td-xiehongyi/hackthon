@@ -1,0 +1,81 @@
+{
+  "browser": "Microsoft Edge headless",
+  "cards": 8,
+  "loaded": "已加载：角色 1536 × 1024；地图 1041 × 1511",
+  "pageErrors": [],
+  "previewAnchorChecks": [
+    {
+      "mode": "walk",
+      "facing": "down",
+      "point": {
+        "x": 555,
+        "y": 225
+      },
+      "stable": true
+    },
+    {
+      "mode": "walk",
+      "facing": "left",
+      "point": {
+        "x": 555,
+        "y": 225
+      },
+      "stable": true
+    },
+    {
+      "mode": "walk",
+      "facing": "right",
+      "point": {
+        "x": 555,
+        "y": 225
+      },
+      "stable": true
+    },
+    {
+      "mode": "walk",
+      "facing": "up",
+      "point": {
+        "x": 555,
+        "y": 225
+      },
+      "stable": true
+    },
+    {
+      "mode": "ride",
+      "facing": "down",
+      "point": {
+        "x": 555,
+        "y": 225
+      },
+      "stable": true
+    },
+    {
+      "mode": "ride",
+      "facing": "left",
+      "point": {
+        "x": 555,
+        "y": 225
+      },
+      "stable": true
+    },
+    {
+      "mode": "ride",
+      "facing": "right",
+      "point": {
+        "x": 555,
+        "y": 225
+      },
+      "stable": true
+    },
+    {
+      "mode": "ride",
+      "facing": "up",
+      "point": {
+        "x": 555,
+        "y": 225
+      },
+      "stable": true
+    }
+  ],
+  "scope": "E1 standalone preview only; not game integration, animation, collision or occlusion verification"
+}

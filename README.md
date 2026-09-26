@@ -1,101 +1,103 @@
 # 中南大学像素校园
 
-面向本机浏览器的像素校园项目：三校区连续探索，潇湘图书馆、教学楼群和体育场（副场）三个地点功能，以及共用地点相册。
+本机浏览器应用：在三校区像素地图上探索，并通过地点入口打开功能页。
 
-当前状态（2026-09-26）：**已接入最终地图，可启动本机浏览器预览。** 支持拖动、滚轮或按钮缩放、适应窗口，以及图片加载失败提示。角色移动、地图标定和地点功能尚未接入；原有需求、地图及历史预览文件保留。
+## 当前交付（2026-09-26）
 
-## 启动地图
+A 的公共框架已在此仓库接入：v20 地图、WASD 移动、Shift 骑行、脚底碰撞、镜头、E 键交互、页面暂停与原位返回、地图搜索/标记和安全点快速移动。图书馆、相册和数据服务沿用 D 的实现；体育场、公共内容编辑沿用 C 的实现并完成联调。
 
-本机已安装依赖。在 PowerShell 中运行：
+**真实地图入口仍未标定，所以首页暂不提供地点 E 键入口。** 完整进入/退出流程可在开发测试场景体验。教学楼业务由 B 交付，目前为明确标注的占位页；三个地点均复用 D 的相册。
+
+A 的交付范围、测试证据与未验证项见 [A 部分交付记录](docs/05_A部分交付与验收.md)。
+
+## 启动
+
+### 一键启动（Windows）
+
+双击根目录的 **`一键启动.bat`**。脚本会启动前端与本机数据服务，并自动打开 [校园地图](http://127.0.0.1:5176/)。保留启动窗口；按 Ctrl+C 或关闭窗口即可停止服务。重复双击会识别并复用本目录的一键启动实例。
+
+此脚本固定使用 5176/8789，数据保存在本项目 `data/`，图片政策保持待配置。端口被其他服务占用时提示错误，不结束其他程序，也不自动更换地址。需要 Node.js 24；首次缺少依赖时按提示执行 `npm ci`。
+
+### 分别启动
+
+Node.js 24；新目录先运行 `npm ci`。在两个 PowerShell 终端中运行：
 
 ```powershell
-cd 'C:\Users\xie\Desktop\Project'
+# 终端 1：本机数据服务（正式图片政策保持 pending）
+cd 'C:\Users\xie\Desktop\多人\hackthon'
+npm run server
+```
+
+```powershell
+# 终端 2：前端
+cd 'C:\Users\xie\Desktop\多人\hackthon'
 npm run dev
 ```
 
-浏览器打开 **http://127.0.0.1:5173/**。看到“地图已加载”和校园图片即表示预览已启动；按住鼠标左键拖动、滚轮缩放，或使用右上方按钮。终端按 `Ctrl+C` 停止服务。
+打开 [校园地图](http://127.0.0.1:5173/)。默认角色模式，WASD 移动，按住 Shift 骑行；“浏览”可拖动全图，“通行区域”显示碰撞边界，“地图总览与搜索”可搜索地点。未登记的坐标、安全点保持缺失状态。
 
-环境要求：Node.js 24。新复制的项目首次运行前执行 `npm ci`，按 `package-lock.json` 安装锁定依赖。端口固定为 5173，被占用时会报错；先确认已有预览是否正在运行。
+打开 [开发测试场景](http://127.0.0.1:5173/?scene=dev-playground)，点击“图书馆范围”“教学楼群范围”或“副场范围”，按 E 进入，点击“返回校园”回原位置。副场页面可进入“维护社团与活动”。测试地形与真实地图坐标无对应关系。
 
-## 目录结构
+如需测试真实图片上传，先停止数据服务，再在终端 1 明确启用开发图片政策：
 
-```text
-Project/
-├── src/                            # 前端源码
-│   ├── app/                        # A：应用入口、页面宿主、地点注册
-│   ├── game/                       # A：Phaser 场景、角色控制、碰撞与镜头
-│   ├── features/
-│   │   ├── teaching/               # B：教学楼群、课表与浏览器存储
-│   │   ├── stadium/                # C：体育场（副场）、社团和活动查询
-│   │   ├── content-editor/         # C：本机公共内容编辑器
-│   │   └── library/                # D：图书馆介绍
-│   └── shared/
-│       ├── ui/                     # A：公共界面与基础样式
-│       ├── gallery/                # D：共用地点相册
-│       └── api/                    # D：统一 API 客户端
-├── server/                         # D：本机服务与公共数据保存
-├── public/                         # 应用直接加载的静态素材
-│   ├── maps/
-│   │   └── derived/campus-v9/       # A：后续地图派生素材
-│   └── characters/student/         # E：正式角色 PNG 与 manifest
-├── assets/                         # 素材制作源文件
-│   ├── references/                 # 已有参考资料
-│   ├── maps/                       # A：Tiled 标注源及编辑导出
-│   └── characters/source/          # E：角色源文件、样张及来源说明
-├── tools/map/                      # A：地图标注转换工具
-├── tests/
-│   ├── unit/                       # 逻辑单元测试
-│   ├── integration/                # 模块接口与持久化集成测试
-│   ├── e2e/                        # 浏览器完整流程测试
-│   └── fixtures/                   # 明确标记用途的测试数据
-├── data/                           # 本机运行数据，与静态构建分离
-├── docs/                           # 已有分工、协议、类型声明和示例
-├── output/                         # 已有最终地图、概念图与交互预览
-├── 中南大学像素校园需求文档.md
-├── index.html                      # 浏览器入口
-├── package.json                    # 依赖与运行命令
-├── package-lock.json               # 依赖锁文件
-├── vite.config.ts                  # 本机启动与构建配置
-├── tsconfig.json                   # TypeScript 配置
-├── vitest.config.ts                # 资产检查配置
-├── playwright.config.ts            # 浏览器检查配置
-├── .gitignore
-└── README.md
+```powershell
+$env:CAMPUS_IMAGE_POLICY = 'dev'
+npm run server
 ```
 
-新建的空目录用 `.gitkeep` 保留位置；该文件不代表功能、数据或素材已经完成。
+这是 D 提供的开发配置（PNG/JPEG/WebP/GIF、单张 10 MB），不代表图片政策已经确认。退出后可执行 `Remove-Item Env:CAMPUS_IMAGE_POLICY` 恢复默认。数据在本仓库 `data/` 中，构建和浏览器测试不修改它；不要复制其他目录的用户数据。
 
-## 开发入口
+开发端口为 5173、服务端口为 8787，占用时报错。若另一个 Project 预览仍占用默认端口，可让本仓库使用独立来源：
 
-- [产品需求](中南大学像素校园需求文档.md)：功能范围与待确认事项。
-- [技术与接口文档](docs/README.md)：既定 React + TypeScript + Vite、Phaser、本机 Node.js + Fastify 技术方案。
-- [A–E 分工](docs/01_开发分工与交付规范.md)：文件归属、协作规则与阶段验收。
-- [共享契约](docs/contracts/campus-v1.d.ts)：当前唯一的类型声明参考。应用初始化时由 A 落地到 `src/shared/contracts.ts` 并统一维护，本次没有另建一份类型副本。
-- [待标定地图示例](docs/examples/map.pending.json)：保留 pending 状态，不能直接作为已验收地图。
+```powershell
+# 终端 1
+$env:CAMPUS_PORT = '8789'
+$env:CAMPUS_ALLOWED_ORIGINS = 'http://127.0.0.1:5176,http://127.0.0.1:8789'
+npm run server
+```
 
-目录职责沿用既有分工。测试目录是本次为既定验证方案预留的位置，各模块也可就近维护测试。
+```powershell
+# 终端 2
+$env:CAMPUS_API_PORT = '8789'
+npm run dev -- --port 5176
+```
 
-## 素材与数据
-
-- 最终地图保留于 [output/中南大学像素校园-最终地图.png](output/中南大学像素校园-最终地图.png)，运行副本为 [public/maps/campus-final-v9.png](public/maps/campus-final-v9.png)。已核对两者字节、SHA-256 及 1041 × 1511 尺寸一致。通行、碰撞与交互区域仍待单独标定。
-- `public/characters/student/` 当前没有正式角色素材或虚构的 manifest。
-- `data/` 当前没有业务数据。后续由服务的明确初始化流程建立 `public-content.json`、`photos/index.json` 和 `photos/files/`，不得把读取失败当成首次初始化。
-- `.gitignore` 排除运行数据、依赖、构建产物、测试报告和本机环境配置；保留 `data/.gitkeep`。个人课表按现有约定保存在浏览器 IndexedDB。
+此时打开 http://127.0.0.1:5176/ 。浏览器私人数据按来源隔离，后续 B 的课表功能换端口前应先备份。
 
 ## 检查与构建
 
-| 命令 | 作用 |
+| 命令 | 用途 |
 |---|---|
-| `npm test` | 检查地图运行副本与指定原图的字节、哈希和尺寸 |
-| `npm run typecheck` | 检查 TypeScript 类型 |
-| `npm run test:e2e` | 使用本机已安装的 Chrome 验证加载、缩放、拖动、恢复全图与加载失败提示 |
-| `npm run build` | 类型检查并生成 `dist/` 静态构建，不修改 `data/` |
-| `npm run preview` | 在同一地址预览静态构建；需先停止开发服务 |
+| `npm test` | 地图哈希、几何、连通、移动、角色 manifest、会话、定位与 C/D 回归 |
+| `npm run build` | 类型检查与生产构建 |
+| `npm run test:e2e` | Chrome 浏览器端到端验证，自动启停 5175/8788，使用独立 `.cache/e2e-*` 数据 |
+| `npm run map:annotate` | 从 v20 提取道路与草地，应用独立通行修正规则，保留已有地点/楼座/安全点等数据 |
+| `npm run preview` | 预览 `dist/`；需同时运行数据服务，开发前端应先停止 |
 
-地图加载与相机浏览由 [CampusMapScene](src/game/CampusMapScene.ts) 负责；React 宿主为 [MapViewport](src/game/MapViewport.tsx)，应用页面为 [App](src/app/App.tsx)。Phaser 按[官方模板基线](https://github.com/phaserjs/template-react-ts/blob/main/package.json)固定为 4.0.0，实际安装版本以锁文件为准。构建存在 Phaser 体积较大的提示，目前用于本机预览。
+浏览器测试拒绝复用已有服务，防止连到其他目录。`.cache/`、`dist/` 和测试报告均不提交。Windows 受限环境如无法清理测试子进程，需在允许子进程管理的普通终端运行测试。
 
-## 尚未实现
+## 文件入口
 
-当前只有前端地图预览，没有启动 Fastify、本机上传或公共数据服务，没有角色、可行走区域、碰撞、入口或地点页面。浏览画面的拖动和缩放是预览控件，不是角色移动。地图标注继续使用文档中的 pending 状态，程序不把整张底图当作可通行场景。
+- `src/app/`：页面宿主、地点注册组件、地图定位总览、体育场集成。
+- `src/game/`：场景、标注校验、移动、碰撞、交互、角色和测试场景。
+- `src/shared/contracts.ts`：唯一运行时共享契约；C 原类型文件已改为重导出。
+- `src/shared/place-registry.ts`：三个固定地点；空楼座目录保留待核验。
+- `public/maps/campus-v20.png` 与 `.annotations.json`：运行底图和生成的通行标注。
+- `assets/maps/campus-v20.navigation.json`：草地/树木/操场/桥的通行修正及建筑、水域边界；重新生成时保留，修改说明见 [碰撞与通行规则](docs/07_碰撞与通行规则.md)。
+- `assets/maps/`、`tools/map/`：蒙版、检查图和生成工具。
+- [assets/characters/README.md](assets/characters/README.md)：全部角色的统一清单；每角色独立目录保存 E1/E2 等阶段素材、来源、预览与状态。
+- `public/characters/temp-prototype/`：当前临时角色的运行副本；原件在 `assets/characters/temp-prototype-blob/runtime/`。
+- `src/features/`、`src/shared/gallery/`、`src/shared/api/`、`server/`：队友模块，保留现有实现。
 
-下一步由 A 落地共享类型、地点注册和地图标定，由 D 接入本机服务。此预览不代表 P0、地理核验或业务功能已验收。项目仓库为 [td-xiehongyi/hackthon](https://github.com/td-xiehongyi/hackthon)，主分支为 `main`。
+E 交付符合 [角色接口](docs/04_角色素材接口.md) 的正式素材并由 A 复核显示比例后，可将选定版本复制到 `public/characters/<character-id>/`，设置 `VITE_CHARACTER_DIR=/characters/<character-id>` 后再启动或构建前端。当前照片角色仍在样张/动画小样阶段，默认角色未替换。新增角色、版本及导出步骤见 [角色目录与新增流程](docs/06_角色目录与新增流程.md)。运行时会校验 manifest、帧范围与精灵图尺寸；高分辨率原图仍需要明确配置等比缩放。
+
+## 验收边界
+
+- v20 通行范围由颜色提取与独立修正规则合成：草地、操场、路边和建筑附近的树木开放，窄路允许骑行，桥面可上桥并接岸。建筑和水面保持阻挡；边界与地理核验仍为 `pending`。
+- 三处真实入口、真实楼座、出生及快速移动落点缺失；不写入截图目测坐标。
+- 遮挡排序和素材加载已接线，真实建筑/树木分层素材尚未交付；合成测试树不是正式地图遮挡验收。
+- 角色为临时造型，骑行用跑动动画替代；速度和脚底尺寸为开发参数。
+- 教学楼课程表由 B 交付；图书馆正文与来源、图片正式政策仍待确认。
+- 原 v9 地图、历史素材保留；本次未修改 `Desktop\Project`，未提交、推送或合并分支。
+
+[需求文档](中南大学像素校园需求文档.md) · [开发分工](docs/01_开发分工与交付规范.md) · [技术接口](docs/README.md)

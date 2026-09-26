@@ -1,0 +1,398 @@
+{
+  "browser": "153.0.4234.48",
+  "url": "http://127.0.0.1:5198/assets/characters/source/photo-student-e2/preview.html",
+  "checks": [
+    {
+      "name": "eight-direction-animation-cards",
+      "passed": true
+    },
+    {
+      "name": "manifest-contract",
+      "passed": true
+    },
+    {
+      "name": "shift-preserves-ground-point",
+      "passed": true,
+      "details": {
+        "before": {
+          "position": {
+            "x": 565,
+            "y": 972
+          },
+          "facing": "down",
+          "mode": "walk",
+          "moving": false,
+          "canStand": true,
+          "spritePosition": {
+            "x": 565,
+            "y": 972
+          },
+          "frame": "375,0,250,316",
+          "scale": 0.1,
+          "occluders": 0
+        },
+        "ride": {
+          "position": {
+            "x": 565,
+            "y": 972
+          },
+          "facing": "down",
+          "mode": "ride",
+          "moving": false,
+          "canStand": true,
+          "spritePosition": {
+            "x": 565,
+            "y": 972
+          },
+          "frame": "0,0,313,316",
+          "scale": 0.1,
+          "occluders": 0
+        }
+      }
+    },
+    {
+      "name": "release-shift-restores-walk",
+      "passed": true
+    },
+    {
+      "name": "wasd-moves-on-map",
+      "passed": true,
+      "details": {
+        "before": {
+          "x": 565,
+          "y": 972
+        },
+        "after": {
+          "x": 587.1753999999979,
+          "y": 972
+        }
+      }
+    },
+    {
+      "name": "stop-keeps-facing",
+      "passed": true
+    },
+    {
+      "name": "ride-animation-selected",
+      "passed": true
+    },
+    {
+      "name": "blur-clears-movement-and-shift",
+      "passed": true
+    },
+    {
+      "name": "sampled-movement-stays-in-walkable-area",
+      "passed": true
+    },
+    {
+      "name": "all-40-frame-references-render-correctly",
+      "passed": true,
+      "details": [
+        {
+          "clip": "walk/down/idle",
+          "index": 0,
+          "expected": "375,0,250,316",
+          "actual": "375,0,250,316",
+          "groundStable": true
+        },
+        {
+          "clip": "walk/down/move",
+          "index": 0,
+          "expected": "125,0,250,316",
+          "actual": "125,0,250,316",
+          "groundStable": true
+        },
+        {
+          "clip": "walk/down/move",
+          "index": 1,
+          "expected": "375,0,250,316",
+          "actual": "375,0,250,316",
+          "groundStable": true
+        },
+        {
+          "clip": "walk/down/move",
+          "index": 2,
+          "expected": "625,0,250,316",
+          "actual": "625,0,250,316",
+          "groundStable": true
+        },
+        {
+          "clip": "walk/down/move",
+          "index": 3,
+          "expected": "875,0,250,316",
+          "actual": "875,0,250,316",
+          "groundStable": true
+        },
+        {
+          "clip": "walk/left/idle",
+          "index": 0,
+          "expected": "375,316,250,308",
+          "actual": "375,316,250,308",
+          "groundStable": true
+        },
+        {
+          "clip": "walk/left/move",
+          "index": 0,
+          "expected": "125,316,250,308",
+          "actual": "125,316,250,308",
+          "groundStable": true
+        },
+        {
+          "clip": "walk/left/move",
+          "index": 1,
+          "expected": "375,316,250,308",
+          "actual": "375,316,250,308",
+          "groundStable": true
+        },
+        {
+          "clip": "walk/left/move",
+          "index": 2,
+          "expected": "625,316,250,308",
+          "actual": "625,316,250,308",
+          "groundStable": true
+        },
+        {
+          "clip": "walk/left/move",
+          "index": 3,
+          "expected": "875,316,250,308",
+          "actual": "875,316,250,308",
+          "groundStable": true
+        },
+        {
+          "clip": "walk/right/idle",
+          "index": 0,
+          "expected": "375,624,250,304",
+          "actual": "375,624,250,304",
+          "groundStable": true
+        },
+        {
+          "clip": "walk/right/move",
+          "index": 0,
+          "expected": "125,624,250,304",
+          "actual": "125,624,250,304",
+          "groundStable": true
+        },
+        {
+          "clip": "walk/right/move",
+          "index": 1,
+          "expected": "375,624,250,304",
+          "actual": "375,624,250,304",
+          "groundStable": true
+        },
+        {
+          "clip": "walk/right/move",
+          "index": 2,
+          "expected": "625,624,250,304",
+          "actual": "625,624,250,304",
+          "groundStable": true
+        },
+        {
+          "clip": "walk/right/move",
+          "index": 3,
+          "expected": "875,624,250,304",
+          "actual": "875,624,250,304",
+          "groundStable": true
+        },
+        {
+          "clip": "walk/up/idle",
+          "index": 0,
+          "expected": "375,928,250,326",
+          "actual": "375,928,250,326",
+          "groundStable": true
+        },
+        {
+          "clip": "walk/up/move",
+          "index": 0,
+          "expected": "125,928,250,326",
+          "actual": "125,928,250,326",
+          "groundStable": true
+        },
+        {
+          "clip": "walk/up/move",
+          "index": 1,
+          "expected": "375,928,250,326",
+          "actual": "375,928,250,326",
+          "groundStable": true
+        },
+        {
+          "clip": "walk/up/move",
+          "index": 2,
+          "expected": "625,928,250,326",
+          "actual": "625,928,250,326",
+          "groundStable": true
+        },
+        {
+          "clip": "walk/up/move",
+          "index": 3,
+          "expected": "875,928,250,326",
+          "actual": "875,928,250,326",
+          "groundStable": true
+        },
+        {
+          "clip": "ride/down/idle",
+          "index": 0,
+          "expected": "0,0,313,316",
+          "actual": "0,0,313,316",
+          "groundStable": true
+        },
+        {
+          "clip": "ride/down/move",
+          "index": 0,
+          "expected": "0,0,313,316",
+          "actual": "0,0,313,316",
+          "groundStable": true
+        },
+        {
+          "clip": "ride/down/move",
+          "index": 1,
+          "expected": "313,0,314,316",
+          "actual": "313,0,314,316",
+          "groundStable": true
+        },
+        {
+          "clip": "ride/down/move",
+          "index": 2,
+          "expected": "627,0,313,316",
+          "actual": "627,0,313,316",
+          "groundStable": true
+        },
+        {
+          "clip": "ride/down/move",
+          "index": 3,
+          "expected": "940,0,314,316",
+          "actual": "940,0,314,316",
+          "groundStable": true
+        },
+        {
+          "clip": "ride/left/idle",
+          "index": 0,
+          "expected": "0,316,313,308",
+          "actual": "0,316,313,308",
+          "groundStable": true
+        },
+        {
+          "clip": "ride/left/move",
+          "index": 0,
+          "expected": "0,316,313,308",
+          "actual": "0,316,313,308",
+          "groundStable": true
+        },
+        {
+          "clip": "ride/left/move",
+          "index": 1,
+          "expected": "313,316,314,308",
+          "actual": "313,316,314,308",
+          "groundStable": true
+        },
+        {
+          "clip": "ride/left/move",
+          "index": 2,
+          "expected": "627,316,313,308",
+          "actual": "627,316,313,308",
+          "groundStable": true
+        },
+        {
+          "clip": "ride/left/move",
+          "index": 3,
+          "expected": "940,316,314,308",
+          "actual": "940,316,314,308",
+          "groundStable": true
+        },
+        {
+          "clip": "ride/right/idle",
+          "index": 0,
+          "expected": "0,624,313,304",
+          "actual": "0,624,313,304",
+          "groundStable": true
+        },
+        {
+          "clip": "ride/right/move",
+          "index": 0,
+          "expected": "0,624,313,304",
+          "actual": "0,624,313,304",
+          "groundStable": true
+        },
+        {
+          "clip": "ride/right/move",
+          "index": 1,
+          "expected": "313,624,314,304",
+          "actual": "313,624,314,304",
+          "groundStable": true
+        },
+        {
+          "clip": "ride/right/move",
+          "index": 2,
+          "expected": "627,624,313,304",
+          "actual": "627,624,313,304",
+          "groundStable": true
+        },
+        {
+          "clip": "ride/right/move",
+          "index": 3,
+          "expected": "940,624,314,304",
+          "actual": "940,624,314,304",
+          "groundStable": true
+        },
+        {
+          "clip": "ride/up/idle",
+          "index": 0,
+          "expected": "0,928,313,326",
+          "actual": "0,928,313,326",
+          "groundStable": true
+        },
+        {
+          "clip": "ride/up/move",
+          "index": 0,
+          "expected": "0,928,313,326",
+          "actual": "0,928,313,326",
+          "groundStable": true
+        },
+        {
+          "clip": "ride/up/move",
+          "index": 1,
+          "expected": "313,928,314,326",
+          "actual": "313,928,314,326",
+          "groundStable": true
+        },
+        {
+          "clip": "ride/up/move",
+          "index": 2,
+          "expected": "627,928,313,326",
+          "actual": "627,928,313,326",
+          "groundStable": true
+        },
+        {
+          "clip": "ride/up/move",
+          "index": 3,
+          "expected": "940,928,314,326",
+          "actual": "940,928,314,326",
+          "groundStable": true
+        }
+      ]
+    },
+    {
+      "name": "all-frame-ground-points-stable",
+      "passed": true
+    },
+    {
+      "name": "no-browser-script-errors",
+      "passed": true,
+      "details": []
+    }
+  ],
+  "annotation": {
+    "occluders": 0,
+    "status": "pending"
+  },
+  "limitations": [
+    "Map occlusion layers absent; real building/tree occlusion not verified.",
+    "Alpha cleanup and front/back walk legibility remain art-review items.",
+    "Preview uses scale 0.10; application default scale is unchanged."
+  ],
+  "additionalChecks": [
+    {
+      "name": "single-step-advances-exactly-one-frame-per-card",
+      "passed": true
+    }
+  ]
+}

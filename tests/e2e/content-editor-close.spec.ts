@@ -78,3 +78,13 @@ test('提交社团后仍需提醒，保存整份内容后可以直接关闭', as
   await expect(page.getByRole('heading', { name: '社团与活动编辑器' })).toBeHidden();
   expect(dialogs).toEqual(['confirm']);
 });
+
+test('未提交的活动输入也参与宿主关闭检查', async ({ page }) => {
+  await page.getByRole('button', { name: '+ 新增活动', exact: true }).click();
+  await page.getByLabel('名称', { exact: true }).fill('未提交活动');
+  const dialogs: string[] = [];
+  page.once('dialog', async (dialog) => { dialogs.push(dialog.type()); await dialog.dismiss(); });
+  await page.getByRole('button', { name: '关闭', exact: true }).click();
+  expect(dialogs).toEqual(['confirm']);
+  await expect(page.getByLabel('名称', { exact: true })).toHaveValue('未提交活动');
+});

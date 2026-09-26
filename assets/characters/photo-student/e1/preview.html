@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>中南大学像素校园｜照片角色样张</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f5f3ef;color:#243b37;font:15px/1.65 system-ui,"Microsoft YaHei",sans-serif}main{max-width:1120px;margin:auto;padding:32px 24px}h1{font-size:30px;margin:4px 0 8px}h2{font-size:20px;margin:0 0 14px}.tag{color:#946849;font-weight:650;font-size:13px;letter-spacing:2px}p{margin:8px 0 20px;color:#596b66}section{background:#fff;border:1px solid #dfE5de;border-radius:18px;padding:24px;margin:20px 0}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.card{background:repeating-conic-gradient(#edf1ed 0 25%,#f8faf7 0 50%) 0/20px 20px;border-radius:12px;text-align:center;overflow:hidden}.card canvas{width:100%;height:205px;object-fit:contain;image-rendering:pixelated}.card span{display:block;padding:7px;background:#edf1ed;font-size:13px}.controls{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin:10px 0}select,input{accent-color:#417667}select{padding:6px 12px;border:1px solid #b8cac1;border-radius:7px}#map{width:100%;display:block;border-radius:12px;cursor:crosshair;image-rendering:pixelated}.hint{font-size:13px;color:#6b7974;margin:10px 0 0}.note{padding:15px;background:#fff4e3;border-radius:10px;font-size:14px}a{color:#326d5d}#status{font-size:13px}@media(max-width:650px){.grid{grid-template-columns:repeat(2,1fr)}main{padding:20px 12px}}
+</style></head><body><main>
+<div class="tag">CSU PIXEL CAMPUS · E1</div><h1>把照片里的她，带进像素校园</h1><p>深棕长发与刘海 · 粉白开衫 · 蓝色耳饰 · 浅蓝长裙。四方向步行及人车合一骑行外观样张。</p>
+<div class="note">当前为 E1 外观审阅稿。鞋子、背面及电动车为设计补全；角色尺寸、动画帧数和正式接入尚未确认。</div>
+<section><h2>01 / 四方向外观</h2><div class="grid" id="views"></div><p class="hint">依次为朝下、朝左、朝右、朝上。上排步行，下排骑行；十字标记为候选脚底／轮胎落地点。</p></section>
+<section><h2>02 / 当前 v20 地图比例预览</h2><div class="controls"><label>状态 <select id="mode"><option value="walk">步行</option><option value="ride">骑行</option></select></label><label>朝向 <select id="facing"><option value="down">朝下</option><option value="left">朝左</option><option value="right">朝右</option><option value="up">朝上</option></select></label><label>步行身高 <input id="size" type="range" min="20" max="48" value="30" step="2"> <output id="height">30</output> 地图像素</label></div><canvas id="map" width="1000" height="430"></canvas><p class="hint">点击地图可调整预览落点。红色十字在换向和切换模式时保持原位。骑行沿用相同人物缩放比例。此页仅检查比例与辨识度，未实现行走、碰撞或前后遮挡。</p><p class="hint">缩小后耳饰、五官细节会丢失；E2 需按选定显示尺寸整理像素和动作。源图仍有轻微半透明边缘，正式素材应继续清理。</p></section>
+<section><h2>03 / 交付边界</h2><p>已提供 8 个静态方向视图、候选裁切和锚点，以及当前地图的比例预览。尚未制作行走帧、骑行动画及覆盖 16 状态的正式素材包。</p><a href="character-views.png">查看原尺寸 PNG</a> · <a href="SOURCE.md">来源与验收记录</a> · <a href="review-metadata.json">候选裁切与锚点</a><div id="status">正在加载图片…</div></section>
+</main><script>
+const frames=[
+{mode:'walk',facing:'down',rect:{x:0,y:0,width:384,height:512},anchor:{x:198,y:501}},
+{mode:'walk',facing:'left',rect:{x:384,y:0,width:384,height:512},anchor:{x:190,y:501}},
+{mode:'walk',facing:'right',rect:{x:768,y:0,width:384,height:512},anchor:{x:192,y:501}},
+{mode:'walk',facing:'up',rect:{x:1152,y:0,width:384,height:512},anchor:{x:193,y:501}},
+{mode:'ride',facing:'down',rect:{x:0,y:512,width:340,height:512},anchor:{x:193,y:483}},
+{mode:'ride',facing:'left',rect:{x:340,y:512,width:428,height:512},anchor:{x:210,y:473}},
+{mode:'ride',facing:'right',rect:{x:768,y:512,width:428,height:512},anchor:{x:216,y:473}},
+{mode:'ride',facing:'up',rect:{x:1196,y:512,width:340,height:512},anchor:{x:149,y:483}}
+];
+const sheet=new Image(),mapImage=new Image(),map=document.querySelector('#map'),ctx=map.getContext('2d');
+const mode=document.querySelector('#mode'),facing=document.querySelector('#facing'),size=document.querySelector('#size');
+let ready=false,point={x:555,y:225};
+const load=(img,url)=>new Promise((resolve,reject)=>{img.onload=resolve;img.onerror=()=>reject(new Error('无法加载 '+url));img.src=url});
+function cross(c,x,y){c.strokeStyle='#e86b58';c.lineWidth=1;c.beginPath();c.moveTo(x-5,y);c.lineTo(x+5,y);c.moveTo(x,y-5);c.lineTo(x,y+5);c.stroke()}
+function sprite(c,f,x,y,s){const r=f.rect;c.imageSmoothingEnabled=false;c.drawImage(sheet,r.x,r.y,r.width,r.height,x-f.anchor.x*s,y-f.anchor.y*s,r.width*s,r.height*s)}
+function render(){if(!ready)return;ctx.clearRect(0,0,1000,430);ctx.imageSmoothingEnabled=false;const zoom=1.9;ctx.drawImage(mapImage,500-540*zoom,215-965*zoom,mapImage.width*zoom,mapImage.height*zoom);const f=frames.find(f=>f.mode===mode.value&&f.facing===facing.value);sprite(ctx,f,point.x,point.y,Number(size.value)/448*zoom);cross(ctx,point.x,point.y);document.querySelector('#height').value=size.value}
+Promise.all([load(sheet,'character-views.png'),load(mapImage,'../../../../public/maps/campus-v20.png')]).then(()=>{ready=true;for(const f of frames){const card=document.createElement('div');card.className='card';const c=document.createElement('canvas');c.width=230;c.height=225;const cc=c.getContext('2d');sprite(cc,f,115,216,.43);cross(cc,115,216);const label=document.createElement('span');label.textContent=(f.mode==='walk'?'步行':'骑行')+' · '+({down:'朝下 / 正面',left:'朝左',right:'朝右',up:'朝上 / 背面'}[f.facing]);card.append(c,label);document.querySelector('#views').append(card)}render();document.querySelector('#status').textContent='已加载：角色 '+sheet.width+' × '+sheet.height+'；地图 '+mapImage.width+' × '+mapImage.height;window.previewReady=true;}).catch(e=>{document.querySelector('#status').textContent=e.message});
+for(const el of [mode,facing,size])el.addEventListener('input',render);
+map.addEventListener('click',e=>{const r=map.getBoundingClientRect();point={x:(e.clientX-r.left)*1000/r.width,y:(e.clientY-r.top)*430/r.height};render()});
+window.characterReview={frames,getPoint:()=>({...point})};
+</script></body></html>

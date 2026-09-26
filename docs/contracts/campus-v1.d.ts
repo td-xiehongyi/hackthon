@@ -59,7 +59,7 @@ export interface Occluder {
 }
 export interface MapAnnotation {
   schemaVersion: 1;
-  mapId: "csu-campus-v9";
+  mapId: "csu-campus-v20";
   imagePath: string;
   imageSha256: string;
   widthPx: 1041;

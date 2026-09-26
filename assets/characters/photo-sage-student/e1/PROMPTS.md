@@ -1,0 +1,22 @@
+# 内置图像生成提示词
+
+用途：中南大学像素校园，照片女生 E1 外观样张。工具：内置 imagegen。
+参考：本次用户上传照片。生成原图和修订图均保留；v2 用于审阅预览。
+
+## 首次生成
+
+Use case: stylized-concept.
+Create a production-oriented E1 character turnaround sprite concept sheet for the existing 2D game "CSU Pixel Campus", using the supplied portrait as the sole identity and outfit reference. No 3D model.
+Subject: the woman in the reference photo. Preserve her gentle smiling face, warm medium-brown shoulder-length wavy hair with a center/slightly off-center part and open forehead, black fitted long-sleeved scoop-neck shirt covered in tiny lime-green "chuu"-like marks, light grey loose trousers, broad olive/sage crossbody strap from HER LEFT shoulder to HER RIGHT hip (in front view shoulder on viewer right to hip on viewer left), copper buckle, small sage bag at HER RIGHT hip. Shoes are not visible in photo: design simple white sneakers. Keep this same anatomical strap/bag placement in all directions; draw both sides independently, do not simply mirror asymmetrical details. Simplify tiny shirt lettering as green pixel strokes. The camera in her hand can be stowed for gameplay; standing hands relaxed and free, riding both hands on handlebars. Preserve shoulder length hair, not long hair, no bangs.
+Art: charming detailed 2D pixel art, 3.5-head-high chibi RPG proportions, stepped crisp pixel contours, solid opaque flat color clusters, compact palette with 3 tone shading. No soft airbrush, no glow, no drop shadows, no ambient backdrop, no labels. Full head-to-shoes/tires views. Consistent character scale and anatomy.
+Layout: transparent PNG landscape canvas, exactly 4 columns by 2 rows, eight distinct isolated full-body sprites, evenly spaced within eight equal cells. Each sprite must stay fully inside its cell with at least 5% empty transparent margin on all sides; absolutely no overlap between cells. Top row: standing facing screen down/front, screen left/profile, screen right/profile, screen up/back. Bottom row: same four directions seated on a compact sage-and-cream electric step-through scooter, human and vehicle rendered together; neutral pose, feet safely on footboard, both hands on handlebar. Scooter is design completion for game requirement, same scooter in all directions, black saddle/wheels, pale headlight front, red taillight rear, two mirrors. Smaller side vehicle width to fit cells, no clipped wheels.
+Critical alpha: actual fully transparent background, not a checkerboard painted into the image; empty pixels alpha=0. Character and scooter interiors fully opaque alpha=255 including pale trousers and shoes; no translucent halo. A clean sprite sheet only, no scenery from photo, no red railing, no text, no grid lines.
+
+## 修订
+
+Edit the supplied E1 pixel-art character sprite sheet. Keep exactly the same woman, facial likeness, shoulder-length brown wavy hair, black green-mark patterned top, light grey wide trousers, white sneakers, sage scooter, 4 columns by 2 rows, directions, character scale and pixel style.
+Correct these specific production problems:
+1) Clean REAL transparency: completely remove the diffuse colored aura/soft halo around ALL sprites and make every empty pixel fully transparent alpha 0. All hair, skin, clothing, bag and scooter interiors must be solid opaque alpha 255. Especially remove white glow around legs and brown glow around hair. No gradient background, no shadow, no glow, no dark outline extending beyond the sharp 1 pixel contour.
+2) Consistent anatomical crossbody bag placement: bag always at the character's RIGHT hip, strap from her LEFT shoulder. Top front sprite correct (bag viewer left). Top back sprite correct (bag viewer right). The side facing screen-left (column 2) shows her anatomical LEFT side: the bag is on the hidden far hip so HIDE the visible bag on near hip in column 2 in BOTH rows, near left torso should be mostly black patterned fabric (strap may be at front edge only). The side facing screen-right (column 3) shows her RIGHT side so retain the visible bag on her right hip in column 3 in BOTH rows. Don't mirror.
+3) Top row shoes must fit fully in y<500, bottom row begins y>=525, all wheels within image with margins. Each bottom-row scooter should fit inside its own equal quarter width with 16+ pixels transparent side margin; slightly narrow side scooters if needed, no overlap.
+Only these corrections, preserve design, no labels or checkerboard. Transparent background.

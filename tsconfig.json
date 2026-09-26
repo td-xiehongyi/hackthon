@@ -12,7 +12,8 @@
     "resolveJsonModule": true,
     "types": ["vite/client", "node"],
     "forceConsistentCasingInFileNames": true,
-    "allowImportingTsExtensions": true
+    "allowImportingTsExtensions": true,
+    "paths": { "@/*": ["./src/*"] }
   },
   "include": ["src", "tests", "server", "*.config.ts"]
 }
