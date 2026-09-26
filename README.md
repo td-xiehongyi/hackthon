@@ -6,16 +6,34 @@
 
 ## 启动地图
 
-本机已安装依赖。在 PowerShell 中运行：
+不要直接双击 `index.html` 或使用 `file:///...` 打开：项目需要 Vite 提供前端模块和社区课表接口。
+
+macOS / Linux 终端运行：
+
+```bash
+cd /Users/hongyaxi/Downloads/hackthon-main
+npm ci                 # 仅首次运行需要；已有 node_modules 可跳过
+npm run dev
+```
+
+Windows PowerShell 运行：
 
 ```powershell
-cd 'C:\Users\xie\Desktop\Project'
+cd '项目所在目录'
 npm run dev
 ```
 
 浏览器打开 **http://127.0.0.1:5173/**。看到“地图已加载”后，点击地图南部教学楼群的“课”标记，或右上方“进入教学楼群”。终端按 `Ctrl+C` 停止服务。
 
-环境要求：Node.js 24。新复制的项目首次运行前执行 `npm ci`，按 `package-lock.json` 安装锁定依赖。端口固定为 5173，被占用时会报错；先确认已有预览是否正在运行。
+如果 5173 端口已经被占用，可改用：
+
+```bash
+npm run dev -- --port 5174
+```
+
+然后打开 **http://127.0.0.1:5174/**。开发服务停止后，社区课表接口也会停止；浏览器中的个人课表仍保留在该站点的本地存储中。
+
+环境要求：Node.js 24。新复制的项目首次运行前执行 `npm ci`，按 `package-lock.json` 安装锁定依赖。默认端口为 5173；若该端口被占用，请按上面的 5174 方式启动。
 
 ## 目录结构
 
