@@ -39,8 +39,10 @@ export default function ContentEditor({ api, onRequestClose, registerCloseGuard 
   const [status, setStatus] = useState<SaveStatus>('loading');
   const [message, setMessage] = useState('');
   const [dirty, setDirty] = useState(false);
+  const [clubFormDirty, setClubFormDirty] = useState(false);
   const [editingClub, setEditingClub] = useState<{ mode: 'new' | 'edit'; club: Club } | null>(null);
   const [editingActivity, setEditingActivity] = useState<{ mode: 'new' | 'edit'; activity: Activity } | null>(null);
+  const hasUnsavedChanges = dirty || clubFormDirty;
 
   useEffect(() => {
     let cancelled = false;
@@ -64,8 +66,8 @@ export default function ContentEditor({ api, onRequestClose, registerCloseGuard 
 
   useEffect(() => {
     if (!registerCloseGuard) return;
-    return registerCloseGuard(() => !dirty);
-  }, [registerCloseGuard, dirty]);
+    return registerCloseGuard(() => !hasUnsavedChanges);
+  }, [registerCloseGuard, hasUnsavedChanges]);
 
   function mutate(fn: (d: PublicContent) => PublicContent) {
     setDraft((d) => (d ? fn(d) : d));
@@ -185,7 +187,7 @@ export default function ContentEditor({ api, onRequestClose, registerCloseGuard 
   }
 
   function handleClose() {
-    if (dirty && !window.confirm('有未保存的修改，确定离开？')) return;
+    if (hasUnsavedChanges && !window.confirm('有未保存的修改，确定离开？')) return;
     onRequestClose?.();
   }
 
@@ -229,7 +231,7 @@ export default function ContentEditor({ api, onRequestClose, registerCloseGuard 
 
       <div className="ce-statusbar">
         <span className={`ce-status ce-${status}`}>
-          {status === 'saved' ? '已保存' : status === 'saving' ? '保存中' : status === 'error' ? '出错' : dirty ? '有未保存修改' : '已同步'}
+          {status === 'saving' ? '保存中' : status === 'error' ? '出错' : hasUnsavedChanges ? '有未保存修改' : status === 'saved' ? '已保存' : '已同步'}
         </span>
         <span>版本 revision {saved.revision}</span>
         {message && <span className="ce-message" role="status">{message}</span>}
@@ -253,6 +255,7 @@ export default function ContentEditor({ api, onRequestClose, registerCloseGuard 
           onCancel={() => setEditingClub(null)}
           onSubmit={upsertClub}
           onDelete={deleteClub}
+          onDirtyChange={setClubFormDirty}
         />
         <ActivitySection
           activities={draft.activities}
@@ -303,6 +306,7 @@ function ClubSection(props: {
   onCancel: () => void;
   onSubmit: (club: Club) => void;
   onDelete: (id: string) => void;
+  onDirtyChange: (dirty: boolean) => void;
 }) {
   return (
     <div className="ce-section">
@@ -316,6 +320,7 @@ function ClubSection(props: {
           initial={props.editing.club}
           onCancel={props.onCancel}
           onSubmit={props.onSubmit}
+          onDirtyChange={props.onDirtyChange}
         />
       )}
       <ul className="ce-list">
@@ -380,12 +385,18 @@ function ActivitySection(props: {
   );
 }
 
-function ClubForm({ initial, onCancel, onSubmit }: {
+function ClubForm({ initial, onCancel, onSubmit, onDirtyChange }: {
   initial: Club;
   onCancel: () => void;
   onSubmit: (club: Club) => void;
+  onDirtyChange: (dirty: boolean) => void;
 }) {
   const [club, setClub] = useState<Club>(initial);
+  // 子表单尚未提交到公共草稿时，也要参与离开检查；取消或提交后清除该状态。
+  useEffect(() => {
+    onDirtyChange(JSON.stringify(club) !== JSON.stringify(initial));
+    return () => onDirtyChange(false);
+  }, [club, initial, onDirtyChange]);
   const toggleCampus = (c: CampusId) =>
     setClub((v) => ({ ...v, campusIds: v.campusIds.includes(c) ? v.campusIds.filter((x) => x !== c) : [...v.campusIds, c] }));
 
