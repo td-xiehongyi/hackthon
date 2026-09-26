@@ -1,0 +1,26 @@
+# Dependencies and generated build files
+node_modules/
+/dist/
+coverage/
+.vite/
+.cache/
+*.tsbuildinfo
+
+# Browser test output
+playwright-report/
+test-results/
+
+# Local runtime data; retain only the directory placeholder
+/data/*
+!/data/.gitkeep
+
+# Local environment and logs
+.env
+.env.*
+!.env.example
+*.log
+
+# Operating system metadata
+.DS_Store
+Thumbs.db
+Desktop.ini

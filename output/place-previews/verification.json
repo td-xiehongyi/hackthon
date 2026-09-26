@@ -1,0 +1,93 @@
+{
+  "date": "2026-09-26",
+  "scope": "HTML UI preview only",
+  "browser": "Codex in-app Chromium browser",
+  "checks": [
+    {
+      "name": "单双周与楼座过滤",
+      "pass": true
+    },
+    {
+      "name": "单周实验课程",
+      "pass": true
+    },
+    {
+      "name": "图片放大",
+      "pass": true
+    },
+    {
+      "name": "关闭大图保留地点面板",
+      "pass": true
+    },
+    {
+      "name": "本机图片临时预览",
+      "pass": true
+    },
+    {
+      "name": "地点相册隔离",
+      "pass": true
+    },
+    {
+      "name": "跨校区活动筛选",
+      "pass": true
+    },
+    {
+      "name": "活动详情含实际地点",
+      "pass": true
+    },
+    {
+      "name": "活动搜索无结果",
+      "pass": true
+    },
+    {
+      "name": "社团类别筛选",
+      "pass": true
+    },
+    {
+      "name": "空状态",
+      "pass": true
+    },
+    {
+      "name": "失败状态",
+      "pass": true
+    },
+    {
+      "name": "失败重试",
+      "pass": true
+    },
+    {
+      "name": "返回校园",
+      "pass": true
+    },
+    {
+      "name": "导入校验错误示意",
+      "pass": true
+    },
+    {
+      "name": "课程表单反馈边界",
+      "pass": true
+    },
+    {
+      "name": "刷新清空临时图片",
+      "pass": true
+    },
+    {
+      "name": "日期筛选与历史状态",
+      "pass": true
+    }
+  ],
+  "passed": 18,
+  "total": 18,
+  "finalViewport": {
+    "height": 701,
+    "scrollWidth": 745,
+    "width": 758
+  },
+  "consoleErrors": [],
+  "limitations": [
+    "未进行正式 Chrome/Edge 版本矩阵验收",
+    "CSV/课程保存仅为反馈示意",
+    "无真实地图移动与碰撞",
+    "图片仅内存暂存，不代表本机相册服务已实现"
+  ]
+}

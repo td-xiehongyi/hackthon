@@ -1,0 +1,26 @@
+[
+  {
+    "file": "三校区总图-方位校正版-v2.png",
+    "format": "PNG",
+    "width": 1254,
+    "height": 1254,
+    "bytes": 3669700,
+    "sha256": "201718745d6c51fe9fc6897b3e2b91eca8e3b83dc462ebf7e34f3ad577d7e419"
+  },
+  {
+    "file": "潇湘校区-方位校正版-v2.png",
+    "format": "PNG",
+    "width": 1448,
+    "height": 1086,
+    "bytes": 3684199,
+    "sha256": "bb9473cb4c1b73e476087fe8c34020d77232d583ae5d82e8bf7c39ed822b0961"
+  },
+  {
+    "file": "麓南校区-方位校正版-v2.png",
+    "format": "PNG",
+    "width": 984,
+    "height": 1599,
+    "bytes": 2900997,
+    "sha256": "e89f840d48aeae1e498e59656e9065f0bcd6f8784c6c2e7587278b7dbce52ad1"
+  }
+]

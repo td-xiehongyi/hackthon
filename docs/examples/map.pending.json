@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "mapId": "csu-campus-v9",
+  "imagePath": "/maps/campus-final-v9.png",
+  "imageSha256": "7c47e74e4002fbe12c998f838ae7d8a1dff937863412380d6101b6f7b8eec745",
+  "widthPx": 1041,
+  "heightPx": 1511,
+  "coordinateSystem": "image-pixels-top-left",
+  "annotationStatus": "pending",
+  "geographyStatus": "pending",
+  "walkableAreas": [],
+  "collisionAreas": [],
+  "landmarks": [],
+  "buildings": [],
+  "interactions": [
+    {
+      "placeId": "xiaoxiang_library",
+      "verificationStatus": "pending",
+      "entrancePoint": null,
+      "triggerPolygon": null,
+      "returnFallbackPointId": null
+    },
+    {
+      "placeId": "xiaoxiang_teaching_group",
+      "verificationStatus": "pending",
+      "entrancePoint": null,
+      "triggerPolygon": null,
+      "returnFallbackPointId": null
+    },
+    {
+      "placeId": "xiaoxiang_sports_ground",
+      "verificationStatus": "pending",
+      "entrancePoint": null,
+      "triggerPolygon": null,
+      "returnFallbackPointId": null
+    }
+  ],
+  "safePoints": [],
+  "occluders": []
+}
