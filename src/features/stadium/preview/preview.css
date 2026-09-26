@@ -1,0 +1,28 @@
+/* 开发预览宿主样式（临时） */
+
+.pv-root { background: #f6f8f3; min-height: 100vh; }
+
+.pv-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: #2b2b2b;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.pv-badge {
+  color: #ffd; font-size: 12px; margin-right: 8px;
+  background: #a33a28; padding: 3px 8px; border-radius: 999px;
+}
+.pv-toolbar button {
+  padding: 7px 14px;
+  border: 1px solid #555;
+  background: transparent;
+  color: #eee;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+}
+.pv-toolbar button.is-active { background: #2f5d3a; border-color: #2f5d3a; color: #fff; }
