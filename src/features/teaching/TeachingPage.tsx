@@ -48,6 +48,7 @@ type CourseFormState = {
 
 const TERM_ID = 'current-term';
 const SELECTED_WEEK_KEY = 'csu-campus-selected-week';
+const INTERESTS_KEY = 'csu-campus-schedule-interests';
 const range = (count: number) => Array.from({ length: count }, (_, index) => index + 1);
 const weekdays = range(7) as Weekday[];
 const periods = range(DEFAULT_MAX_PERIOD);
@@ -523,6 +524,13 @@ export default function TeachingPage({ onBack }: { onBack: () => void }) {
   const [discoverBuilding, setDiscoverBuilding] = useState('all');
   const [discoverQuery, setDiscoverQuery] = useState('');
   const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
+  const [myInterests, setMyInterests] = useState<string[]>(() => {
+    try {
+      const stored = JSON.parse(window.localStorage.getItem(INTERESTS_KEY) ?? '[]');
+      return Array.isArray(stored) ? stored.filter((item): item is string => typeof item === 'string').slice(0, 12) : [];
+    } catch { return []; }
+  });
+  const [interestDraft, setInterestDraft] = useState('');
   const [importPreview, setImportPreview] = useState<ImportPreview | null>(null);
   const [importFilename, setImportFilename] = useState('');
   const [toast, setToast] = useState('');
@@ -559,6 +567,17 @@ export default function TeachingPage({ onBack }: { onBack: () => void }) {
     // The first contribution/load belongs to this page session only.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    window.localStorage.setItem(INTERESTS_KEY, JSON.stringify(myInterests));
+  }, [myInterests]);
+
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      void refreshCommunity(courses, sharing);
+    }, 30_000);
+    return () => window.clearInterval(timer);
+  }, [courses, sharing]);
 
   useEffect(() => {
     window.localStorage.setItem(SELECTED_WEEK_KEY, String(week));
@@ -614,12 +633,20 @@ export default function TeachingPage({ onBack }: { onBack: () => void }) {
       .filter((course) => courseOccursInWeek(course, week))
       .filter((course) => discoverDay === 'all' || course.weekday === discoverDay)
       .filter((course) => discoverBuilding === 'all' || locationFilterKey(course) === discoverBuilding)
-      .filter((course) => selectedInterests.length === 0 || selectedInterests.some((tag) => course.tags.includes(tag)))
+      .filter((course) => selectedInterests.length === 0 || selectedInterests.some((tag) => [course.name, course.teacher, course.location, course.buildingName, ...course.tags].join(' ').toLocaleLowerCase('zh-CN').includes(tag.toLocaleLowerCase('zh-CN'))))
       .filter((course) => !query || [course.name, course.teacher, course.location, course.buildingName, ...course.tags]
         .join(' ').toLocaleLowerCase('zh-CN').includes(query))
       .filter((course) => !courses.some((personal) => coursesConflict(course, personal, week)))
       .sort(compareCourses);
   }, [communityCourses, courses, discoverBuilding, discoverDay, discoverQuery, selectedInterests, week]);
+
+  const addInterest = () => {
+    const value = interestDraft.trim();
+    if (!value) return;
+    setMyInterests((current) => current.includes(value) ? current : [...current, value].slice(-12));
+    setSelectedInterests((current) => current.includes(value) ? current : [...current, value]);
+    setInterestDraft('');
+  };
 
   const handleCourseSubmit = (course: Course) => {
     const next = editing
@@ -769,12 +796,13 @@ export default function TeachingPage({ onBack }: { onBack: () => void }) {
               <i className={communityState} />
               <strong>{community?.contributorCount ?? 0}</strong>
               <span>位本机参与者<br />{formatCommunityTime(community?.updatedAt)}</span>
+              <button type="button" aria-label="刷新社区课池" onClick={() => void refreshCommunity(courses, sharing)} disabled={communityState === 'loading'}>刷新</button>
             </div>
           </div>
 
           <div className="discover-layout">
             <aside className="discover-filters">
-              <div className="filter-title"><strong>蹭课条件</strong><button type="button" onClick={() => { setDiscoverDay('all'); setDiscoverBuilding('all'); setSelectedInterests([]); setDiscoverQuery(''); }}>重置</button></div>
+              <div className="filter-title"><strong>蹭课条件</strong><button type="button" onClick={() => { setDiscoverDay('all'); setDiscoverBuilding('all'); setSelectedInterests([]); setDiscoverQuery(''); }}>重置筛选</button></div>
               <label className="search-field"><span aria-hidden="true">⌕</span><input value={discoverQuery} onChange={(event) => setDiscoverQuery(event.target.value)} placeholder="搜课程或教师" /></label>
               <fieldset>
                 <legend>星期</legend>
@@ -791,20 +819,24 @@ export default function TeachingPage({ onBack }: { onBack: () => void }) {
                 </select>
               </label>
               <fieldset>
-                <legend>我感兴趣的方向</legend>
-                {interestOptions.length > 0 ? (
+                <legend>我的兴趣</legend>
+                <div className="interest-entry">
+                  <input aria-label="添加兴趣关键词" value={interestDraft} onChange={(event) => setInterestDraft(event.target.value)} onKeyDown={(event) => { if (event.key === 'Enter') { event.preventDefault(); addInterest(); } }} placeholder="例如：人工智能" />
+                  <button type="button" onClick={addInterest}>添加</button>
+                </div>
+                {myInterests.length > 0 ? (
                   <div className="filter-chips interests">
-                    {interestOptions.map((tag) => (
+                    {myInterests.map((tag) => (
                       <button
                         type="button"
                         aria-pressed={selectedInterests.includes(tag)}
                         className={selectedInterests.includes(tag) ? 'active' : ''}
                         onClick={() => setSelectedInterests((current) => current.includes(tag) ? current.filter((item) => item !== tag) : [...current, tag])}
-                        key={tag}
-                      >{tag}</button>
+                      key={tag}
+                    >{tag}</button>
                     ))}
                   </div>
-                ) : <p className="filter-hint">课池还没有兴趣标签，暂时展示全部。</p>}
+                ) : <p className="filter-hint">添加关键词后，蹭课结果会按课程名、教师、地点和课程标签筛选。</p>}
               </fieldset>
               <div className="privacy-note"><strong>如何判断空闲？</strong><p>候选课程与你第 {week} 周的任一课程有节次重叠时，会自动排除。</p></div>
             </aside>

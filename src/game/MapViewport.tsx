@@ -12,6 +12,7 @@ export default function MapViewport({ active = true, onOpenTeaching }: MapViewpo
   const scene = useRef<CampusMapScene | null>(null);
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
   const [zoom, setZoom] = useState(1);
+  const [nearTeaching, setNearTeaching] = useState(false);
 
   useEffect(() => {
     if (!host.current) return;
@@ -21,6 +22,7 @@ export default function MapViewport({ active = true, onOpenTeaching }: MapViewpo
       onError: () => mounted && setStatus('error'),
       onZoom: (value) => mounted && setZoom(value),
       onOpenTeaching,
+      onTeachingProximity: (near) => mounted && setNearTeaching(near),
     });
     scene.current = map;
     let game: Phaser.Game | undefined;
@@ -76,6 +78,7 @@ export default function MapViewport({ active = true, onOpenTeaching }: MapViewpo
       </div>
       <div className="map-stage">
         <div ref={host} className="map-canvas" />
+        {nearTeaching && <div className="map-proximity-hint" role="status">已到达教学楼群，正在打开课表…</div>}
         {status === 'loading' && <div className="map-message">正在展开校园地图…</div>}
         {status === 'error' && (
           <div className="map-message" role="alert">
@@ -85,7 +88,7 @@ export default function MapViewport({ active = true, onOpenTeaching }: MapViewpo
           </div>
         )}
       </div>
-      <div className="map-footer"><span>拖动浏览 · 滚轮缩放 · 点击“课”进入教学楼</span><span>1041 × 1511 · 原始地图</span></div>
+      <div className="map-footer"><span>方向键 / WASD 移动人物 · 走到“课”附近自动进入 · 点击标记也可进入</span><span>1041 × 1511 · 原始地图</span></div>
     </section>
   );
 }
