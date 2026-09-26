@@ -1,0 +1,13 @@
+.library-panel {
+  max-width: 860px; margin: 0 auto; padding: 24px 20px 40px;
+  background: #fcfdf7; border: 1px solid #d1d9c8; border-radius: 8px;
+  display: flex; flex-direction: column; gap: 22px;
+}
+.library-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; border-bottom: 1px solid #dde2d5; padding-bottom: 16px; }
+.library-eyebrow { font-size: 10px; letter-spacing: 2px; color: #71806e; }
+.library-header h1 { margin: 6px 0 4px; font-size: 22px; letter-spacing: 1px; color: #263c31; }
+.library-campus { margin: 0; font-size: 13px; color: #74806e; }
+.library-back { border: 1px solid #d5decb; background: #f4f7ed; color: #3f5743; padding: 9px 16px; border-radius: 4px; font-size: 13px; }
+.library-back:hover { background: #e3ebd8; }
+.library-info h2 { margin: 0 0 6px; font-size: 14px; color: #263c31; }
+.library-missing { margin: 0 0 14px; font-size: 13px; color: #a99d60; font-style: italic; }
