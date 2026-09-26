@@ -1,5 +1,9 @@
 import KeyCap from '../shared/ui/KeyCap';
 import PixelSprite from '../shared/ui/PixelSprite';
+import CharacterPanel from './CharacterPanel';
+import Toolbar from './Toolbar';
+import { useCharacter } from './characters';
+import { useSettings } from './settings';
 
 interface StartScreenProps {
   onEnter: () => void;
@@ -12,15 +16,21 @@ const CAMPUSES = [
 ];
 
 export default function StartScreen({ onEnter }: StartScreenProps) {
+  const { settings, update, reset } = useSettings();
+  const { character, select } = useCharacter();
+
   return (
     <main className="start-screen">
       <header className="start-header">
         <div className="brand-mark" aria-hidden="true">中南</div>
         <span className="start-header-title">中南大学像素校园</span>
         <span className="version-tag">v0.1 · 本机运行</span>
+        <Toolbar settings={settings} onChange={update} onReset={reset} />
       </header>
 
       <section className="hero" aria-labelledby="hero-title">
+        <CharacterPanel character={character} onSelect={select} />
+
         <div className="hero-copy">
           <p className="eyebrow">CSU PIXEL CAMPUS</p>
           <h1 id="hero-title" className="pixel-title" aria-label="中南大学像素校园">
@@ -36,17 +46,21 @@ export default function StartScreen({ onEnter }: StartScreenProps) {
               查看完整地图
             </a>
           </div>
-          <dl className="control-hints" aria-label="操作方式">
-            <div><dt>移动</dt><dd><KeyCap>W</KeyCap><KeyCap>A</KeyCap><KeyCap>S</KeyCap><KeyCap>D</KeyCap></dd></div>
-            <div><dt>骑行</dt><dd><KeyCap wide>Shift</KeyCap></dd></div>
-            <div><dt>互动</dt><dd><KeyCap>E</KeyCap></dd></div>
-          </dl>
+          {settings.showHints && (
+            <dl className="control-hints" aria-label="操作方式">
+              <div><dt>移动</dt><dd><KeyCap>W</KeyCap><KeyCap>A</KeyCap><KeyCap>S</KeyCap><KeyCap>D</KeyCap></dd></div>
+              <div><dt>骑行</dt><dd><KeyCap wide>Shift</KeyCap></dd></div>
+              <div><dt>互动</dt><dd><KeyCap>E</KeyCap></dd></div>
+            </dl>
+          )}
         </div>
 
         <figure className="viewfinder" aria-label="校园地图取景">
           <div className="viewfinder-frame">
             <img className="viewfinder-map" src="/maps/campus-final-v9.png" alt="" width="1041" height="1511" decoding="async" />
-            <PixelSprite state="walk" direction="down" scale={2} className="viewfinder-sprite" label="占位像素角色" />
+            <span className="viewfinder-sprite" style={{ filter: `hue-rotate(${character.hue}deg)` }}>
+              <PixelSprite state="walk" direction="down" scale={2} label={`${character.name}正在校园里行走`} />
+            </span>
             <span className="viewfinder-compass" aria-hidden="true">北▲</span>
             <span className="viewfinder-size" aria-hidden="true">1041 × 1511</span>
           </div>

@@ -101,11 +101,12 @@ h2 { font-size: 35px; line-height: 1.55; font-weight: 600; margin: 17px 0 13px; 
 }
 
 /* ---------- 启动界面 ---------- */
-.start-screen { min-height: 100dvh; display: flex; flex-direction: column; max-width: 1720px; margin: 0 auto; padding: 0 36px 24px; background-image: linear-gradient(var(--shadow) 1px, transparent 1px), linear-gradient(90deg, var(--shadow) 1px, transparent 1px); background-size: 48px 48px; background-position: -1px -1px; }
+.start-screen { min-height: 100dvh; display: flex; flex-direction: column; max-width: 1720px; margin: 0 auto; padding: 0 36px 24px; }
+html[data-grid="on"] .start-screen { background-image: linear-gradient(var(--shadow) 1px, transparent 1px), linear-gradient(90deg, var(--shadow) 1px, transparent 1px); background-size: 48px 48px; background-position: -1px -1px; }
 .start-header { min-height: 88px; display: flex; align-items: center; gap: 14px; }
 .start-header-title { font-family: var(--font-pixel); font-size: 18px; letter-spacing: 1px; }
-.version-tag { margin-left: auto; font-family: var(--font-pixel); font-size: 13px; color: var(--ink-2); background: var(--surface); border: 2px solid var(--path-deep); padding: 5px 10px; }
-.hero { flex: 1; display: grid; grid-template-columns: minmax(320px, 5fr) minmax(0, 7fr); gap: 48px; align-items: center; padding: 24px 0 40px; }
+.version-tag { margin-left: 6px; font-family: var(--font-pixel); font-size: 13px; color: var(--ink-2); background: var(--surface); border: 2px solid var(--path-deep); padding: 5px 10px; }
+.hero { flex: 1; display: grid; grid-template-columns: 260px minmax(300px, 4fr) minmax(0, 6fr); gap: 36px; align-items: center; padding: 24px 0 40px; }
 .hero-copy { display: flex; flex-direction: column; align-items: flex-start; }
 .hero-copy .eyebrow { font-family: var(--font-pixel); font-size: 13px; color: var(--primary); letter-spacing: 3px; }
 .pixel-title { font-family: var(--font-pixel); font-weight: 400; font-size: clamp(44px, 5vw, 72px); line-height: 1.2; margin: 6px 0 20px; color: var(--primary-ink); text-shadow: 4px 4px 0 var(--shadow); }
@@ -169,3 +170,66 @@ h2 { font-size: 35px; line-height: 1.55; font-weight: 600; margin: 17px 0 13px; 
   .viewfinder-frame { aspect-ratio: 4 / 3; }
   .campus-strip { grid-template-columns: minmax(0, 1fr); }
 }
+
+/* ---------- 工具栏与弹层 ---------- */
+.toolbar { position: relative; margin-left: auto; display: flex; gap: 8px; }
+.tool-button { width: 40px; height: 40px; display: grid; place-items: center; color: var(--primary-ink); background: var(--surface); border: 2px solid var(--primary-ink); box-shadow: 3px 3px 0 var(--shadow); }
+.tool-button:hover { background: var(--surface-2); }
+.tool-button.active, .tool-button:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--shadow); }
+.tool-button.active { background: var(--primary); color: #fff; }
+.popover { position: absolute; right: 0; top: calc(100% + 10px); z-index: 20; width: 280px; background: var(--surface); border: 3px solid var(--primary-ink); box-shadow: 6px 6px 0 var(--shadow); }
+.popover-head { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; background: var(--surface-2); border-bottom: 2px solid var(--path-deep); }
+.popover-title { font-family: var(--font-pixel); font-size: 15px; }
+.popover-close { display: grid; place-items: center; width: 24px; height: 24px; color: var(--ink-2); background: transparent; border: 2px solid transparent; }
+.popover-close:hover { color: var(--ink); border-color: var(--primary-ink); }
+.popover-body { display: flex; flex-direction: column; gap: 12px; padding: 14px 12px; }
+.field-label { display: flex; justify-content: space-between; font-size: 13px; color: var(--ink-2); }
+.field-label output { font-family: var(--font-pixel); color: var(--ink); }
+.pixel-range { width: 100%; height: 12px; margin: 0; appearance: none; background: var(--surface-2); border: 2px solid var(--primary-ink); }
+.pixel-range::-webkit-slider-thumb { appearance: none; width: 16px; height: 20px; background: var(--primary); border: 2px solid var(--primary-ink); box-shadow: 2px 2px 0 var(--shadow); cursor: pointer; }
+.pixel-range::-moz-range-thumb { width: 12px; height: 16px; border-radius: 0; background: var(--primary); border: 2px solid var(--primary-ink); cursor: pointer; }
+.pixel-range:disabled { opacity: .4; }
+.check-row { display: flex; align-items: center; gap: 10px; font-size: 13px; cursor: pointer; }
+.check-row input { width: 18px; height: 18px; margin: 0; accent-color: var(--primary); }
+.field-note { margin: 0; font-size: 11px; line-height: 1.6; color: var(--ink-3); }
+.pixel-button.small { min-height: 36px; padding: 0 14px; font-size: 14px; gap: 6px; box-shadow: 3px 3px 0 var(--shadow); align-self: flex-start; }
+.theme-options { display: flex; flex-direction: column; gap: 8px; }
+.theme-option { display: flex; align-items: center; gap: 10px; padding: 8px 10px; text-align: left; color: var(--ink); background: var(--surface); border: 2px solid var(--path-deep); }
+.theme-option:hover { background: var(--surface-2); }
+.theme-option.selected { border-color: var(--primary); box-shadow: 3px 3px 0 var(--shadow); }
+.theme-swatch { width: 28px; height: 28px; flex-shrink: 0; border: 2px solid var(--primary-ink); background: linear-gradient(135deg, var(--swatch-a) 50%, var(--swatch-b) 50%); }
+.theme-option[data-theme-preview="grass"] { --swatch-a: #eef3e4; --swatch-b: #3f7f4a; }
+.theme-option[data-theme-preview="dusk"] { --swatch-a: #f5e9d6; --swatch-b: #c97a4a; }
+.theme-option[data-theme-preview="night"] { --swatch-a: #1c2621; --swatch-b: #6fae7c; }
+.theme-text { display: flex; flex: 1; flex-direction: column; gap: 2px; }
+.theme-text strong { font-family: var(--font-pixel); font-size: 14px; font-weight: 400; }
+.theme-text small { font-size: 11px; color: var(--ink-3); }
+
+/* ---------- 角色选择 ---------- */
+.character-panel { display: flex; flex-direction: column; gap: 14px; padding: 18px 16px; background: var(--surface); border: 3px solid var(--primary-ink); box-shadow: 6px 6px 0 var(--shadow); }
+.panel-head { display: flex; flex-direction: column; gap: 4px; }
+.panel-title { margin: 0; font-family: var(--font-pixel); font-weight: 400; font-size: 22px; letter-spacing: 1px; }
+.character-stage { display: grid; grid-template-columns: 32px minmax(0, 1fr) 32px; align-items: center; gap: 6px; padding: 12px 0; background: var(--surface-2); border: 2px solid var(--path-deep); }
+.turn-button { width: 32px; height: 44px; display: grid; place-items: center; color: var(--primary-ink); background: var(--surface); border: 2px solid var(--primary-ink); border-width: 2px 0; }
+.turn-button:hover { background: var(--path); }
+.character-preview { position: relative; display: grid; place-items: center; height: 152px; }
+.character-preview .pixel-sprite { position: relative; z-index: 1; }
+.character-shadow { position: absolute; bottom: 8px; width: 64px; height: 12px; background: var(--shadow); }
+.character-name { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
+.character-note { font-size: 12px; color: var(--ink-3); }
+.character-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.character-slot { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 4px 6px; color: var(--ink-2); background: var(--surface-2); border: 2px solid var(--path-deep); }
+.character-slot:hover:not(:disabled) { background: var(--path); }
+.character-slot.selected { color: var(--ink); background: var(--surface); border-color: var(--primary); box-shadow: 3px 3px 0 var(--shadow); }
+.character-slot.locked { border-style: dashed; }
+.character-slot > span:first-child, .character-slot > svg { height: 44px; display: grid; place-items: center; }
+.slot-name { font-family: var(--font-pixel); font-size: 12px; }
+
+/* ---------- 背景主题与动效偏好（由 settings.ts 写到 <html> data 属性） ---------- */
+html[data-theme="dusk"] { --bg: #f5e9d6; --surface: #fff8ec; --surface-2: #f0e0c6; --shadow: #dcc7a6; --primary: #c97a4a; --primary-deep: #a65f36; --primary-ink: #5a3a26; --path-deep: #cfa676; }
+html[data-theme="night"] { --bg: #1c2621; --surface: #26332c; --surface-2: #2f3f36; --ink: #e8efe2; --ink-2: #b6c4b1; --ink-3: #8a9a86; --primary: #4f8f5c; --primary-deep: #3d7549; --primary-ink: #d7e6d3; --shadow: #0f1713; --path-deep: #5b6b5e; --path: #4a5a4c; }
+html[data-theme="night"] .viewfinder-map { filter: brightness(.7); }
+html[data-theme="night"] .keycap { color: var(--ink); }
+html[data-motion="reduce"] .viewfinder-map { animation: none; transform: translateY(-36%); }
+html[data-motion="reduce"] .pixel-sprite { animation: none; }
+html[data-motion="reduce"] .pixel-button { transition: none; }
