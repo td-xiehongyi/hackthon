@@ -1,0 +1,5 @@
+# Reference material used during design discussion, not a project artifact.
+# Contains third-party copyrighted screenshots — excluded on purpose.
+*.png
+!assets/character-sheet.png
+!assets/frames/**/*.png
