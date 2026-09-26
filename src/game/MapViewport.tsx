@@ -2,11 +2,17 @@ import { useEffect, useRef, useState } from 'react';
 import * as Phaser from 'phaser';
 import { CampusMapScene } from './CampusMapScene';
 
-export default function MapViewport() {
+type MapViewportProps = {
+  active?: boolean;
+  onOpenTeaching: () => void;
+};
+
+export default function MapViewport({ active = true, onOpenTeaching }: MapViewportProps) {
   const host = useRef<HTMLDivElement>(null);
   const scene = useRef<CampusMapScene | null>(null);
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
   const [zoom, setZoom] = useState(1);
+  const [nearTeaching, setNearTeaching] = useState(false);
 
   useEffect(() => {
     if (!host.current) return;
@@ -15,6 +21,8 @@ export default function MapViewport() {
       onReady: () => mounted && setStatus('ready'),
       onError: () => mounted && setStatus('error'),
       onZoom: (value) => mounted && setZoom(value),
+      onOpenTeaching,
+      onTeachingProximity: (near) => mounted && setNearTeaching(near),
     });
     scene.current = map;
     let game: Phaser.Game | undefined;
@@ -39,7 +47,13 @@ export default function MapViewport() {
       scene.current = null;
       game?.destroy(true);
     };
-  }, []);
+  }, [onOpenTeaching]);
+
+  useEffect(() => {
+    if (!active) return;
+    const frame = window.requestAnimationFrame(() => scene.current?.fitToWindow());
+    return () => window.cancelAnimationFrame(frame);
+  }, [active]);
 
   return (
     <section className="map-panel" aria-label="地图预览">
@@ -49,6 +63,13 @@ export default function MapViewport() {
           <span role="status" aria-label="地图加载状态">{status === 'ready' ? '地图已加载' : status === 'loading' ? '正在加载地图…' : '地图未加载'}</span>
         </div>
         <div className="map-controls" aria-label="地图浏览控件">
+          <button
+            className="place-entry-button"
+            disabled={status !== 'ready'}
+            onClick={onOpenTeaching}
+          >
+            进入教学楼群
+          </button>
           <button aria-label="缩小地图" disabled={status !== 'ready'} onClick={() => scene.current?.changeZoom(1 / 1.25)}>−</button>
           <output aria-label="当前缩放">{status === 'ready' ? `${Math.round(zoom * 100)}%` : '—'}</output>
           <button aria-label="放大地图" disabled={status !== 'ready'} onClick={() => scene.current?.changeZoom(1.25)}>+</button>
@@ -57,6 +78,7 @@ export default function MapViewport() {
       </div>
       <div className="map-stage">
         <div ref={host} className="map-canvas" />
+        {nearTeaching && <div className="map-proximity-hint" role="status">已到达教学楼群，正在打开课表…</div>}
         {status === 'loading' && <div className="map-message">正在展开校园地图…</div>}
         {status === 'error' && (
           <div className="map-message" role="alert">
@@ -66,7 +88,7 @@ export default function MapViewport() {
           </div>
         )}
       </div>
-      <div className="map-footer"><span>拖动浏览 · 滚轮缩放</span><span>1041 × 1511 · 原始地图</span></div>
+      <div className="map-footer"><span>方向键 / WASD 移动人物 · 走到“课”附近自动进入 · 点击标记也可进入</span><span>1041 × 1511 · 原始地图</span></div>
     </section>
   );
 }

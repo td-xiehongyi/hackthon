@@ -1,12 +1,37 @@
+import { useCallback, useEffect, useState } from 'react';
+import TeachingPage from '../features/teaching/TeachingPage';
 import MapViewport from '../game/MapViewport';
 
 export default function App() {
+  const [page, setPage] = useState<'campus' | 'teaching'>(() => window.location.hash === '#teaching' ? 'teaching' : 'campus');
+  const openTeaching = useCallback(() => {
+    if (window.location.hash !== '#teaching') {
+      window.history.pushState({ csuView: 'teaching' }, '', '#teaching');
+    }
+    setPage('teaching');
+  }, []);
+  const returnToCampus = useCallback(() => {
+    if (window.history.state?.csuView === 'teaching') {
+      window.history.back();
+      return;
+    }
+    window.history.replaceState({}, '', `${window.location.pathname}${window.location.search}`);
+    setPage('campus');
+  }, []);
+
+  useEffect(() => {
+    const handleHistory = () => setPage(window.location.hash === '#teaching' ? 'teaching' : 'campus');
+    window.addEventListener('popstate', handleHistory);
+    return () => window.removeEventListener('popstate', handleHistory);
+  }, []);
+
   return (
-    <main className="campus-app">
+    <>
+    <main className="campus-app" hidden={page !== 'campus'}>
       <header className="app-header">
         <div className="brand-mark" aria-hidden="true">中南</div>
         <div><p className="eyebrow">CSU PIXEL CAMPUS</p><h1>中南大学像素校园</h1></div>
-        <span className="preview-label">地图预览</span>
+        <span className="preview-label">校园地图</span>
       </header>
       <div className="workspace">
         <aside className="sidebar">
@@ -21,14 +46,16 @@ export default function App() {
             <div><span>03</span>潇湘校区</div>
           </div>
           <div className="preview-note">
-            <strong>当前可浏览地图</strong>
-            <p>角色移动与地点交互待接入</p>
-            <p>道路、碰撞和入口仍待标定。</p>
+            <strong>教学楼群已开放</strong>
+            <p>在地图南部找到“课”标记</p>
+            <button type="button" onClick={openTeaching}>进入课表与蹭课中心</button>
           </div>
           <a className="original-link" href="/maps/campus-final-v9.png" target="_blank" rel="noreferrer">查看完整原图 <span aria-hidden="true">↗</span></a>
         </aside>
-        <MapViewport />
+        <MapViewport active={page === 'campus'} onOpenTeaching={openTeaching} />
       </div>
     </main>
+    {page === 'teaching' && <TeachingPage onBack={returnToCampus} />}
+    </>
   );
 }
