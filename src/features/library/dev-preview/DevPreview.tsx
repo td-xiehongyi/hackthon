@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { LocateResult, NavigationTarget, PlaceId, PlaceIdentity } from '../../../shared/contracts';
 import LibraryPanel from '../LibraryPanel';
 import PlaceGallery from '../../../shared/gallery/PlaceGallery';
+import TeachingPanel from '../../teaching/TeachingPanel';
 
 const PLACES: PlaceIdentity[] = [
   { name: '潇湘校区图书馆', campusId: 'xiaoxiang', placeId: 'xiaoxiang_library', featureKey: 'library' },
@@ -36,6 +37,15 @@ export default function DevPreview() {
 
       {place.featureKey === 'library' ? (
         <LibraryPanel
+          place={place}
+          sessionId="dev-preview"
+          buildings={[]}
+          onRequestClose={onRequestClose}
+          onLocate={onLocate}
+          registerCloseGuard={registerCloseGuard}
+        />
+      ) : place.featureKey === 'teaching' ? (
+        <TeachingPanel
           place={place}
           sessionId="dev-preview"
           buildings={[]}

@@ -17,6 +17,8 @@ button:focus-visible, a:focus-visible { outline: 3px solid #a27b26; outline-offs
 .eyebrow { color: #71806e; font-size: 10px; letter-spacing: 2.4px; margin: 0 0 4px; }
 h1 { margin: 0; font-size: 21px; letter-spacing: 1px; }
 .preview-label { margin-left: auto; font-size: 12px; color: #627357; border: 1px solid #cfd8c4; padding: 7px 13px; border-radius: 4px; }
+.timetable-trigger { border: 1px solid #aec29f; background: #edf4e7; color: #315b43; border-radius: 4px; padding: 8px 13px; font-size: 12px; }
+.timetable-trigger:hover { background: #e2efda; border-color: #7da17d; }
 .workspace { display: grid; grid-template-columns: 242px minmax(0, 1fr); gap: 32px; }
 .sidebar { padding: 26px 0 0; display: flex; flex-direction: column; align-items: flex-start; }
 .section-number { font-size: 10px; letter-spacing: 2px; color: #83917b; }
@@ -29,6 +31,8 @@ h2 { font-size: 35px; line-height: 1.55; font-weight: 600; margin: 17px 0 13px; 
 .preview-note strong { font-weight: 600; }
 .preview-note p { margin: 6px 0 0; color: #74806b; font-size: 11px; }
 .preview-note button { margin-top: 10px; padding: 0; border: 0; border-bottom: 1px solid currentColor; background: transparent; color: #254d3b; font-size: 11px; font-weight: 700; }
+.sidebar-timetable { margin-top: 11px; border: 0; border-bottom: 1px solid #8da17d; background: transparent; color: #315b43; padding: 0 0 2px; font-size: 11px; text-align: left; }
+.sidebar-timetable:hover { color: #8b6324; border-color: #8b6324; }
 .original-link { margin-top: 23px; color: #45644f; font-size: 12px; text-decoration: none; }
 .original-link span { margin-left: 6px; }
 .original-link:hover { text-decoration: underline; }
@@ -54,6 +58,14 @@ h2 { font-size: 35px; line-height: 1.55; font-weight: 600; margin: 17px 0 13px; 
 .map-message button { background: #254d3b; color: white; border: 0; padding: 9px 18px; border-radius: 4px; margin-top: 10px; }
 .map-proximity-hint { position: absolute; z-index: 5; left: 50%; bottom: 20px; transform: translateX(-50%); padding: 10px 15px; border: 1px solid #d5b85e; border-radius: 4px; background: #fff8d9; color: #4d4a2b; box-shadow: 4px 4px 0 #173f3526; font-size: 12px; font-weight: 700; pointer-events: none; }
 .map-footer { height: 38px; display: flex; align-items: center; justify-content: space-between; padding: 0 18px; font-size: 10px; color: #84927a; }
+.timetable-overlay { position: fixed; z-index: 20; inset: 0; display: grid; place-items: center; padding: 24px; background: rgba(25, 42, 30, .46); }
+.timetable-modal { width: min(980px, 100%); max-height: min(860px, calc(100dvh - 48px)); overflow: auto; padding: 24px 26px 28px; border: 1px solid #cbd7c3; border-radius: 8px; background: #fcfdf7; box-shadow: 0 20px 70px rgba(26, 49, 31, .24); }
+.timetable-modal-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; }
+.timetable-modal-head h2 { margin: 7px 0 0; color: #263c31; font-size: 27px; line-height: 1.2; }
+.timetable-modal-close { width: 34px; height: 34px; border: 1px solid #d1d9c8; border-radius: 4px; background: #f4f7ed; color: #536451; font-size: 24px; line-height: 1; }
+.timetable-modal-close:hover { background: #e7efe0; }
+.timetable-modal-intro { margin: 12px 0 0; color: #71806e; font-size: 12px; line-height: 1.7; }
+.timetable-modal .timetable-editor { margin-top: 18px; border-top: 0; padding-top: 0; }
 @media (max-width: 900px) {
   .campus-app { padding: 0 16px 20px; }
   .workspace { grid-template-columns: minmax(0, 1fr); gap: 18px; }
@@ -467,6 +479,7 @@ h2 { font-size: 35px; line-height: 1.55; font-weight: 600; margin: 17px 0 13px; 
   h1 { font-size: 16px; }
   .app-header { gap: 10px; }
   .preview-label { padding: 5px 7px; font-size: 10px; white-space: nowrap; }
+  .timetable-trigger { padding: 6px 8px; font-size: 10px; }
   .map-toolbar { padding: 0 9px; }
   .map-status { font-size: 10px; gap: 5px; }
   .map-controls { gap: 3px; }
@@ -475,3 +488,4 @@ h2 { font-size: 35px; line-height: 1.55; font-weight: 600; margin: 17px 0 13px; 
   .map-controls .place-entry-button { width: 30px; min-width: 30px; padding: 0; font-size: 0; }
   .map-controls .place-entry-button::after { content: "课"; font-size: 11px; }
 }
+@media (max-width: 620px) { .timetable-overlay { padding: 10px; } .timetable-modal { max-height: calc(100dvh - 20px); padding: 18px 14px 22px; } .timetable-modal-head h2 { font-size: 22px; } }
