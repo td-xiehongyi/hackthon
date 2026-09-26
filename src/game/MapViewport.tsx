@@ -5,9 +5,10 @@ import { CampusMapScene } from './CampusMapScene';
 type MapViewportProps = {
   active?: boolean;
   onOpenTeaching: () => void;
+  onOpenDormitory: () => void;
 };
 
-export default function MapViewport({ active = true, onOpenTeaching }: MapViewportProps) {
+export default function MapViewport({ active = true, onOpenTeaching, onOpenDormitory }: MapViewportProps) {
   const host = useRef<HTMLDivElement>(null);
   const scene = useRef<CampusMapScene | null>(null);
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
@@ -22,6 +23,7 @@ export default function MapViewport({ active = true, onOpenTeaching }: MapViewpo
       onError: () => mounted && setStatus('error'),
       onZoom: (value) => mounted && setZoom(value),
       onOpenTeaching,
+      onOpenDormitory,
       onTeachingProximity: (near) => mounted && setNearTeaching(near),
     });
     scene.current = map;
@@ -47,7 +49,7 @@ export default function MapViewport({ active = true, onOpenTeaching }: MapViewpo
       scene.current = null;
       game?.destroy(true);
     };
-  }, [onOpenTeaching]);
+  }, [onOpenTeaching, onOpenDormitory]);
 
   useEffect(() => {
     if (!active) return;
@@ -70,6 +72,13 @@ export default function MapViewport({ active = true, onOpenTeaching }: MapViewpo
           >
             进入教学楼群
           </button>
+          <button
+            className="dorm-entry-map-button"
+            disabled={status !== 'ready'}
+            onClick={onOpenDormitory}
+          >
+            升华公寓群聊
+          </button>
           <button aria-label="缩小地图" disabled={status !== 'ready'} onClick={() => scene.current?.changeZoom(1 / 1.25)}>−</button>
           <output aria-label="当前缩放">{status === 'ready' ? `${Math.round(zoom * 100)}%` : '—'}</output>
           <button aria-label="放大地图" disabled={status !== 'ready'} onClick={() => scene.current?.changeZoom(1.25)}>+</button>
@@ -88,7 +97,7 @@ export default function MapViewport({ active = true, onOpenTeaching }: MapViewpo
           </div>
         )}
       </div>
-      <div className="map-footer"><span>方向键 / WASD 移动人物 · 走到“课”附近自动进入 · 点击标记也可进入</span><span>1041 × 1511 · 原始地图</span></div>
+      <div className="map-footer"><span>方向键 / WASD 移动人物 · 走到“课”附近自动进入 · 点击“宿”标记进入升华公寓</span><span>1041 × 1511 · 原始地图</span></div>
     </section>
   );
 }
