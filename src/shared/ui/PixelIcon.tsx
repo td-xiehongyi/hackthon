@@ -1,7 +1,7 @@
 import type { SVGProps } from 'react';
 
 /** 12×12 像素风图标，只用矩形拼接，保持与像素字体一致的颗粒感。 */
-type IconName = 'volume' | 'volume-mute' | 'settings' | 'palette' | 'close' | 'check' | 'lock' | 'arrow-left' | 'arrow-right' | 'reset';
+type IconName = 'volume' | 'volume-mute' | 'settings' | 'palette' | 'close' | 'check' | 'lock' | 'arrow-left' | 'arrow-right' | 'reset' | 'home' | 'map' | 'pin' | 'external';
 
 const PATHS: Record<IconName, string> = {
   volume: 'M1 4h2v4H1zM3 3h2v6H3zM5 1h2v10H5zM8 4h1v4H8zM10 2h1v8h-1z',
@@ -14,6 +14,10 @@ const PATHS: Record<IconName, string> = {
   'arrow-left': 'M8 1H6v2h2zM6 3H4v2h2zM4 5H2v2h2zM6 7H4v2h2zM8 9H6v2h2z',
   'arrow-right': 'M4 1h2v2H4zM6 3h2v2H6zM8 5h2v2H8zM6 7h2v2H6zM4 9h2v2H4z',
   reset: 'M3 2h6v1H3zM2 3h1v2H2zM9 3h1v5H9zM2 8h1v1H2zM3 9h6v1H3zM1 5h3v1H1zM2 6h1v1H2zM7 1h2v1H7z',
+  home: 'M5 1h2v1H5zM4 2h1v1H4zM7 2h1v1H7zM3 3h1v1H3zM8 3h1v1H8zM2 4h1v1H2zM9 4h1v1H9zM1 5h1v1H1zM10 5h1v1h-1zM3 5h6v6H3zM5 8h2v3H5z',
+  map: 'M1 2h3v8H1zM4 3h4v8H4zM8 2h3v8H8zM2 4h1v1H2zM5 6h2v1H5zM9 5h1v1H9z',
+  pin: 'M4 1h4v1H4zM3 2h6v4H3zM4 6h4v1H4zM5 7h2v1H5zM5 8h2v1H5zM5 9h2v2H5zM5 3h2v2H5z',
+  external: 'M1 3h5v1H1zM1 4h1v7H1zM2 10h7v1H2zM8 6h1v4H8zM6 1h5v5h-1V3l-4 4-1-1 4-4H6z',
 };
 
 interface PixelIconProps extends Omit<SVGProps<SVGSVGElement>, 'name'> {

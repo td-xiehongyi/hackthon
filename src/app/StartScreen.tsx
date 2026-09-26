@@ -1,21 +1,18 @@
 import KeyCap from '../shared/ui/KeyCap';
+import PixelIcon from '../shared/ui/PixelIcon';
 import PixelSprite from '../shared/ui/PixelSprite';
 import CharacterPanel from './CharacterPanel';
 import Toolbar from './Toolbar';
+import { CAMPUSES, PLACES } from './campuses';
 import { useCharacter } from './characters';
+import type { Route } from './router';
 import { useSettings } from './settings';
 
 interface StartScreenProps {
-  onEnter: () => void;
+  onNavigate: (route: Route) => void;
 }
 
-const CAMPUSES = [
-  { index: '01', name: '岳麓山校区', note: '南门 · 图书馆 · 和平楼 · 观云池' },
-  { index: '02', name: '麓南校区', note: '升华公寓 · 半月湖 · 二食堂 · 天桥' },
-  { index: '03', name: '潇湘校区', note: '可互动：图书馆 · 教学楼群 · 体育场（副场）', interactive: true },
-];
-
-export default function StartScreen({ onEnter }: StartScreenProps) {
+export default function StartScreen({ onNavigate }: StartScreenProps) {
   const { settings, update, reset } = useSettings();
   const { character, select } = useCharacter();
 
@@ -38,13 +35,13 @@ export default function StartScreen({ onEnter }: StartScreenProps) {
           </h1>
           <p className="hero-lead">三个校区连成一张地图。沿着校园道路探索，靠近地点，按下 E 进入互动。</p>
           <div className="hero-actions">
-            <button type="button" className="pixel-button primary" onClick={onEnter}>
-              <svg aria-hidden="true" viewBox="0 0 12 12" width="12" height="12"><path d="M2 1h2v2H2zM4 3h2v2H4zM6 5h2v2H6zM4 7h2v2H4zM2 9h2v2H2z" fill="currentColor" /></svg>
+            <button type="button" className="pixel-button primary" onClick={() => onNavigate({ name: 'map' })}>
+              <PixelIcon name="arrow-right" size={12} />
               进入校园
             </button>
-            <a className="pixel-button ghost" href="/maps/campus-final-v9.png" target="_blank" rel="noreferrer">
+            <button type="button" className="pixel-button ghost" onClick={() => onNavigate({ name: 'full-map' })}>
               查看完整地图
-            </a>
+            </button>
           </div>
           {settings.showHints && (
             <dl className="control-hints" aria-label="操作方式">
@@ -56,26 +53,42 @@ export default function StartScreen({ onEnter }: StartScreenProps) {
         </div>
 
         <figure className="viewfinder" aria-label="校园地图取景">
-          <div className="viewfinder-frame">
+          <button type="button" className="viewfinder-frame" aria-label="打开地图浏览" onClick={() => onNavigate({ name: 'map' })}>
             <img className="viewfinder-map" src="/maps/campus-final-v9.png" alt="" width="1041" height="1511" decoding="async" />
             <span className="viewfinder-sprite" style={{ filter: `hue-rotate(${character.hue}deg)` }}>
               <PixelSprite state="walk" direction="down" scale={2} label={`${character.name}正在校园里行走`} />
             </span>
             <span className="viewfinder-compass" aria-hidden="true">北▲</span>
             <span className="viewfinder-size" aria-hidden="true">1041 × 1511</span>
-          </div>
+            <span className="viewfinder-cta" aria-hidden="true">点击进入地图</span>
+          </button>
           <figcaption>最终地图 v9 · 无路线标记版</figcaption>
         </figure>
       </section>
 
       <section className="campus-strip" aria-label="校区一览">
-        {CAMPUSES.map((campus) => (
-          <div key={campus.index} className={campus.interactive ? 'campus-card interactive' : 'campus-card'}>
-            <span className="campus-index">{campus.index}</span>
-            <span className="campus-plate">{campus.name}</span>
-            <p className="campus-note">{campus.note}</p>
-          </div>
-        ))}
+        {CAMPUSES.map((campus) => {
+          const interactive = campus.placeIds.length > 0;
+          return (
+            <article key={campus.id} className={interactive ? 'campus-card interactive' : 'campus-card'}>
+              <span className="campus-index">{campus.index}</span>
+              <button type="button" className="campus-card-link" onClick={() => onNavigate({ name: 'campus', campusId: campus.id })}>
+                <span className="campus-plate">{campus.name}</span>
+                <span className="campus-note">{campus.note}</span>
+              </button>
+              {interactive && (
+                <div className="campus-places" aria-label={`${campus.name}可互动地点`}>
+                  {campus.placeIds.map((placeId) => (
+                    <button key={placeId} type="button" className="place-chip" onClick={() => onNavigate({ name: 'place', placeId })}>
+                      <PixelIcon name="pin" size={10} />
+                      {PLACES[placeId].identity.name}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </article>
+          );
+        })}
       </section>
 
       <footer className="start-footer">

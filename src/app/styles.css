@@ -50,12 +50,15 @@ h1 { margin: 0; font-size: 21px; letter-spacing: 1px; }
 h2 { font-size: 35px; line-height: 1.55; font-weight: 600; margin: 17px 0 13px; letter-spacing: 1px; }
 .intro { color: #74806e; font-size: 13px; line-height: 1.9; max-width: 200px; }
 .campus-list { margin: 24px 0 32px; width: 100%; }
-.campus-list div { padding: 15px 0; font-size: 14px; border-bottom: 1px solid #dde2d5; }
-.campus-list span { color: #8d9c80; font-size: 11px; margin-right: 19px; font-variant-numeric: tabular-nums; }
+.campus-list-item { display: flex; align-items: center; width: 100%; padding: 15px 0; font-size: 14px; color: var(--ink); text-align: left; background: transparent; border: 0; border-bottom: 1px solid #dde2d5; }
+.campus-list-item > span { color: #8d9c80; font-size: 11px; margin-right: 19px; font-variant-numeric: tabular-nums; }
+.campus-list-item .campus-list-arrow { margin-left: auto; color: var(--ink-3); opacity: 0; transition: opacity 120ms ease; }
+.campus-list-item:hover { color: var(--primary-deep); }
+.campus-list-item:hover .campus-list-arrow { opacity: 1; }
 .preview-note { background: #e9edde; border-left: 3px solid #96a781; padding: 15px 13px; width: 100%; font-size: 12px; line-height: 1.7; }
 .preview-note strong { font-weight: 600; }
 .preview-note p { margin: 6px 0 0; color: #74806b; font-size: 11px; }
-.original-link { margin-top: 23px; color: #45644f; font-size: 12px; text-decoration: none; }
+.original-link { margin-top: 23px; padding: 0; color: #45644f; font-size: 12px; text-decoration: none; background: transparent; border: 0; }
 .original-link span { margin-left: 6px; }
 .original-link:hover { text-decoration: underline; }
 .map-panel { overflow: hidden; border: 1px solid #d1d9c8; border-radius: 8px; background: #fcfdf7; box-shadow: 0 8px 32px #344d3a08; }
@@ -127,7 +130,10 @@ html[data-grid="on"] .start-screen { background-image: linear-gradient(var(--sha
 .keycap-wide { min-width: 56px; }
 
 .viewfinder { margin: 0; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
-.viewfinder-frame { position: relative; aspect-ratio: 4 / 3; overflow: hidden; border: 4px solid var(--primary-ink); background: var(--surface-2); box-shadow: 8px 8px 0 var(--shadow); }
+.viewfinder-frame { position: relative; display: block; width: 100%; padding: 0; aspect-ratio: 4 / 3; overflow: hidden; border: 4px solid var(--primary-ink); background: var(--surface-2); box-shadow: 8px 8px 0 var(--shadow); cursor: pointer; }
+.viewfinder-cta { position: absolute; left: 50%; bottom: 14px; translate: -50% 0; font-family: var(--font-pixel); font-size: 14px; color: #fff; background: var(--primary); border: 2px solid var(--primary-ink); padding: 5px 12px; opacity: 0; transition: opacity 120ms ease; }
+.viewfinder-frame:hover .viewfinder-cta, .viewfinder-frame:focus-visible .viewfinder-cta { opacity: 1; }
+.viewfinder-frame:focus-visible { outline: 3px solid var(--water); outline-offset: 3px; }
 .viewfinder-map { position: absolute; left: 0; top: 0; width: 100%; height: auto; image-rendering: pixelated; animation: viewfinder-pan 48s ease-in-out infinite alternate; will-change: transform; }
 .viewfinder-sprite { position: absolute; left: 47%; top: 62%; translate: -50% -50%; filter: drop-shadow(2px 3px 0 rgba(31, 46, 36, .35)); }
 .viewfinder-compass, .viewfinder-size { position: absolute; font-family: var(--font-pixel); font-size: 13px; background: var(--surface); border: 2px solid var(--ink); padding: 3px 7px; }
@@ -143,7 +149,12 @@ html[data-grid="on"] .start-screen { background-image: linear-gradient(var(--sha
 .campus-card.interactive { border-color: var(--primary); }
 .campus-index { position: absolute; right: 14px; top: 12px; font-family: var(--font-pixel); font-size: 13px; color: var(--ink-3); }
 .campus-plate { display: inline-block; font-family: var(--font-pixel); font-size: 17px; color: #fff; background: var(--primary); padding: 4px 10px; border: 2px solid var(--primary-ink); }
+.campus-card-link { display: flex; flex-direction: column; align-items: flex-start; width: 100%; padding: 0; text-align: left; background: transparent; border: 0; }
+.campus-card-link:hover .campus-plate { background: var(--primary-deep); }
 .campus-note { margin: 12px 0 0; font-size: 13px; line-height: 1.6; color: var(--ink-2); }
+.campus-places { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--path-deep); }
+.place-chip { display: inline-flex; align-items: center; gap: 5px; padding: 4px 8px; font-family: var(--font-pixel); font-size: 12px; color: var(--primary-deep); background: var(--surface-2); border: 2px solid var(--path-deep); }
+.place-chip:hover { color: #fff; background: var(--primary); border-color: var(--primary-ink); }
 .campus-card.interactive .campus-note { color: var(--primary-deep); }
 
 .start-footer { display: flex; align-items: center; gap: 10px; margin-top: 24px; padding: 12px 0 0; border-top: 2px dashed var(--path-deep); font-size: 12px; color: var(--ink-3); }
@@ -233,3 +244,77 @@ html[data-theme="night"] .keycap { color: var(--ink); }
 html[data-motion="reduce"] .viewfinder-map { animation: none; transform: translateY(-36%); }
 html[data-motion="reduce"] .pixel-sprite { animation: none; }
 html[data-motion="reduce"] .pixel-button { transition: none; }
+
+/* ---------- 二级页面外壳 ---------- */
+.page-shell { min-height: 100dvh; max-width: 1720px; margin: 0 auto; padding: 0 36px 28px; display: flex; flex-direction: column; }
+.page-header { min-height: 104px; display: flex; align-items: center; gap: 16px; }
+.page-heading { display: flex; flex-direction: column; }
+.page-heading .eyebrow { margin: 0 0 4px; }
+.page-title { margin: 0; font-size: 21px; letter-spacing: 1px; }
+.page-actions { margin-left: auto; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+.page-actions .back-button { margin-left: 0; text-decoration: none; }
+.page-actions .back-button[aria-label] { padding: 6px 9px; }
+.campus-app.page-shell .page-header { min-height: 104px; }
+
+/* ---------- 完整地图页 ---------- */
+.full-map-scroll { flex: 1; overflow: auto; border: 4px solid var(--primary-ink); background: var(--surface-2); box-shadow: 8px 8px 0 var(--shadow); max-height: calc(100dvh - 190px); }
+.full-map-image { display: block; width: 1041px; height: 1511px; max-width: none; image-rendering: pixelated; margin: 0 auto; }
+.full-map-caption { margin: 14px 0 0; font-family: var(--font-pixel); font-size: 13px; color: var(--ink-3); text-align: right; }
+
+/* ---------- 校区页 ---------- */
+.campus-page { gap: 32px; }
+.campus-hero { display: grid; grid-template-columns: minmax(0, 7fr) minmax(260px, 5fr); gap: 36px; align-items: start; }
+.campus-hero-copy { display: flex; flex-direction: column; align-items: flex-start; gap: 18px; padding-top: 12px; }
+.campus-hero-copy .hero-lead { margin: 0; }
+.campus-facts { display: flex; flex-wrap: wrap; gap: 10px 28px; margin: 0; padding: 14px 18px; background: var(--surface); border: 2px solid var(--path-deep); box-shadow: 4px 4px 0 var(--shadow); }
+.campus-facts > div { display: flex; align-items: baseline; gap: 10px; }
+.campus-facts dt { font-size: 12px; color: var(--ink-3); }
+.campus-facts dd { margin: 0; font-family: var(--font-pixel); font-size: 15px; }
+.campus-thumb { position: relative; margin: 0; aspect-ratio: 4 / 3; overflow: hidden; border: 4px solid var(--primary-ink); background: var(--surface-2); box-shadow: 8px 8px 0 var(--shadow); }
+.campus-thumb img { position: absolute; left: 0; top: 0; width: 100%; height: auto; image-rendering: pixelated; }
+/* 缩略图按校区大致纵向分段；仅作页面装饰，不是坐标标定。 */
+.campus-thumb img[data-campus="yuelushan"] { transform: translateY(-2%); }
+.campus-thumb img[data-campus="lunan"] { transform: translateY(-34%); }
+.campus-thumb img[data-campus="xiaoxiang"] { transform: translateY(-66%); }
+.campus-section { display: flex; flex-direction: column; gap: 14px; }
+.landmark-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; margin: 0; padding: 0; list-style: none; }
+.landmark-item { display: flex; align-items: center; gap: 10px; padding: 12px 14px; background: var(--surface); border: 2px solid var(--path-deep); color: var(--ink); }
+.landmark-item svg { color: var(--primary); flex-shrink: 0; }
+.landmark-item small { margin-left: auto; font-size: 11px; color: var(--ink-3); }
+.place-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+.place-card { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; padding: 18px; text-align: left; color: var(--ink); background: var(--surface); border: 2px solid var(--primary); box-shadow: 4px 4px 0 var(--shadow); }
+.place-card:hover { background: var(--surface-2); }
+.place-card:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--shadow); }
+.place-card-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; }
+.place-owner { font-family: var(--font-pixel); font-size: 12px; color: var(--ink-3); }
+.place-summary { font-size: 13px; line-height: 1.6; color: var(--ink-2); }
+.place-enter { display: inline-flex; align-items: center; gap: 6px; margin-top: auto; font-family: var(--font-pixel); font-size: 14px; color: var(--primary-deep); }
+.campus-pager { display: flex; justify-content: space-between; gap: 12px; margin-top: auto; padding-top: 20px; border-top: 2px dashed var(--path-deep); }
+
+/* ---------- 地点功能页 ---------- */
+.place-page { gap: 20px; }
+.place-host { flex: 1; display: flex; flex-direction: column; min-height: 0; }
+.place-loading { display: grid; place-items: center; flex: 1; font-family: var(--font-pixel); font-size: 16px; color: var(--ink-3); }
+.place-placeholder { display: grid; grid-template-columns: minmax(0, 7fr) minmax(260px, 4fr); gap: 36px; align-items: start; padding: 28px; background: var(--surface); border: 3px solid var(--primary-ink); box-shadow: 6px 6px 0 var(--shadow); }
+.place-placeholder-copy { display: flex; flex-direction: column; align-items: flex-start; gap: 16px; }
+.place-placeholder-copy .hero-lead { margin: 0; }
+.place-placeholder-copy .hero-actions { margin: 6px 0 0; }
+.place-placeholder code { font-family: var(--font-pixel); padding: 1px 5px; background: var(--surface-2); border: 1px solid var(--path-deep); }
+.feature-list { display: flex; flex-direction: column; gap: 8px; margin: 0; padding: 0; list-style: none; font-size: 14px; }
+.feature-list li { display: flex; align-items: center; gap: 10px; }
+.feature-list svg { color: var(--primary); }
+.place-siblings { display: flex; flex-direction: column; gap: 10px; }
+.place-siblings .theme-option { width: 100%; }
+
+@media (max-width: 1023px) {
+  .campus-hero, .place-placeholder { grid-template-columns: minmax(0, 1fr); }
+  .campus-thumb { order: -1; aspect-ratio: 16 / 9; }
+}
+@media (max-width: 767px) {
+  .page-shell { padding: 0 16px 20px; }
+  .page-header { min-height: 84px; flex-wrap: wrap; gap: 10px; }
+  .page-actions { width: 100%; justify-content: flex-start; }
+  .campus-pager { flex-direction: column; }
+  .campus-pager .pixel-button { justify-content: center; }
+  .full-map-scroll { max-height: calc(100dvh - 240px); }
+}
