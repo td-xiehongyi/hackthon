@@ -1,0 +1,484 @@
+{
+  "schemaVersion": 1,
+  "characterId": "csu-campus-placeholder-v0",
+  "sheets": [
+    {
+      "id": "walk",
+      "url": "walk-sheet.png",
+      "width": 96,
+      "height": 192
+    },
+    {
+      "id": "ride",
+      "url": "ride-sheet.png",
+      "width": 168,
+      "height": 224
+    }
+  ],
+  "clips": [
+    {
+      "mode": "walk",
+      "facing": "down",
+      "action": "idle",
+      "loop": true,
+      "frames": [
+        {
+          "sheetId": "walk",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 32,
+            "height": 48
+          },
+          "anchor": {
+            "x": 16,
+            "y": 47
+          },
+          "durationMs": 1000
+        }
+      ]
+    },
+    {
+      "mode": "walk",
+      "facing": "down",
+      "action": "move",
+      "loop": true,
+      "frames": [
+        {
+          "sheetId": "walk",
+          "rect": {
+            "x": 32,
+            "y": 0,
+            "width": 32,
+            "height": 48
+          },
+          "anchor": {
+            "x": 16,
+            "y": 47
+          },
+          "durationMs": 220
+        },
+        {
+          "sheetId": "walk",
+          "rect": {
+            "x": 64,
+            "y": 0,
+            "width": 32,
+            "height": 48
+          },
+          "anchor": {
+            "x": 16,
+            "y": 47
+          },
+          "durationMs": 220
+        }
+      ]
+    },
+    {
+      "mode": "walk",
+      "facing": "up",
+      "action": "idle",
+      "loop": true,
+      "frames": [
+        {
+          "sheetId": "walk",
+          "rect": {
+            "x": 0,
+            "y": 48,
+            "width": 32,
+            "height": 48
+          },
+          "anchor": {
+            "x": 16,
+            "y": 47
+          },
+          "durationMs": 1000
+        }
+      ]
+    },
+    {
+      "mode": "walk",
+      "facing": "up",
+      "action": "move",
+      "loop": true,
+      "frames": [
+        {
+          "sheetId": "walk",
+          "rect": {
+            "x": 32,
+            "y": 48,
+            "width": 32,
+            "height": 48
+          },
+          "anchor": {
+            "x": 16,
+            "y": 47
+          },
+          "durationMs": 220
+        },
+        {
+          "sheetId": "walk",
+          "rect": {
+            "x": 64,
+            "y": 48,
+            "width": 32,
+            "height": 48
+          },
+          "anchor": {
+            "x": 16,
+            "y": 47
+          },
+          "durationMs": 220
+        }
+      ]
+    },
+    {
+      "mode": "walk",
+      "facing": "right",
+      "action": "idle",
+      "loop": true,
+      "frames": [
+        {
+          "sheetId": "walk",
+          "rect": {
+            "x": 0,
+            "y": 96,
+            "width": 32,
+            "height": 48
+          },
+          "anchor": {
+            "x": 17,
+            "y": 47
+          },
+          "durationMs": 1000
+        }
+      ]
+    },
+    {
+      "mode": "walk",
+      "facing": "right",
+      "action": "move",
+      "loop": true,
+      "frames": [
+        {
+          "sheetId": "walk",
+          "rect": {
+            "x": 32,
+            "y": 96,
+            "width": 32,
+            "height": 48
+          },
+          "anchor": {
+            "x": 17,
+            "y": 47
+          },
+          "durationMs": 220
+        },
+        {
+          "sheetId": "walk",
+          "rect": {
+            "x": 64,
+            "y": 96,
+            "width": 32,
+            "height": 48
+          },
+          "anchor": {
+            "x": 17,
+            "y": 47
+          },
+          "durationMs": 220
+        }
+      ]
+    },
+    {
+      "mode": "walk",
+      "facing": "left",
+      "action": "idle",
+      "loop": true,
+      "frames": [
+        {
+          "sheetId": "walk",
+          "rect": {
+            "x": 0,
+            "y": 144,
+            "width": 32,
+            "height": 48
+          },
+          "anchor": {
+            "x": 14,
+            "y": 47
+          },
+          "durationMs": 1000
+        }
+      ]
+    },
+    {
+      "mode": "walk",
+      "facing": "left",
+      "action": "move",
+      "loop": true,
+      "frames": [
+        {
+          "sheetId": "walk",
+          "rect": {
+            "x": 32,
+            "y": 144,
+            "width": 32,
+            "height": 48
+          },
+          "anchor": {
+            "x": 14,
+            "y": 47
+          },
+          "durationMs": 220
+        },
+        {
+          "sheetId": "walk",
+          "rect": {
+            "x": 64,
+            "y": 144,
+            "width": 32,
+            "height": 48
+          },
+          "anchor": {
+            "x": 14,
+            "y": 47
+          },
+          "durationMs": 220
+        }
+      ]
+    },
+    {
+      "mode": "ride",
+      "facing": "down",
+      "action": "idle",
+      "loop": true,
+      "frames": [
+        {
+          "sheetId": "ride",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 56,
+            "height": 56
+          },
+          "anchor": {
+            "x": 28,
+            "y": 51
+          },
+          "durationMs": 1000
+        }
+      ]
+    },
+    {
+      "mode": "ride",
+      "facing": "down",
+      "action": "move",
+      "loop": true,
+      "frames": [
+        {
+          "sheetId": "ride",
+          "rect": {
+            "x": 56,
+            "y": 0,
+            "width": 56,
+            "height": 56
+          },
+          "anchor": {
+            "x": 28,
+            "y": 51
+          },
+          "durationMs": 220
+        },
+        {
+          "sheetId": "ride",
+          "rect": {
+            "x": 112,
+            "y": 0,
+            "width": 56,
+            "height": 56
+          },
+          "anchor": {
+            "x": 28,
+            "y": 51
+          },
+          "durationMs": 220
+        }
+      ]
+    },
+    {
+      "mode": "ride",
+      "facing": "up",
+      "action": "idle",
+      "loop": true,
+      "frames": [
+        {
+          "sheetId": "ride",
+          "rect": {
+            "x": 0,
+            "y": 56,
+            "width": 56,
+            "height": 56
+          },
+          "anchor": {
+            "x": 28,
+            "y": 51
+          },
+          "durationMs": 1000
+        }
+      ]
+    },
+    {
+      "mode": "ride",
+      "facing": "up",
+      "action": "move",
+      "loop": true,
+      "frames": [
+        {
+          "sheetId": "ride",
+          "rect": {
+            "x": 56,
+            "y": 56,
+            "width": 56,
+            "height": 56
+          },
+          "anchor": {
+            "x": 28,
+            "y": 51
+          },
+          "durationMs": 220
+        },
+        {
+          "sheetId": "ride",
+          "rect": {
+            "x": 112,
+            "y": 56,
+            "width": 56,
+            "height": 56
+          },
+          "anchor": {
+            "x": 28,
+            "y": 51
+          },
+          "durationMs": 220
+        }
+      ]
+    },
+    {
+      "mode": "ride",
+      "facing": "right",
+      "action": "idle",
+      "loop": true,
+      "frames": [
+        {
+          "sheetId": "ride",
+          "rect": {
+            "x": 0,
+            "y": 112,
+            "width": 56,
+            "height": 56
+          },
+          "anchor": {
+            "x": 28,
+            "y": 47
+          },
+          "durationMs": 1000
+        }
+      ]
+    },
+    {
+      "mode": "ride",
+      "facing": "right",
+      "action": "move",
+      "loop": true,
+      "frames": [
+        {
+          "sheetId": "ride",
+          "rect": {
+            "x": 56,
+            "y": 112,
+            "width": 56,
+            "height": 56
+          },
+          "anchor": {
+            "x": 28,
+            "y": 47
+          },
+          "durationMs": 220
+        },
+        {
+          "sheetId": "ride",
+          "rect": {
+            "x": 112,
+            "y": 112,
+            "width": 56,
+            "height": 56
+          },
+          "anchor": {
+            "x": 28,
+            "y": 47
+          },
+          "durationMs": 220
+        }
+      ]
+    },
+    {
+      "mode": "ride",
+      "facing": "left",
+      "action": "idle",
+      "loop": true,
+      "frames": [
+        {
+          "sheetId": "ride",
+          "rect": {
+            "x": 0,
+            "y": 168,
+            "width": 56,
+            "height": 56
+          },
+          "anchor": {
+            "x": 27,
+            "y": 47
+          },
+          "durationMs": 1000
+        }
+      ]
+    },
+    {
+      "mode": "ride",
+      "facing": "left",
+      "action": "move",
+      "loop": true,
+      "frames": [
+        {
+          "sheetId": "ride",
+          "rect": {
+            "x": 56,
+            "y": 168,
+            "width": 56,
+            "height": 56
+          },
+          "anchor": {
+            "x": 27,
+            "y": 47
+          },
+          "durationMs": 220
+        },
+        {
+          "sheetId": "ride",
+          "rect": {
+            "x": 112,
+            "y": 168,
+            "width": 56,
+            "height": 56
+          },
+          "anchor": {
+            "x": 27,
+            "y": 47
+          },
+          "durationMs": 220
+        }
+      ]
+    }
+  ]
+}
