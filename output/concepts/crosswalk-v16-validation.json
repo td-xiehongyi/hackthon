@@ -1,0 +1,27 @@
+{
+  "files": [
+    {
+      "file": "沿线地标图-斑马线与小湖调整-v16.png",
+      "format": "PNG",
+      "width": 1041,
+      "height": 1511,
+      "mode": "RGB",
+      "bytes": 2712486,
+      "sha256": "afc2c73c7fc803ba29e1d3216702c5dfb80ee91999097f33f58606db8f398604",
+      "decode_verified": true
+    },
+    {
+      "file": "沿线地标图-斑马线与小湖调整-v16-4倍像素.png",
+      "format": "PNG",
+      "width": 4164,
+      "height": 6044,
+      "mode": "RGB",
+      "bytes": 5478329,
+      "sha256": "3213d3994aaebd9d47159662209b301e387ff07e2492323a6028857df7bf159b",
+      "decode_verified": true
+    }
+  ],
+  "scale_each_axis": 4,
+  "exact_4x4_pixel_replication_verified": true,
+  "native_new_detail_from_upscale": false
+}

@@ -1,0 +1,27 @@
+{
+  "files": [
+    {
+      "file": "沿线地标图-全图宽路-v15.png",
+      "format": "PNG",
+      "width": 1041,
+      "height": 1511,
+      "mode": "RGB",
+      "bytes": 2786733,
+      "sha256": "5620bf64215721c871af88d966ee4810ff5a2e73aa2d75b9c50a6393c92d27cc",
+      "decode_verified": true
+    },
+    {
+      "file": "沿线地标图-全图宽路-v15-4倍像素.png",
+      "format": "PNG",
+      "width": 4164,
+      "height": 6044,
+      "mode": "RGB",
+      "bytes": 5478838,
+      "sha256": "1c44c5120bc8e2774595258df5d9da0635f84fb3f71c60a4ef8f3793a9621757",
+      "decode_verified": true
+    }
+  ],
+  "scale_each_axis": 4,
+  "exact_4x4_pixel_replication_verified": true,
+  "native_new_detail_from_upscale": false
+}

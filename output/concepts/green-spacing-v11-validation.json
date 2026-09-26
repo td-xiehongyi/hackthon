@@ -1,0 +1,22 @@
+[
+  {
+    "file": "沿线地标图-宽路大建筑-v10.png",
+    "format": "PNG",
+    "width": 1041,
+    "height": 1511,
+    "mode": "RGB",
+    "bytes": 2729629,
+    "sha256": "d27df96d5fee43fc091d1b66cd6cae1b67f1dce96acf909c1305fe5e7e8cd0c1",
+    "decode_verified": true
+  },
+  {
+    "file": "沿线地标图-疏密绿化与体育场间距-v11.png",
+    "format": "PNG",
+    "width": 1041,
+    "height": 1511,
+    "mode": "RGB",
+    "bytes": 2829162,
+    "sha256": "8c523d460add73dfdedccfbe5fe171c9b72981d20404a7420ff4f9e34a54999c",
+    "decode_verified": true
+  }
+]

@@ -3,16 +3,25 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "engines": { "node": ">=24 <25" },
+  "engines": {
+    "node": ">=24 <25"
+  },
   "scripts": {
     "dev": "vite",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.server.json",
     "build": "npm run typecheck && vite build",
     "preview": "vite preview",
     "test": "vitest run",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "map:annotate": "node tools/map/extract-walkable.mjs && node tools/map/build-annotation.mjs",
+    "server:init": "node server/main.ts --init",
+    "server": "node server/main.ts",
+    "server:dev": "node server/main.ts --dev-image-policy",
+    "test:integration": "vitest run --config vitest.integration.config.ts"
   },
   "dependencies": {
+    "@fastify/multipart": "10.1.2",
+    "fastify": "5.12.5",
     "phaser": "4.0.0",
     "react": "19.3.0",
     "react-dom": "19.3.0"

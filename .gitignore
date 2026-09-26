@@ -24,3 +24,7 @@ test-results/
 .DS_Store
 Thumbs.db
 Desktop.ini
+
+# Large enlarged viewing copies of concept maps (4x / 8K, ~5–43 MB each); native-size originals are tracked
+output/concepts/*-4倍像素.png
+output/concepts/*-8K*.png

@@ -1,0 +1,27 @@
+{
+  "files": [
+    {
+      "file": "沿线地标图-清水路北端接通-v17.png",
+      "format": "PNG",
+      "width": 1041,
+      "height": 1511,
+      "mode": "RGB",
+      "bytes": 2681024,
+      "sha256": "06bd4445303c68a2cfd371d56c9d15c553e1c6fdd1080a4d8bae094af5bc77f4",
+      "decode_verified": true
+    },
+    {
+      "file": "沿线地标图-清水路北端接通-v17-4倍像素.png",
+      "format": "PNG",
+      "width": 4164,
+      "height": 6044,
+      "mode": "RGB",
+      "bytes": 5499582,
+      "sha256": "b71a38ca9ad89a6bc801f1456f2748c4546e9321d594cf1abaece279b328716d",
+      "decode_verified": true
+    }
+  ],
+  "scale_each_axis": 4,
+  "exact_4x4_pixel_replication_verified": true,
+  "native_new_detail_from_upscale": false
+}

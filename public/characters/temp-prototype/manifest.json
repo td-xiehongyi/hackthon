@@ -1,0 +1,926 @@
+{
+  "schemaVersion": 1,
+  "characterId": "temp-prototype-blob",
+  "sheets": [
+    {
+      "id": "prototype-sheet",
+      "url": "character-sheet.png",
+      "width": 240,
+      "height": 176
+    }
+  ],
+  "clips": [
+    {
+      "mode": "walk",
+      "facing": "up",
+      "action": "idle",
+      "loop": true,
+      "frames": [
+        {
+          "sheetId": "prototype-sheet",
+          "rect": {
+            "x": 0,
+            "y": 88,
+            "width": 20,
+            "height": 22
+          },
+          "anchor": {
+            "x": 10,
+            "y": 20
+          },
+          "durationMs": 900
+        },
+        {
+          "sheetId": "prototype-sheet",
+          "rect": {
+            "x": 20,
+            "y": 88,
+            "width": 20,
+            "height": 22
+          },
+          "anchor": {
+            "x": 10,
+            "y": 20
+          },
+          "durationMs": 900
+        }
+      ]
+    },
+    {
+      "mode": "walk",
+      "facing": "down",
+      "action": "idle",
+      "loop": true,
+      "frames": [
+        {
+          "sheetId": "prototype-sheet",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 20,
+            "height": 22
+          },
+          "anchor": {
+            "x": 10,
+            "y": 20
+          },
+          "durationMs": 900
+        },
+        {
+          "sheetId": "prototype-sheet",
+          "rect": {
+            "x": 20,
+            "y": 0,
+            "width": 20,
+            "height": 22
+          },
+          "anchor": {
+            "x": 10,
+            "y": 20
+          },
+          "durationMs": 900
+        }
+      ]
+    },
+    {
+      "mode": "walk",
+      "facing": "left",
+      "action": "idle",
+      "loop": true,
+      "frames": [
+        {
+          "sheetId": "prototype-sheet",
+          "rect": {
+            "x": 0,
+            "y": 132,
+            "width": 20,
+            "height": 22
+          },
+          "anchor": {
+            "x": 10,
+            "y": 20
+          },
+          "durationMs": 900
+        },
+        {
+          "sheetId": "prototype-sheet",
+          "rect": {
+            "x": 20,
+            "y": 132,
+            "width": 20,
+            "height": 22
+          },
+          "anchor": {
+            "x": 10,
+            "y": 20
+          },
+          "durationMs": 900
+        }
+      ]
+    },
+    {
+      "mode": "walk",
+      "facing": "right",
+      "action": "idle",
+      "loop": true,
+      "frames": [
+        {
+          "sheetId": "prototype-sheet",
+          "rect": {
+            "x": 0,
+            "y": 44,
+            "width": 20,
+            "height": 22
+          },
+          "anchor": {
+            "x": 10,
+            "y": 20
+          },
+          "durationMs": 900
+        },
+        {
+          "sheetId": "prototype-sheet",
+          "rect": {
+            "x": 20,
+            "y": 44,
+            "width": 20,
+            "height": 22
+          },
+          "anchor": {
+            "x": 10,
+            "y": 20
+          },
+          "durationMs": 900
+        }
+      ]
+    },
+    {
+      "mode": "walk",
+      "facing": "up",
+      "action": "move",
+      "loop": true,
+      "frames": [
+        {
+          "sheetId": "prototype-sheet",
+          "rect": {
+            "x": 40,
+            "y": 88,
+            "width": 20,
+            "height": 22
+          },
+          "anchor": {
+            "x": 10,
+            "y": 20
+          },
+          "durationMs": 150
+        },
+        {
+          "sheetId": "prototype-sheet",
+          "rect": {
+            "x": 60,
+            "y": 88,
+            "width": 20,
+            "height": 22
+          },
+          "anchor": {
+            "x": 10,
+            "y": 20
+          },
+          "durationMs": 150
+        },
+        {
+          "sheetId": "prototype-sheet",
+          "rect": {
+            "x": 80,
+            "y": 88,
+            "width": 20,
+            "height": 22
+          },
+          "anchor": {
+            "x": 10,
+            "y": 20
+          },
+          "durationMs": 150
+        },
+        {
+          "sheetId": "prototype-sheet",
+          "rect": {
+            "x": 100,
+            "y": 88,
+            "width": 20,
+            "height": 22
+          },
+          "anchor": {
+            "x": 10,
+            "y": 20
+          },
+          "durationMs": 150
+        }
+      ]
+    },
+    {
+      "mode": "walk",
+      "facing": "down",
+      "action": "move",
+      "loop": true,
+      "frames": [
+        {
+          "sheetId": "prototype-sheet",
+          "rect": {
+            "x": 40,
+            "y": 0,
+            "width": 20,
+            "height": 22
+          },
+          "anchor": {
+            "x": 10,
+            "y": 20
+          },
+          "durationMs": 150
+        },
+        {
+          "sheetId": "prototype-sheet",
+          "rect": {
+            "x": 60,
+            "y": 0,
+            "width": 20,
+            "height": 22
+          },
+          "anchor": {
+            "x": 10,
+            "y": 20
+          },
+          "durationMs": 150
+        },
+        {
+          "sheetId": "prototype-sheet",
+          "rect": {
+            "x": 80,
+            "y": 0,
+            "width": 20,
+            "height": 22
+          },
+          "anchor": {
+            "x": 10,
+            "y": 20
+          },
+          "durationMs": 150
+        },
+        {
+          "sheetId": "prototype-sheet",
+          "rect": {
+            "x": 100,
+            "y": 0,
+            "width": 20,
+            "height": 22
+          },
+          "anchor": {
+            "x": 10,
+            "y": 20
+          },
+          "durationMs": 150
+        }
+      ]
+    },
+    {
+      "mode": "walk",
+      "facing": "left",
+      "action": "move",
+      "loop": true,
+      "frames": [
+        {
+          "sheetId": "prototype-sheet",
+          "rect": {
+            "x": 40,
+            "y": 132,
+            "width": 20,
+            "height": 22
+          },
+          "anchor": {
+            "x": 10,
+            "y": 20
+          },
+          "durationMs": 150
+        },
+        {
+          "sheetId": "prototype-sheet",
+          "rect": {
+            "x": 60,
+            "y": 132,
+            "width": 20,
+            "height": 22
+          },
+          "anchor": {
+            "x": 10,
+            "y": 20
+          },
+          "durationMs": 150
+        },
+        {
+          "sheetId": "prototype-sheet",
+          "rect": {
+            "x": 80,
+            "y": 132,
+            "width": 20,
+            "height": 22
+          },
+          "anchor": {
+            "x": 10,
+            "y": 20
+          },
+          "durationMs": 150
+        },
+        {
+          "sheetId": "prototype-sheet",
+          "rect": {
+            "x": 100,
+            "y": 132,
+            "width": 20,
+            "height": 22
+          },
+          "anchor": {
+            "x": 10,
+            "y": 20
+          },
+          "durationMs": 150
+        }
+      ]
+    },
+    {
+      "mode": "walk",
+      "facing": "right",
+      "action": "move",
+      "loop": true,
+      "frames": [
+        {
+          "sheetId": "prototype-sheet",
+          "rect": {
+            "x": 40,
+            "y": 44,
+            "width": 20,
+            "height": 22
+          },
+          "anchor": {
+            "x": 10,
+            "y": 20
+          },
+          "durationMs": 150
+        },
+        {
+          "sheetId": "prototype-sheet",
+          "rect": {
+            "x": 60,
+            "y": 44,
+            "width": 20,
+            "height": 22
+          },
+          "anchor": {
+            "x": 10,
+            "y": 20
+          },
+          "durationMs": 150
+        },
+        {
+          "sheetId": "prototype-sheet",
+          "rect": {
+            "x": 80,
+            "y": 44,
+            "width": 20,
+            "height": 22
+          },
+          "anchor": {
+            "x": 10,
+            "y": 20
+          },
+          "durationMs": 150
+        },
+        {
+          "sheetId": "prototype-sheet",
+          "rect": {
+            "x": 100,
+            "y": 44,
+            "width": 20,
+            "height": 22
+          },
+          "anchor": {
+            "x": 10,
+            "y": 20
+          },
+          "durationMs": 150
+        }
+      ]
+    },
+    {
+      "mode": "ride",
+      "facing": "up",
+      "action": "idle",
+      "loop": true,
+      "frames": [
+        {
+          "sheetId": "prototype-sheet",
+          "rect": {
+            "x": 0,
+            "y": 88,
+            "width": 20,
+            "height": 22
+          },
+          "anchor": {
+            "x": 10,
+            "y": 20
+          },
+          "durationMs": 900
+        },
+        {
+          "sheetId": "prototype-sheet",
+          "rect": {
+            "x": 20,
+            "y": 88,
+            "width": 20,
+            "height": 22
+          },
+          "anchor": {
+            "x": 10,
+            "y": 20
+          },
+          "durationMs": 900
+        }
+      ]
+    },
+    {
+      "mode": "ride",
+      "facing": "down",
+      "action": "idle",
+      "loop": true,
+      "frames": [
+        {
+          "sheetId": "prototype-sheet",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 20,
+            "height": 22
+          },
+          "anchor": {
+            "x": 10,
+            "y": 20
+          },
+          "durationMs": 900
+        },
+        {
+          "sheetId": "prototype-sheet",
+          "rect": {
+            "x": 20,
+            "y": 0,
+            "width": 20,
+            "height": 22
+          },
+          "anchor": {
+            "x": 10,
+            "y": 20
+          },
+          "durationMs": 900
+        }
+      ]
+    },
+    {
+      "mode": "ride",
+      "facing": "left",
+      "action": "idle",
+      "loop": true,
+      "frames": [
+        {
+          "sheetId": "prototype-sheet",
+          "rect": {
+            "x": 0,
+            "y": 132,
+            "width": 20,
+            "height": 22
+          },
+          "anchor": {
+            "x": 10,
+            "y": 20
+          },
+          "durationMs": 900
+        },
+        {
+          "sheetId": "prototype-sheet",
+          "rect": {
+            "x": 20,
+            "y": 132,
+            "width": 20,
+            "height": 22
+          },
+          "anchor": {
+            "x": 10,
+            "y": 20
+          },
+          "durationMs": 900
+        }
+      ]
+    },
+    {
+      "mode": "ride",
+      "facing": "right",
+      "action": "idle",
+      "loop": true,
+      "frames": [
+        {
+          "sheetId": "prototype-sheet",
+          "rect": {
+            "x": 0,
+            "y": 44,
+            "width": 20,
+            "height": 22
+          },
+          "anchor": {
+            "x": 10,
+            "y": 20
+          },
+          "durationMs": 900
+        },
+        {
+          "sheetId": "prototype-sheet",
+          "rect": {
+            "x": 20,
+            "y": 44,
+            "width": 20,
+            "height": 22
+          },
+          "anchor": {
+            "x": 10,
+            "y": 20
+          },
+          "durationMs": 900
+        }
+      ]
+    },
+    {
+      "mode": "ride",
+      "facing": "up",
+      "action": "move",
+      "loop": true,
+      "frames": [
+        {
+          "sheetId": "prototype-sheet",
+          "rect": {
+            "x": 120,
+            "y": 88,
+            "width": 20,
+            "height": 22
+          },
+          "anchor": {
+            "x": 10,
+            "y": 20
+          },
+          "durationMs": 90
+        },
+        {
+          "sheetId": "prototype-sheet",
+          "rect": {
+            "x": 140,
+            "y": 88,
+            "width": 20,
+            "height": 22
+          },
+          "anchor": {
+            "x": 10,
+            "y": 20
+          },
+          "durationMs": 90
+        },
+        {
+          "sheetId": "prototype-sheet",
+          "rect": {
+            "x": 160,
+            "y": 88,
+            "width": 20,
+            "height": 22
+          },
+          "anchor": {
+            "x": 10,
+            "y": 20
+          },
+          "durationMs": 90
+        },
+        {
+          "sheetId": "prototype-sheet",
+          "rect": {
+            "x": 180,
+            "y": 88,
+            "width": 20,
+            "height": 22
+          },
+          "anchor": {
+            "x": 10,
+            "y": 20
+          },
+          "durationMs": 90
+        },
+        {
+          "sheetId": "prototype-sheet",
+          "rect": {
+            "x": 200,
+            "y": 88,
+            "width": 20,
+            "height": 22
+          },
+          "anchor": {
+            "x": 10,
+            "y": 20
+          },
+          "durationMs": 90
+        },
+        {
+          "sheetId": "prototype-sheet",
+          "rect": {
+            "x": 220,
+            "y": 88,
+            "width": 20,
+            "height": 22
+          },
+          "anchor": {
+            "x": 10,
+            "y": 20
+          },
+          "durationMs": 90
+        }
+      ]
+    },
+    {
+      "mode": "ride",
+      "facing": "down",
+      "action": "move",
+      "loop": true,
+      "frames": [
+        {
+          "sheetId": "prototype-sheet",
+          "rect": {
+            "x": 120,
+            "y": 0,
+            "width": 20,
+            "height": 22
+          },
+          "anchor": {
+            "x": 10,
+            "y": 20
+          },
+          "durationMs": 90
+        },
+        {
+          "sheetId": "prototype-sheet",
+          "rect": {
+            "x": 140,
+            "y": 0,
+            "width": 20,
+            "height": 22
+          },
+          "anchor": {
+            "x": 10,
+            "y": 20
+          },
+          "durationMs": 90
+        },
+        {
+          "sheetId": "prototype-sheet",
+          "rect": {
+            "x": 160,
+            "y": 0,
+            "width": 20,
+            "height": 22
+          },
+          "anchor": {
+            "x": 10,
+            "y": 20
+          },
+          "durationMs": 90
+        },
+        {
+          "sheetId": "prototype-sheet",
+          "rect": {
+            "x": 180,
+            "y": 0,
+            "width": 20,
+            "height": 22
+          },
+          "anchor": {
+            "x": 10,
+            "y": 20
+          },
+          "durationMs": 90
+        },
+        {
+          "sheetId": "prototype-sheet",
+          "rect": {
+            "x": 200,
+            "y": 0,
+            "width": 20,
+            "height": 22
+          },
+          "anchor": {
+            "x": 10,
+            "y": 20
+          },
+          "durationMs": 90
+        },
+        {
+          "sheetId": "prototype-sheet",
+          "rect": {
+            "x": 220,
+            "y": 0,
+            "width": 20,
+            "height": 22
+          },
+          "anchor": {
+            "x": 10,
+            "y": 20
+          },
+          "durationMs": 90
+        }
+      ]
+    },
+    {
+      "mode": "ride",
+      "facing": "left",
+      "action": "move",
+      "loop": true,
+      "frames": [
+        {
+          "sheetId": "prototype-sheet",
+          "rect": {
+            "x": 120,
+            "y": 132,
+            "width": 20,
+            "height": 22
+          },
+          "anchor": {
+            "x": 10,
+            "y": 20
+          },
+          "durationMs": 90
+        },
+        {
+          "sheetId": "prototype-sheet",
+          "rect": {
+            "x": 140,
+            "y": 132,
+            "width": 20,
+            "height": 22
+          },
+          "anchor": {
+            "x": 10,
+            "y": 20
+          },
+          "durationMs": 90
+        },
+        {
+          "sheetId": "prototype-sheet",
+          "rect": {
+            "x": 160,
+            "y": 132,
+            "width": 20,
+            "height": 22
+          },
+          "anchor": {
+            "x": 10,
+            "y": 20
+          },
+          "durationMs": 90
+        },
+        {
+          "sheetId": "prototype-sheet",
+          "rect": {
+            "x": 180,
+            "y": 132,
+            "width": 20,
+            "height": 22
+          },
+          "anchor": {
+            "x": 10,
+            "y": 20
+          },
+          "durationMs": 90
+        },
+        {
+          "sheetId": "prototype-sheet",
+          "rect": {
+            "x": 200,
+            "y": 132,
+            "width": 20,
+            "height": 22
+          },
+          "anchor": {
+            "x": 10,
+            "y": 20
+          },
+          "durationMs": 90
+        },
+        {
+          "sheetId": "prototype-sheet",
+          "rect": {
+            "x": 220,
+            "y": 132,
+            "width": 20,
+            "height": 22
+          },
+          "anchor": {
+            "x": 10,
+            "y": 20
+          },
+          "durationMs": 90
+        }
+      ]
+    },
+    {
+      "mode": "ride",
+      "facing": "right",
+      "action": "move",
+      "loop": true,
+      "frames": [
+        {
+          "sheetId": "prototype-sheet",
+          "rect": {
+            "x": 120,
+            "y": 44,
+            "width": 20,
+            "height": 22
+          },
+          "anchor": {
+            "x": 10,
+            "y": 20
+          },
+          "durationMs": 90
+        },
+        {
+          "sheetId": "prototype-sheet",
+          "rect": {
+            "x": 140,
+            "y": 44,
+            "width": 20,
+            "height": 22
+          },
+          "anchor": {
+            "x": 10,
+            "y": 20
+          },
+          "durationMs": 90
+        },
+        {
+          "sheetId": "prototype-sheet",
+          "rect": {
+            "x": 160,
+            "y": 44,
+            "width": 20,
+            "height": 22
+          },
+          "anchor": {
+            "x": 10,
+            "y": 20
+          },
+          "durationMs": 90
+        },
+        {
+          "sheetId": "prototype-sheet",
+          "rect": {
+            "x": 180,
+            "y": 44,
+            "width": 20,
+            "height": 22
+          },
+          "anchor": {
+            "x": 10,
+            "y": 20
+          },
+          "durationMs": 90
+        },
+        {
+          "sheetId": "prototype-sheet",
+          "rect": {
+            "x": 200,
+            "y": 44,
+            "width": 20,
+            "height": 22
+          },
+          "anchor": {
+            "x": 10,
+            "y": 20
+          },
+          "durationMs": 90
+        },
+        {
+          "sheetId": "prototype-sheet",
+          "rect": {
+            "x": 220,
+            "y": 44,
+            "width": 20,
+            "height": 22
+          },
+          "anchor": {
+            "x": 10,
+            "y": 20
+          },
+          "durationMs": 90
+        }
+      ]
+    }
+  ]
+}
