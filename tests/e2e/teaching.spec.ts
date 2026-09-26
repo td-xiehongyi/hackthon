@@ -88,3 +88,16 @@ test('从教学楼页使用浏览器后退可返回原地图', async ({ page }) 
   await page.goBack();
   await expect(page.getByRole('heading', { name: '中南大学像素校园' })).toBeVisible();
 });
+
+test('教务系统辅助导入与兴趣关键词可用', async ({ page }) => {
+  await openTeaching(page);
+  await page.getByRole('button', { name: '课表管理' }).click();
+  await page.getByRole('button', { name: '从 CSU 教务系统导入' }).click();
+  await expect(page.getByRole('heading', { name: '从 CSU 教务系统带入课表' })).toBeVisible();
+  await expect(page.getByText('不会读取或保存账号、密码')).toBeVisible();
+  await page.getByRole('button', { name: '关闭' }).click();
+  await page.getByRole('button', { name: '蹭课发现' }).click();
+  await page.getByLabel('添加兴趣关键词').fill('人工智能');
+  await page.getByRole('button', { name: '添加', exact: true }).click();
+  await expect(page.getByRole('button', { name: '人工智能', exact: true })).toBeVisible();
+});
