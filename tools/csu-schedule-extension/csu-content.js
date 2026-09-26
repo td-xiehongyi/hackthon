@@ -1,7 +1,8 @@
 /*
  * CSU course-page content script.
  *
- * This file deliberately runs only on csujwc.its.csu.edu.cn.  It reads the
+ * This file deliberately runs only on the old CSU teaching domain
+ * (csujwc.its.csu.edu.cn). It reads the
  * rendered timetable DOM after the student has logged in, and never reads
  * form controls, cookies, localStorage, or the page URL query string.  The
  * resulting payload contains normalised course fields only.
@@ -52,9 +53,17 @@
     if (!text) return null;
     const explicit = text.match(/(?:第\s*)?(\d{1,2})\s*[-~～—–至到、，,]\s*(\d{1,2})/);
     if (explicit) return [Number(explicit[1]), Number(explicit[2])];
-    // The old CSU endpoint uses compact strings such as 0708节 and 0304.
-    const compactFour = text.match(/(?<!\d)(\d{4})(?!\d)/);
-    if (compactFour) return [Number(compactFour[1].slice(0, 2)), Number(compactFour[1].slice(2))];
+    // The old CSU endpoint uses compact strings such as 0708节, 0304, or
+    // 01020304. Decode the complete run instead of truncating after four
+    // digits. This branch also wins over a trailing clock range such as
+    // `0102节（08:00-09:40）`.
+    const compact = text.match(/(?<!\d)((?:\d{2}){2,})(?!\d)/);
+    if (compact) {
+      const parts = compact[1].match(/\d{2}/g) || [];
+      if (parts.length >= 2) return [Number(parts[0]), Number(parts[parts.length - 1])];
+    }
+    // A clock range by itself is not a section range.
+    if (/\b\d{1,2}\s*:\s*\d{2}\b/.test(text)) return null;
     const numbers = text.match(/\d{1,2}/g);
     if (!numbers || !numbers.length) return null;
     return [Number(numbers[0]), Number(numbers[1] || numbers[0])];

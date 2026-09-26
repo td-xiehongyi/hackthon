@@ -303,6 +303,11 @@ h2 { font-size: 35px; line-height: 1.55; font-weight: 600; margin: 17px 0 13px; 
 .ca-import-body { padding: 22px 24px 0; display: grid; gap: 12px; }
 .ca-import-body > p { margin: 0; color: #5e705f; font-size: 11px; line-height: 1.8; }
 .ca-import-body > a { color: #496954; font-size: 10px; }
+.ca-extension-action { padding: 13px; display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 7px 12px; border: 1px solid #c6d8c8; background: #edf5ed; }
+.ca-extension-action > div { display: grid; gap: 4px; }
+.ca-extension-action strong { color: #315b43; font-size: 10px; }
+.ca-extension-action small { color: #667b6a; font-size: 9px; line-height: 1.55; }
+.ca-extension-action .secondary-button { min-height: 34px; padding-inline: 12px; font-size: 10px; }
 .ca-import-file-action { padding: 13px; display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 7px 12px; border: 1px solid #d5decf; background: #f3f6ec; }
 .ca-import-file-action strong { color: #426049; font-size: 10px; }
 .ca-import-file-action .secondary-button { min-height: 34px; padding-inline: 12px; font-size: 10px; }
@@ -460,6 +465,8 @@ h2 { font-size: 35px; line-height: 1.55; font-weight: 600; margin: 17px 0 13px; 
   .ca-import-file-action { grid-template-columns: 1fr; }
   .ca-import-file-action .secondary-button { width: 100%; }
   .ca-import-file-action small { grid-column: auto; }
+  .ca-extension-action { grid-template-columns: 1fr; }
+  .ca-extension-action .secondary-button { width: 100%; }
   .form-grid { grid-template-columns: 1fr; }
   .form-grid input, .form-grid select, .form-grid textarea { min-height: 44px; font-size: 16px; }
   .span-2 { grid-column: span 1; }

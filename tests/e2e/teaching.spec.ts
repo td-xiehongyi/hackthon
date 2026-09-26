@@ -128,3 +128,36 @@ test('从教务辅助弹窗选择下载的 HTML 课表并进入统一预览', as
   await page.getByRole('button', { name: '确认导入' }).click();
   await expect(page.getByText('程序设计实践')).toBeVisible();
 });
+
+test('浏览器插件抓取结果进入统一导入预览', async ({ page }) => {
+  await openTeaching(page);
+  await page.getByRole('button', { name: '课表管理' }).click();
+  await page.getByRole('button', { name: '从 CSU 教务系统导入' }).click();
+  await page.getByRole('button', { name: '等待插件数据' }).click();
+
+  await page.evaluate(() => {
+    window.postMessage({
+      source: 'csu-browser-extension',
+      type: 'CSU_SCHEDULE_CAPTURE',
+      payload: {
+        capturedAt: '2026-09-26T00:00:00.000Z',
+        pageTitle: '我的课表',
+        courses: [{
+          title: '课程名称：机器学习导论\n周次：1-16(周)\n星期：星期二\n节次：0708节\n上课教师：周老师\n上课地点：A座203',
+          name: '机器学习导论',
+          teacher: '周老师',
+          weekday: 2,
+          startPeriod: 7,
+          endPeriod: 8,
+          weeks: '1-16(周)',
+          location: 'A座203',
+        }],
+      },
+    }, window.location.origin);
+  });
+
+  await expect(page.getByRole('heading', { name: 'CSU 浏览器插件课表' })).toBeVisible();
+  await expect(page.getByText('确认后将写入 1 条课程。')).toBeVisible();
+  await page.getByRole('button', { name: '确认导入' }).click();
+  await expect(page.getByText('机器学习导论')).toBeVisible();
+});

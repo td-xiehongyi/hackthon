@@ -27,6 +27,7 @@ import {
   type CommunitySnapshot,
 } from './community';
 import { CSU_CA_SCHEDULE_URL, openCsuSchedulePage, parseCsuScheduleText } from './caImport';
+import { readCsuExtensionMessage } from './csuExtensionBridge';
 
 type TeachingTab = 'schedule' | 'discover' | 'manage';
 type SaveState = { kind: 'saved' | 'saving' | 'error'; message: string };
@@ -507,23 +508,41 @@ function CaImportModal({
   onClose,
   onChooseFile,
   onPreview,
+  extensionStatus,
+  extensionError,
+  onWaitExtension,
 }: {
   onClose: () => void;
   onChooseFile: () => void;
   onPreview: (preview: ImportPreview) => void;
+  extensionStatus: 'idle' | 'waiting' | 'received';
+  extensionError?: string;
+  onWaitExtension: () => void;
 }) {
   const [source, setSource] = useState('');
   const [error, setError] = useState('');
   const dialogRef = useRef<HTMLElement>(null);
   useDialogFocus(dialogRef, onClose);
+  useEffect(() => {
+    if (extensionError) setError(extensionError);
+  }, [extensionError]);
   return (
     <div className="modal-backdrop" role="presentation">
       <section ref={dialogRef} className="import-modal ca-import-modal" role="dialog" aria-modal="true" aria-labelledby="ca-import-title" tabIndex={-1}>
         <header><div><span className="modal-kicker">教务系统辅助导入</span><h2 id="ca-import-title">从 CSU 教务系统带入课表</h2></div><button className="icon-button" type="button" aria-label="关闭" onClick={onClose}>×</button></header>
         <div className="ca-import-body">
-          <p>先打开官方统一认证并由你本人完成登录，再进入网上办事大厅的教务服务，打开“我的课表”。目前学校没有提供可供本页面跨站直接读取的公开接口，因此请复制课表表格或已登录页面返回的 JSON 粘贴到这里，或选择 CSV、TSV、HTML、JSON 文件导入。我们不会读取或保存账号、密码，也不会代替你登录。</p>
+          <p>先打开官方统一认证并由你本人完成登录，再进入旧版教务课表页（csujwc.its.csu.edu.cn）的“我的课表”。ca.csu.edu.cn/网上办事大厅只负责登录和跳转，浏览器插件不会在这些入口页面运行。目前学校没有提供可供本页面跨站直接读取的公开接口，因此请复制课表表格或已登录页面返回的 JSON 粘贴到这里，或选择 CSV、TSV、HTML、JSON 文件导入。我们不会读取或保存账号、密码，也不会代替你登录。</p>
           <button className="secondary-button" type="button" onClick={() => { if (!openCsuSchedulePage()) setError('浏览器阻止了新标签页，请手动打开教务系统。'); }}>打开 CSU 教务系统</button>
           <a href={CSU_CA_SCHEDULE_URL} target="_blank" rel="noreferrer">打开 https://ca.csu.edu.cn/（官方登录页）</a>
+          <div className="ca-extension-action" role="status" aria-live="polite">
+            <div>
+              <strong>已安装 CSU 浏览器插件？</strong>
+              <small>在教务课表页点击右下角“抓取当前课表”，数据会回到这里并进入同一份导入预览。</small>
+            </div>
+            <button className="secondary-button" type="button" onClick={onWaitExtension}>
+              {extensionStatus === 'waiting' ? '等待插件抓取…' : extensionStatus === 'received' ? '已收到课表' : '等待插件数据'}
+            </button>
+          </div>
           <div className="ca-import-file-action">
             <strong>已经下载课表文件？</strong>
             <button className="secondary-button" type="button" onClick={onChooseFile}>选择 CSV / TSV / HTML / JSON 文件</button>
@@ -569,6 +588,8 @@ export default function TeachingPage({ onBack }: { onBack: () => void }) {
   const [importPreview, setImportPreview] = useState<ImportPreview | null>(null);
   const [importFilename, setImportFilename] = useState('');
   const [caImportOpen, setCaImportOpen] = useState(false);
+  const [extensionStatus, setExtensionStatus] = useState<'idle' | 'waiting' | 'received'>('idle');
+  const [extensionError, setExtensionError] = useState('');
   const [toast, setToast] = useState('');
   const fileInput = useRef<HTMLInputElement>(null);
   const mainElement = useRef<HTMLElement>(null);
@@ -624,6 +645,34 @@ export default function TeachingPage({ onBack }: { onBack: () => void }) {
     const timer = window.setTimeout(() => setToast(''), 2600);
     return () => window.clearTimeout(timer);
   }, [toast]);
+
+  // The browser extension content script posts only after the student clicks
+  // its button on the CSU page. Keep the listener mounted for the whole
+  // teaching page so returning from the CSU tab does not lose the capture.
+  useEffect(() => {
+    const handleExtensionMessage = (event: MessageEvent<unknown>) => {
+      const message = readCsuExtensionMessage(event, window.location.origin, window);
+      if (!message) return;
+      const preview = parseCsuScheduleText(JSON.stringify(message.payload), {
+        existingCourses: courses,
+        sourceLabel: `CSU 浏览器插件${message.payload.pageTitle ? ` · ${message.payload.pageTitle}` : ''}`,
+      });
+      setExtensionStatus('received');
+      if (preview.status === 'invalid') {
+        setExtensionError(preview.errors[0]?.message || '插件抓取到了数据，但没有识别出有效课程。');
+        setCaImportOpen(true);
+        setToast('插件数据未通过课表检查，请查看提示后重试。');
+        return;
+      }
+      setExtensionError('');
+      setImportFilename('CSU 浏览器插件课表');
+      setImportPreview(preview);
+      setCaImportOpen(false);
+      setToast(`已从浏览器插件读取 ${preview.acceptedRows} 条课程，等待确认导入。`);
+    };
+    window.addEventListener('message', handleExtensionMessage);
+    return () => window.removeEventListener('message', handleExtensionMessage);
+  }, [courses]);
 
   const persistCourses = (next: Course[], successMessage: string) => {
     setSaveState({ kind: 'saving', message: '正在保存…' });
@@ -982,7 +1031,14 @@ export default function TeachingPage({ onBack }: { onBack: () => void }) {
       <input ref={fileInput} className="visually-hidden" type="file" accept=".csv,.tsv,.txt,.html,.htm,.json,text/csv,text/tab-separated-values,text/plain,text/html,application/json" onChange={(event) => void handleFile(event.target.files?.[0])} />
       {editing !== undefined && <CourseFormModal editing={editing} onClose={() => setEditing(undefined)} onSubmit={handleCourseSubmit} />}
       {importPreview && <ImportModal preview={importPreview} filename={importFilename} onClose={() => setImportPreview(null)} onConfirm={confirmImport} />}
-      {caImportOpen && <CaImportModal onClose={() => setCaImportOpen(false)} onChooseFile={() => fileInput.current?.click()} onPreview={acceptCaPreview} />}
+      {caImportOpen && <CaImportModal
+        onClose={() => setCaImportOpen(false)}
+        onChooseFile={() => fileInput.current?.click()}
+        onPreview={acceptCaPreview}
+        extensionStatus={extensionStatus}
+        extensionError={extensionError}
+        onWaitExtension={() => { setExtensionError(''); setExtensionStatus('waiting'); setToast('请切换到 CSU 课表页并点击浏览器插件的抓取按钮。'); }}
+      />}
       {toast && <div className="toast" role="status"><span>✓</span>{toast}</div>}
     </main>
   );
