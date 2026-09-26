@@ -52,6 +52,7 @@ export interface CharacterStatus {
 }
 
 type MapCallbacks = {
+  onOpenTeaching?: () => void;
   onReady: () => void;
   onError: () => void;
   onZoom: (zoom: number) => void;
@@ -85,6 +86,8 @@ export class CampusMapScene extends Phaser.Scene {
   private mapHeight = 0;
   private minimumZoom = 1;
   private ready = false;
+  private teachingPoint = new Phaser.Math.Vector2(506, 1267);
+  private proximityTriggered = false;
   private viewMode: ViewMode = 'browse';
   private suspended = false;
   readonly keys = new MovementKeys();
@@ -130,6 +133,7 @@ export class CampusMapScene extends Phaser.Scene {
     this.mapHeight = source.height;
     this.add.image(0, 0, 'campus').setOrigin(0).setDepth(-1_000_000);
     this.cameras.main.setRoundPixels(true);
+    if (this.callbacks.onOpenTeaching) this.createTeachingHotspot();
     this.ready = true;
     this.setupWorld();
     for (const item of this.annotation?.occluders ?? []) {
@@ -182,6 +186,7 @@ export class CampusMapScene extends Phaser.Scene {
     this.updateTarget();
     this.character.update(this.state, deltaMs);
     this.publishStatus();
+    this.updateTeachingProximity();
   }
 
   /** 读取并校验标注；不可用时保留只读地图。 */
@@ -322,6 +327,52 @@ export class CampusMapScene extends Phaser.Scene {
   setSuspended(value: boolean) {
     this.suspended = value;
     this.syncKeySuspension();
+  }
+
+  private createTeachingHotspot() {
+    // Source-image coordinates for the labelled teaching group on the current map.
+    // This is a discoverability hotspot, not a verified character entrance/return point.
+    const halo = this.add.circle(0, 0, 44, 0xf5cf65, 0.32)
+      .setStrokeStyle(3, 0xfff4b8, 0.92);
+    const marker = this.add.circle(0, 0, 27, 0x173f35, 1)
+      .setStrokeStyle(3, 0xfdf9dd, 1);
+    const glyph = this.add.text(0, -1, '课', {
+      color: '#fffbea',
+      fontFamily: '"Microsoft YaHei", "PingFang SC", sans-serif',
+      fontSize: '20px',
+      fontStyle: 'bold',
+    }).setOrigin(0.5);
+    const label = this.add.text(0, -59, '课表 · 蹭课', {
+      backgroundColor: '#fffbea',
+      color: '#173f35',
+      fontFamily: '"Microsoft YaHei", "PingFang SC", sans-serif',
+      fontSize: '14px',
+      fontStyle: 'bold',
+      padding: { x: 9, y: 6 },
+    }).setOrigin(0.5).setStroke('#173f35', 1);
+
+    const hotspot = this.add.container(this.teachingPoint.x, this.teachingPoint.y, [halo, marker, glyph, label]);
+    hotspot.setSize(152, 126).setInteractive({ useHandCursor: true });
+    hotspot.on('pointerover', () => {
+      halo.setScale(1.14);
+      label.setBackgroundColor('#f5cf65');
+    });
+    hotspot.on('pointerout', () => {
+      halo.setScale(1);
+      label.setBackgroundColor('#fffbea');
+    });
+    hotspot.setDepth(100_000);
+    hotspot.on('pointerup', () => { if (!this.suspended) this.callbacks.onOpenTeaching?.(); });
+
+  }
+
+  private updateTeachingProximity() {
+    if (this.suspended || !this.movementAvailable || !this.callbacks.onOpenTeaching) return;
+    const near = Phaser.Math.Distance.BetweenPoints(this.state.position, this.teachingPoint) <= 82;
+    if (near && !this.proximityTriggered) {
+      this.proximityTriggered = true;
+      this.callbacks.onOpenTeaching();
+    } else if (!near) this.proximityTriggered = false;
   }
 
   fitToWindow() {

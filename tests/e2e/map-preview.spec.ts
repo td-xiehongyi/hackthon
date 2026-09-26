@@ -30,6 +30,7 @@ test('地图可加载、缩放、拖动并恢复全图', async ({ page }) => {
   await expect.poll(async () => (await canvas.screenshot()).equals(before)).toBe(true);
   await expect(page.getByText('草地、操场、桥面及建筑和道路附近的树木可通行，窄路可骑行；地点入口仍待标定。')).toBeVisible();
   await expect(page.getByTestId('character-status')).toHaveCount(0);
+  await expect(page.getByText('教学楼群已开放')).toBeVisible();
   expect(errors).toEqual([]);
 });
 

@@ -7,12 +7,14 @@ import { getPlace } from '@/shared/place-registry';
 import { USING_TEMP_CHARACTER } from './character/character-sprite';
 
 interface MapViewportProps {
+  active?: boolean;
+  onOpenTeaching?: () => void;
   registerScene?: (scene: CampusMapScene | null) => void;
   onRequestOpen?: (context: OpenContext) => void;
   onAnnotation?: (annotation: MapAnnotation | null) => void;
 }
 
-export default function MapViewport({ registerScene, onRequestOpen, onAnnotation }: MapViewportProps) {
+export default function MapViewport({ active = true, onOpenTeaching, registerScene, onRequestOpen, onAnnotation }: MapViewportProps) {
   const host = useRef<HTMLDivElement>(null);
   const scene = useRef<CampusMapScene | null>(null);
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
@@ -36,6 +38,7 @@ export default function MapViewport({ registerScene, onRequestOpen, onAnnotation
       onViewModeChange: (mode) => mounted && setViewMode(mode),
       onCollisionSource: (source, detail) => mounted && setCollision({ source, detail }),
       onTarget: (value) => mounted && setTarget(value),
+      onOpenTeaching,
       onRequestOpen,
       onAnnotation,
     });
@@ -67,7 +70,13 @@ export default function MapViewport({ registerScene, onRequestOpen, onAnnotation
       registerScene?.(null);
       game?.destroy(true);
     };
-  }, [registerScene, onRequestOpen, onAnnotation]);
+  }, [registerScene, onRequestOpen, onAnnotation, onOpenTeaching]);
+
+  useEffect(() => {
+    if (!active) return;
+    const frame = window.requestAnimationFrame(() => scene.current?.fitToWindow());
+    return () => window.cancelAnimationFrame(frame);
+  }, [active]);
 
   function switchMode(mode: ViewMode) {
     scene.current?.setViewMode(mode);
@@ -85,6 +94,7 @@ export default function MapViewport({ registerScene, onRequestOpen, onAnnotation
           <span role="status" aria-label="地图加载状态">{ready ? '地图已加载' : status === 'loading' ? '正在加载地图…' : '地图未加载'}</span>
         </div>
         <div className="map-controls" aria-label="地图浏览控件">
+          {onOpenTeaching && <button className="place-entry-button" disabled={!ready} onClick={onOpenTeaching}>进入教学楼群</button>}
           <div className="mode-switch" role="group" aria-label="地图模式">
             <button aria-pressed={viewMode === 'browse'} disabled={!ready} onClick={() => switchMode('browse')}>浏览</button>
             <button aria-pressed={viewMode === 'character'} disabled={!characterAvailable} onClick={() => switchMode('character')}>角色</button>
