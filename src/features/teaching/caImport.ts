@@ -632,7 +632,7 @@ export const CSU_CA_SCHEDULE_URL = 'https://ca.csu.edu.cn/';
  * passes it to `parseCsuSchedule`.
  */
 export function openCsuSchedulePage(open: (url: string, target?: string, features?: string) => unknown =
-  (url, target, features) => window.open(url, target, features)):
+  (url, target, features) => typeof window === 'undefined' ? null : window.open(url, target, features)):
   boolean {
   try {
     return Boolean(open(CSU_CA_SCHEDULE_URL, '_blank', 'noopener,noreferrer'));

@@ -83,4 +83,8 @@ describe('CSU CA 教务课表导入适配器', () => {
     expect(opened).toBe(CSU_CA_SCHEDULE_URL);
     expect(opened).not.toMatch(/[?&](?:user|username|password|pwd)=/i);
   });
+
+  test('在没有浏览器窗口的运行环境中安全返回失败', () => {
+    expect(openCsuSchedulePage()).toBe(false);
+  });
 });
