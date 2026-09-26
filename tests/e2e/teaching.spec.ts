@@ -101,3 +101,30 @@ test('教务系统辅助导入与兴趣关键词可用', async ({ page }) => {
   await page.getByRole('button', { name: '添加', exact: true }).click();
   await expect(page.getByRole('button', { name: '人工智能', exact: true })).toBeVisible();
 });
+
+test('从教务辅助弹窗选择下载的 HTML 课表并进入统一预览', async ({ page }) => {
+  await openTeaching(page);
+  await page.getByRole('button', { name: '课表管理' }).click();
+  await page.getByRole('button', { name: '从 CSU 教务系统导入' }).click();
+  await expect(page.getByRole('heading', { name: '从 CSU 教务系统带入课表' })).toBeVisible();
+
+  await page.getByRole('button', { name: '选择 CSV / TSV / HTML 文件' }).click();
+  await page.locator('input[type="file"]').setInputFiles({
+    name: 'csu-schedule.html',
+    mimeType: 'text/html',
+    buffer: Buffer.from(`
+      <table>
+        <tr><th>课程名称</th><th>上课星期</th><th>上课时间</th><th>教师</th><th>地点</th><th>周次</th></tr>
+        <tr><td>程序设计实践</td><td>周四</td><td>第7-8节</td><td>陈老师</td><td>教学楼 A203</td><td>1-16周</td></tr>
+      </table>
+    `),
+  });
+
+  // The helper closes before the shared preview opens, so two modal backdrops
+  // cannot trap focus at the same time.
+  await expect(page.getByRole('heading', { name: '从 CSU 教务系统带入课表' })).toBeHidden();
+  await expect(page.getByRole('heading', { name: 'csu-schedule.html' })).toBeVisible();
+  await expect(page.getByText('确认后将写入 1 条课程。')).toBeVisible();
+  await page.getByRole('button', { name: '确认导入' }).click();
+  await expect(page.getByText('程序设计实践')).toBeVisible();
+});
