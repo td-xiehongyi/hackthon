@@ -1,0 +1,31 @@
+{
+  "characterId": "photo-gray-student",
+  "version": "0.3.0-rc.1",
+  "status": "integration-candidate",
+  "appearanceApproved": true,
+  "animationSampleApproved": true,
+  "fullAcceptance": false,
+  "recommendedUniformScale": 0.1,
+  "files": [
+    {
+      "file": "walk-cycle.png",
+      "sha256": "e138c9edbd45f2538a320de78df76f60021eacc358fd6f52709222dcfd81f9b5"
+    },
+    {
+      "file": "ride-cycle.png",
+      "sha256": "01b27b9bd2965c0342e2d6654fbcf45c94a57c20d7b0e1c43607c1db7caca3e5"
+    },
+    {
+      "file": "manifest.json",
+      "sha256": "74574c65384205bef26e7d5d7c73863011b49ecdfd394883df5f9670f2a50646"
+    },
+    {
+      "file": "SOURCE.md",
+      "sha256": "8d6205faf83b44039da8cc265bd064c099dc321cd53410d419797716e0758c7d"
+    },
+    {
+      "file": "PROMPTS.md",
+      "sha256": "e7a7444b9d542c2d923ddad7d218f5ce16be598143c29efcf7617aa227ba6124"
+    }
+  ]
+}

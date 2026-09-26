@@ -6,6 +6,15 @@ import { validateAnnotation, resolveNavigation } from '@/game/map-data';
 const fixture = (): MapAnnotation => JSON.parse(readFileSync('docs/examples/map.pending.json', 'utf8'));
 
 describe('地图数据入口', () => {
+  test('高亮轮廓可省略；提供时必须是图内有效多边形', () => {
+    const map = fixture();
+    map.interactions[0].highlightPolygon = [{ x: 1, y: 1 }, { x: 10, y: 1 }, { x: 10, y: 10 }];
+    expect(validateAnnotation(map)).toEqual([]);
+    map.interactions[0].highlightPolygon[0].x = -1;
+    expect(validateAnnotation(map)).toContain('建筑高亮轮廓无效');
+    map.interactions[0].highlightPolygon = [];
+    expect(validateAnnotation(map)).toContain('建筑高亮轮廓无效');
+  });
   test('允许待标定的空模板，拒绝缺字段、错误身份和损坏几何', () => {
     expect(validateAnnotation(fixture())).toEqual([]);
     expect(validateAnnotation(null).length).toBeGreaterThan(0);

@@ -26,15 +26,15 @@ import { createSessionHost, type OpenContext, type SessionHost } from './place-s
 import type { ComponentType } from 'react';
 import type { FeatureKey } from '../shared/contracts';
 import LibraryPanel from '../features/library/LibraryPanel';
-import PlaceholderPanel from './PlaceholderPanel';
+import TeachingPlacePage from './TeachingPlacePage';
 import StadiumPage from './StadiumPage';
 import NavigationOverview from './NavigationOverview';
 import { resolveNavigation, type NavigationResolution } from '@/game/map-data';
 
-/** 图书馆、体育场接入现有 D/C 模块；教学楼 B 尚未交付。 */
+/** 三处地点共用会话、暂停与原位返回流程。 */
 const PANELS: Record<FeatureKey, ComponentType<PlacePanelProps>> = {
   library: LibraryPanel,
-  teaching: PlaceholderPanel,
+  teaching: TeachingPlacePage,
   stadium: StadiumPage,
 };
 
@@ -44,6 +44,8 @@ export interface PlaceHostHandle {
 }
 
 interface PlaceHostProps {
+  /** 开发测试场景可注入协议演示面板。正式地图使用默认业务页面。 */
+  panelOverrides?: Partial<Record<FeatureKey, ComponentType<PlacePanelProps>>>;
   /** 地图探索页内容；功能页打开时被替换，关闭后恢复。 */
   children: ReactNode;
   /** 打开前的地图侧准备：暂停移动并清除按键状态。 */
@@ -66,6 +68,7 @@ export default function PlaceHost({
   onOpenChange,
   validateOpen,
   annotation = null,
+  panelOverrides,
 }: PlaceHostProps) {
   const hostRef = useRef<SessionHost | null>(null);
   const [session, setSession] = useState<ReturnType<SessionHost['current']>>(null);
@@ -150,7 +153,7 @@ export default function PlaceHost({
         <div className="workspace workspace-single">
           {closeError && <p className="place-error" role="alert">{closeError}</p>}
           {(() => {
-            const Panel = PANELS[panelProps.place.featureKey];
+            const Panel = panelOverrides?.[panelProps.place.featureKey] ?? PANELS[panelProps.place.featureKey];
             return <Panel key={panelProps.sessionId} {...panelProps} />;
           })()}
         </div>

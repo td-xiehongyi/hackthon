@@ -38,17 +38,17 @@ export class CharacterSprite {
   private readonly player: ClipPlayer;
   private frame: SpriteFrame;
 
-  private constructor(scene: Phaser.Scene, manifest: CharacterManifest, scale: number) {
+  private constructor(scene: Phaser.Scene, manifest: CharacterManifest, scale: number, private readonly hue: number) {
     this.player = new ClipPlayer(manifest);
     this.frame = this.player.update({ mode: 'walk', facing: 'down', action: 'idle' }, 0);
-    this.image = scene.add.image(0, 0, `character:${this.frame.sheetId}`, frameName(this.frame.rect)).setScale(scale);
+    this.image = scene.add.image(0, 0, this.textureKey(this.frame.sheetId), frameName(this.frame.rect)).setScale(scale);
   }
 
   /**
    * 在 create() 中调用。校验 manifest 与雪碧图实际尺寸后注册帧；
    * 不符合契约时返回错误信息而不是带着坏素材继续运行。
    */
-  static create(scene: Phaser.Scene, scale = 1): CharacterSprite | { error: string } {
+  static create(scene: Phaser.Scene, scale = 1, hue = 0): CharacterSprite | { error: string } {
     const manifest = scene.cache.json.get(MANIFEST_KEY) as CharacterManifest | undefined;
     const problems = validateManifest(manifest);
     if (!manifest || problems.length > 0) {
@@ -57,10 +57,24 @@ export class CharacterSprite {
     for (const sheet of manifest.sheets) {
       const key = `character:${sheet.id}`;
       if (!scene.textures.exists(key)) return { error: `雪碧图 ${sheet.id} 未能加载` };
-      const texture = scene.textures.get(key);
+      let texture = scene.textures.get(key);
       const source = texture.getSourceImage();
       if (source.width !== sheet.width || source.height !== sheet.height) {
         return { error: `雪碧图 ${sheet.id} 实际尺寸与 manifest 声明不符` };
+      }
+      if (hue !== 0) {
+        const coloredKey = `${key}:hue:${hue}`;
+        if (!scene.textures.exists(coloredKey)) {
+          const canvas = document.createElement('canvas');
+          canvas.width = sheet.width;
+          canvas.height = sheet.height;
+          const context = canvas.getContext('2d');
+          if (!context) return { error: '无法创建角色配色' };
+          context.filter = `hue-rotate(${hue}deg)`;
+          context.drawImage(source as HTMLImageElement, 0, 0);
+          scene.textures.addCanvas(coloredKey, canvas);
+        }
+        texture = scene.textures.get(coloredKey);
       }
       for (const clip of manifest.clips) {
         for (const frame of clip.frames) {
@@ -70,7 +84,11 @@ export class CharacterSprite {
         }
       }
     }
-    return new CharacterSprite(scene, manifest, scale);
+    return new CharacterSprite(scene, manifest, scale, hue);
+  }
+
+  private textureKey(sheetId: string) {
+    return `character:${sheetId}${this.hue === 0 ? '' : `:hue:${this.hue}`}`;
   }
 
   /** 按角色状态推进动画并摆放到脚底位置；深度 = 脚底 y，用于遮挡排序。 */
@@ -84,7 +102,7 @@ export class CharacterSprite {
 
   place(position: Point) {
     const f = this.frame;
-    this.image.setTexture(`character:${f.sheetId}`, frameName(f.rect));
+    this.image.setTexture(this.textureKey(f.sheetId), frameName(f.rect));
     // 锚点对齐世界脚底点：换帧、换向、切换步行/骑行时落地点不变。
     this.image.setOrigin(f.anchor.x / f.rect.width, f.anchor.y / f.rect.height);
     this.image.setPosition(Math.round(position.x), Math.round(position.y));

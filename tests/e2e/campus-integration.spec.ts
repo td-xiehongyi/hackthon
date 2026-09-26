@@ -26,10 +26,11 @@ for (const [placeId, name] of [
     page.on('pageerror', (error) => errors.push(error.message));
     await useFixture(page, placeId);
     await page.goto('/');
+  await page.getByRole('button', { name: '进入校园', exact: true }).click();
     await expect(page.getByTestId('interact-prompt')).toContainText(name);
     const before = await page.getByTestId('character-status').innerText();
     await page.keyboard.press('KeyE');
-    await expect(page.getByRole('heading', { name, exact: true })).toBeVisible();
+    await expect(page.getByRole('heading', { name: placeId === 'xiaoxiang_teaching_group' ? '课表与蹭课中心' : name, exact: true })).toBeVisible();
     await page.keyboard.down('KeyD');
     await page.waitForTimeout(200);
     await page.keyboard.up('KeyD');
@@ -43,6 +44,7 @@ for (const [placeId, name] of [
 test('页面中定位只打开地图总览，关闭总览后回到页面且角色保持原位', async ({ page }) => {
   await useFixture(page, 'xiaoxiang_teaching_group');
   await page.goto('/');
+  await page.getByRole('button', { name: '进入校园', exact: true }).click();
   await expect(page.getByTestId('interact-prompt')).toBeVisible();
   const before = await page.getByTestId('character-status').innerText();
   await page.keyboard.press('KeyE');
@@ -51,7 +53,7 @@ test('页面中定位只打开地图总览，关闭总览后回到页面且角�
   await expect(page.getByTestId('navigation-marker')).toHaveAttribute('cx', '520');
   await page.keyboard.press('KeyD');
   await page.getByRole('button', { name: '返回地点页面' }).click();
-  await expect(page.getByRole('heading', { name: '潇湘校区教学楼群', exact: true })).toBeVisible();
+  await expect(page.getByRole('heading', { name: '课表与蹭课中心', exact: true })).toBeVisible();
   await page.getByRole('button', { name: '返回校园', exact: true }).click();
   await expect(page.getByTestId('character-status')).toHaveText(before);
 });
@@ -59,26 +61,28 @@ test('页面中定位只打开地图总览，关闭总览后回到页面且角�
 test('缺少或损坏标注时禁止移动，保留浏览并说明原因', async ({ page }) => {
   await page.route('**/maps/campus-v20.annotations.json', (route) => route.fulfill({ json: { schemaVersion: 1 } }));
   await page.goto('/');
+  await page.getByRole('button', { name: '进入校园', exact: true }).click();
   await expect(page.getByRole('status', { name: '地图加载状态' })).toHaveText('地图已加载');
-  await expect(page.getByRole('button', { name: '角色', exact: true })).toBeDisabled();
+  await expect(page.getByRole('button', { name: '回到角色位置' })).toBeDisabled();
   await expect(page.getByText(/移动已停用/)).toBeVisible();
   await page.keyboard.press('KeyE');
   await expect(page.getByRole('button', { name: '返回校园', exact: true })).toHaveCount(0);
 });
 
-test('地图总览搜索显示缺失状态，只能快速移动到已核验安全点', async ({ page }) => {
-  await useFixture(page, 'xiaoxiang_library');
+test('地点定位总览显示未标定状态，关闭后返回地点与原位置', async ({ page }) => {
+  await useFixture(page, 'xiaoxiang_teaching_group');
   await page.goto('/');
+  await page.getByRole('button', { name: '进入校园', exact: true }).click();
   await expect(page.getByTestId('interact-prompt')).toBeVisible();
-  await page.getByRole('button', { name: '地图总览与搜索' }).click();
-  await page.getByLabel('搜索地点或地标').fill('教学');
-  await page.getByRole('button', { name: '潇湘校区教学楼群', exact: true }).click();
-  await expect(page.getByRole('dialog').getByRole('status')).toContainText('尚未完成地图标定');
-  await page.getByRole('button', { name: '前往 测试安全落点' }).click();
-  await expect(page.getByRole('dialog')).toHaveCount(0);
-  await expect(page.getByTestId('character-status')).toContainText('位置 600, 800');
+  const before = await page.getByTestId('character-status').textContent();
   await page.keyboard.press('KeyE');
-  await expect(page.getByRole('button', { name: '返回校园', exact: true })).toHaveCount(0);
+  await page.getByRole('button', { name: '定位本地点' }).click();
+  await page.getByLabel('搜索地点或地标').fill('图书馆');
+  await page.getByRole('button', { name: '潇湘校区图书馆', exact: true }).click();
+  await expect(page.getByRole('dialog').getByRole('status')).toContainText('尚未完成地图标定');
+  await page.getByRole('button', { name: '返回地点页面' }).click();
+  await page.getByRole('button', { name: '返回校园', exact: true }).click();
+  await expect(page.getByTestId('character-status')).toHaveText(before!);
 });
 
 test('真实服务：图书馆上传跨页面刷新和新浏览器上下文可见，副场相册隔离', async ({ page, browser }) => {
@@ -115,6 +119,7 @@ test('真实服务：图书馆上传跨页面刷新和新浏览器上下文可�
 test('体育场编辑器使用真实API保存，重回查询立即可见；冲突保留草稿', async ({ page }) => {
   await useFixture(page, 'xiaoxiang_sports_ground');
   await page.goto('/');
+  await page.getByRole('button', { name: '进入校园', exact: true }).click();
   await expect(page.getByTestId('interact-prompt')).toBeVisible();
   await page.keyboard.press('KeyE');
   await page.getByRole('button', { name: '维护社团与活动' }).click();

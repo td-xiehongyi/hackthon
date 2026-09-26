@@ -93,8 +93,12 @@ describe('v20 通行标注', () => {
     expect(annotation.geographyStatus).toBe('pending');
   });
 
-  test('只标定了通行范围：入口、安全点、地标、楼座仍为空，不产生互动提示', () => {
-    expect(activeInteractions(annotation.interactions)).toEqual([]);
+  test('三处地图交互可用且入口可站立；地理、安全点和楼座仍保留待核验状态', () => {
+    expect(activeInteractions(annotation.interactions)).toHaveLength(3);
+    for (const interaction of annotation.interactions) {
+      expect(footprintFits(interaction.entrancePoint!, DEV_TUNING.rideFootprint, world), interaction.placeId).toBe(true);
+      expect(polygonProblems(interaction.highlightPolygon!)).toEqual([]);
+    }
     expect(annotation.safePoints).toEqual([]);
     expect(annotation.buildings).toEqual([]);
     expect(annotation.interactions.map((r) => r.placeId).sort()).toEqual([
@@ -155,6 +159,10 @@ describe('v20 通行标注', () => {
     for (const [name, p] of Object.entries(KEY_SPOTS)) {
       const near = nearestStandable(p, DEV_TUNING.rideFootprint, world, 6);
       expect(near && ride(near), `骑行到 ${name}`).toBe(true);
+    }
+    for (const interaction of annotation.interactions) {
+      expect(walk(interaction.entrancePoint!), `步行到互动区 ${interaction.placeId}`).toBe(true);
+      expect(ride(interaction.entrancePoint!), `骑行到互动区 ${interaction.placeId}`).toBe(true);
     }
   }, 60_000);
 

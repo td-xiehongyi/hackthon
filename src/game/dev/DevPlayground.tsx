@@ -13,6 +13,7 @@ import * as Phaser from 'phaser';
 import { MAP_ID, type PlaceId } from '@/shared/contracts';
 import { getPlace } from '@/shared/place-registry';
 import PlaceHost, { type PlaceHostHandle } from '@/app/PlaceHost';
+import PlaceholderPanel from '@/app/PlaceholderPanel';
 import type { OpenContext } from '@/app/place-session';
 import { DevPlaygroundScene, type PlaygroundSnapshot } from './DevPlaygroundScene';
 import { DEV_TUNING, type WalkableWorld } from '../movement/movement';
@@ -142,6 +143,7 @@ export default function DevPlayground() {
         <span className="preview-label">{placeOpen ? '地点功能页' : '开发模式'}</span>
       </header>
       <PlaceHost
+        panelOverrides={{ teaching: PlaceholderPanel }}
         onSuspendMap={onSuspendMap}
         onResumeMap={onResumeMap}
         registerHandle={registerHandle}

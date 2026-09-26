@@ -1,20 +1,22 @@
 import { useEffect, useRef, useState } from 'react';
+import ExplorerSidebar from '../app/ExplorerSidebar';
 import * as Phaser from 'phaser';
 import { CampusMapScene, type CharacterStatus, type CollisionSource, type ViewMode } from './CampusMapScene';
 import type { OpenContext } from '@/app/place-session';
 import type { MapAnnotation, PlaceId } from '@/shared/contracts';
 import { getPlace } from '@/shared/place-registry';
-import { USING_TEMP_CHARACTER } from './character/character-sprite';
+import { CHARACTER_CHOICES, type CharacterChoice } from './character/choices';
 
 interface MapViewportProps {
+  characterChoice?: CharacterChoice;
   active?: boolean;
-  onOpenTeaching?: () => void;
+  onReturnHome: () => void;
   registerScene?: (scene: CampusMapScene | null) => void;
   onRequestOpen?: (context: OpenContext) => void;
   onAnnotation?: (annotation: MapAnnotation | null) => void;
 }
 
-export default function MapViewport({ active = true, onOpenTeaching, registerScene, onRequestOpen, onAnnotation }: MapViewportProps) {
+export default function MapViewport({ characterChoice = CHARACTER_CHOICES[0], active = true, onReturnHome, registerScene, onRequestOpen, onAnnotation }: MapViewportProps) {
   const host = useRef<HTMLDivElement>(null);
   const scene = useRef<CampusMapScene | null>(null);
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
@@ -23,7 +25,6 @@ export default function MapViewport({ active = true, onOpenTeaching, registerSce
   const [characterError, setCharacterError] = useState<string | null>(null);
   const [character, setCharacter] = useState<CharacterStatus | null>(null);
   const [collision, setCollision] = useState<{ source: CollisionSource; detail: string } | null>(null);
-  const [overlay, setOverlay] = useState(false);
   const [target, setTarget] = useState<PlaceId | null>(null);
 
   useEffect(() => {
@@ -38,10 +39,9 @@ export default function MapViewport({ active = true, onOpenTeaching, registerSce
       onViewModeChange: (mode) => mounted && setViewMode(mode),
       onCollisionSource: (source, detail) => mounted && setCollision({ source, detail }),
       onTarget: (value) => mounted && setTarget(value),
-      onOpenTeaching,
       onRequestOpen,
       onAnnotation,
-    });
+    }, 'character', characterChoice);
     scene.current = map;
     registerScene?.(map);
     let game: Phaser.Game | undefined;
@@ -70,7 +70,7 @@ export default function MapViewport({ active = true, onOpenTeaching, registerSce
       registerScene?.(null);
       game?.destroy(true);
     };
-  }, [registerScene, onRequestOpen, onAnnotation, onOpenTeaching]);
+  }, [registerScene, onRequestOpen, onAnnotation, characterChoice]);
 
   useEffect(() => {
     if (!active) return;
@@ -78,81 +78,48 @@ export default function MapViewport({ active = true, onOpenTeaching, registerSce
     return () => window.cancelAnimationFrame(frame);
   }, [active]);
 
-  function switchMode(mode: ViewMode) {
-    scene.current?.setViewMode(mode);
-    if (mode === 'character') host.current?.querySelector('canvas')?.focus();
-  }
-
   const ready = status === 'ready';
   const characterAvailable = ready && characterError === null && collision?.source === 'annotation';
 
+  function returnToCharacter() {
+    scene.current?.setViewMode('character');
+    host.current?.querySelector('canvas')?.focus();
+  }
+
   return (
-    <section className="map-panel" aria-label="地图预览">
-      <div className="map-toolbar">
-        <div className="map-status">
-          <span className={`status-dot ${status}`} />
-          <span role="status" aria-label="地图加载状态">{ready ? '地图已加载' : status === 'loading' ? '正在加载地图…' : '地图未加载'}</span>
-        </div>
-        <div className="map-controls" aria-label="地图浏览控件">
-          {onOpenTeaching && <button className="place-entry-button" disabled={!ready} onClick={onOpenTeaching}>进入教学楼群</button>}
-          <div className="mode-switch" role="group" aria-label="地图模式">
-            <button aria-pressed={viewMode === 'browse'} disabled={!ready} onClick={() => switchMode('browse')}>浏览</button>
-            <button aria-pressed={viewMode === 'character'} disabled={!characterAvailable} onClick={() => switchMode('character')}>角色</button>
-          </div>
-          <button aria-label="缩小地图" disabled={!ready} onClick={() => scene.current?.changeZoom(1 / 1.25)}>−</button>
-          <output aria-label="当前缩放">{ready ? `${Math.round(zoom * 100)}%` : '—'}</output>
-          <button aria-label="放大地图" disabled={!ready} onClick={() => scene.current?.changeZoom(1.25)}>+</button>
-          <button
-            className="fit-button"
-            aria-pressed={overlay}
-            disabled={!ready || collision?.source !== 'annotation'}
-            onClick={() => {
-              scene.current?.setOverlayVisible(!overlay);
-              setOverlay(!overlay);
-            }}
-          >
-            通行区域
-          </button>
-          <button className="fit-button" disabled={!ready} onClick={() => scene.current?.fitToWindow()}>
-            {viewMode === 'character' ? '回到角色' : '适应窗口'}
-          </button>
-        </div>
-      </div>
-      {collision?.source === 'unavailable' && (
-        <p className="map-uncalibrated" role="note">
-          <strong>移动已停用：</strong>{collision.detail}。仍可浏览地图，请修复通行标注后重新加载。
-        </p>
-      )}
-      {viewMode === 'character' && collision?.source === 'annotation' && (
-        <p className="map-uncalibrated map-annotation-note" role="note">
-          <strong>通行范围：</strong>道路、草地、操场内部与桥面可进入，建筑和道路附近的树木可穿过，窄路可骑行；建筑、水面仍阻挡（{collision.detail}）。
-          可通过“通行区域”核对边界。尚未登记出生点时，起点取地图中心附近。
-          {USING_TEMP_CHARACTER ? '角色为临时占位造型。' : '角色使用已配置素材，外观与尺寸仍需单独验收。'}
-        </p>
-      )}
-      <div className="map-stage">
-        {target && <p className="map-interact-prompt" data-testid="interact-prompt">按 E 进入【{getPlace(target)?.name}】</p>}
+    <div className="campus-explorer">
+      <ExplorerSidebar character={character} choice={characterChoice} onReturnHome={onReturnHome} />
+      <section className="explorer-map" aria-label="校园探索地图">
         <div ref={host} className="map-canvas" />
+        <span role="status" aria-label="地图加载状态" className="visually-hidden">{ready ? '地图已加载' : status === 'loading' ? '正在加载地图…' : '地图未加载'}</span>
+        <div className="explorer-compass" aria-label="正北方向">N<b>↑</b></div>
+        <div className="explorer-map-tools" aria-label="地图浏览控件">
+          <button aria-label="放大地图" disabled={!ready} onClick={() => scene.current?.changeZoom(1.25)}>+</button>
+          <button aria-label="缩小地图" disabled={!ready} onClick={() => scene.current?.changeZoom(1 / 1.25)}>−</button>
+          <button aria-label="回到角色位置" title="回到角色位置" disabled={!characterAvailable} onClick={returnToCharacter}>⌖</button>
+        </div>
+        <div className="explorer-touch-pad" aria-label="触屏方向控制">
+          {([['KeyW', '上', '↑'], ['KeyA', '左', '←'], ['KeyS', '下', '↓'], ['KeyD', '右', '→']] as const).map(([code, name, icon]) => <button key={code} aria-label={'向' + name + '移动'} disabled={!characterAvailable} onPointerDown={event => {
+            event.preventDefault();
+            if (viewMode !== 'character') returnToCharacter();
+            event.currentTarget.setPointerCapture(event.pointerId);
+            scene.current?.keys.keyDown({ code, target: event.currentTarget });
+          }} onPointerUp={event => scene.current?.keys.keyUp({ code, target: event.currentTarget })} onPointerCancel={event => scene.current?.keys.keyUp({ code, target: event.currentTarget })} onLostPointerCapture={event => scene.current?.keys.keyUp({ code, target: event.currentTarget })}>{icon}</button>)}
+        </div>
+        <div className="explorer-map-status">
+          <span>{viewMode === 'character' ? '角色跟随' : '自由浏览'}</span> · <output aria-label="当前缩放">{ready ? Math.round(zoom * 100) + '%' : '—'}</output>
+          <small>{characterChoice.name} · {character?.mode === 'ride' ? '骑行' : '步行'}</small>
+        </div>
+        {character && <span data-testid="character-status" className="visually-hidden">
+          {characterChoice.name} ·
+          位置 {Math.round(character.x)}, {Math.round(character.y)} · {character.mode === 'ride' ? '骑行' : '步行'} · 朝向 {character.facing}
+        </span>}
+        {target && <p className="map-interact-prompt" data-testid="interact-prompt">按 E 进入【{getPlace(target)?.name}】</p>}
+        {collision?.source === 'unavailable' && <p className="explorer-warning" role="note"><strong>移动已停用：</strong>{collision.detail}。仍可拖动浏览地图。</p>}
+        {characterError && <p className="explorer-warning" role="alert">{characterError}</p>}
         {status === 'loading' && <div className="map-message">正在展开校园地图…</div>}
-        {status === 'error' && (
-          <div className="map-message" role="alert">
-            <strong>地图加载失败</strong>
-            <p>请确认地图文件可读取，然后重新加载页面。</p>
-            <button onClick={() => window.location.reload()}>重新加载</button>
-          </div>
-        )}
-      </div>
-      <div className="map-footer">
-        {viewMode === 'character' ? (
-          <span data-testid="character-status">
-            WASD 移动 · 按住 Shift 骑行
-            {character && ` · 位置 ${Math.round(character.x)}, ${Math.round(character.y)} · ${character.mode === 'ride' ? '骑行' : '步行'} · 朝向 ${character.facing}`}
-          </span>
-        ) : (
-          <span>拖动浏览 · 滚轮缩放{characterAvailable ? ' · 点“角色”放入角色' : ''}</span>
-        )}
-        {characterError ? <span role="alert">{characterError}</span> : <span>1041 × 1511 · v20 原始地图</span>}
-      </div>
-    </section>
+        {status === 'error' && <div className="map-message" role="alert"><strong>地图加载失败</strong><p>请确认地图文件可读取，然后重新加载页面。</p><button onClick={() => window.location.reload()}>重新加载</button></div>}
+      </section>
+    </div>
   );
 }

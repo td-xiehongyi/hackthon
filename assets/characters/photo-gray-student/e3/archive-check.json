@@ -1,0 +1,44 @@
+{
+  "archive": "photo-gray-student-0.3.0-rc.1.zip",
+  "bytes": 2840665,
+  "sha256": "e6c5df8389b0620e28c0002c06bd37ab735fd9b64236d423339fb1b2cb9513db",
+  "entries": [
+    {
+      "file": "walk-cycle.png",
+      "bytes": 1240931,
+      "sha256": "e138c9edbd45f2538a320de78df76f60021eacc358fd6f52709222dcfd81f9b5",
+      "matchesSource": true
+    },
+    {
+      "file": "ride-cycle.png",
+      "bytes": 1618586,
+      "sha256": "01b27b9bd2965c0342e2d6654fbcf45c94a57c20d7b0e1c43607c1db7caca3e5",
+      "matchesSource": true
+    },
+    {
+      "file": "manifest.json",
+      "bytes": 13711,
+      "sha256": "74574c65384205bef26e7d5d7c73863011b49ecdfd394883df5f9670f2a50646",
+      "matchesSource": true
+    },
+    {
+      "file": "SOURCE.md",
+      "bytes": 3298,
+      "sha256": "8d6205faf83b44039da8cc265bd064c099dc321cd53410d419797716e0758c7d",
+      "matchesSource": true
+    },
+    {
+      "file": "PROMPTS.md",
+      "bytes": 4593,
+      "sha256": "e7a7444b9d542c2d923ddad7d218f5ce16be598143c29efcf7617aa227ba6124",
+      "matchesSource": true
+    },
+    {
+      "file": "VERSION.json",
+      "bytes": 879,
+      "sha256": "90a3f3fb7905bfd8350f1ea991a12a87375239ff57318b7121830df53cf9098d",
+      "matchesSource": true
+    }
+  ],
+  "passed": true
+}

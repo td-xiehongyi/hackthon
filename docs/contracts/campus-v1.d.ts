@@ -42,6 +42,8 @@ export interface InteractionRecord {
   entrancePoint: Point | null;
   /** Player ground-contact point must be inside this area when E is newly pressed. */
   triggerPolygon: Polygon | null;
+  /** Optional building/ground outline for highlighting; defaults to the trigger area. */
+  highlightPolygon?: Polygon;
   returnFallbackPointId: string | null;
 }
 export interface SafePoint {

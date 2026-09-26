@@ -63,6 +63,8 @@ export interface InteractionRecord {
   entrancePoint: Point | null;
   /** 新按下 E 时，角色脚底点必须处于该区域内。 */
   triggerPolygon: Polygon | null;
+  /** 建筑/场地轮廓，仅用于高亮；省略时沿用触发范围。 */
+  highlightPolygon?: Polygon;
   returnFallbackPointId: string | null;
 }
 export interface SafePoint {

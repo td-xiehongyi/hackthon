@@ -18,6 +18,7 @@ for (const scenario of [
       safePoints: [{ id: 'test-spawn', position: { x: scenario.x, y: scenario.y }, usage: ['spawn'], verificationStatus: 'verified' }],
     } }));
     await page.goto('/');
+  await page.getByRole('button', { name: '进入校园', exact: true }).click();
     const status = page.getByTestId('character-status');
     await expect(status).toContainText(`位置 ${scenario.x}, ${scenario.y}`);
     await page.keyboard.down('Shift');

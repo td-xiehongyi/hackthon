@@ -1,0 +1,22 @@
+# 灰衣黑包男生｜E2 动画小样提示词
+
+工具：内置 imagegen。两次生成均使用用户已确认的 `../e1/character-views.png` 作为外观参考。原始结果直接复制入本目录，未改写 PNG 像素。
+
+## 步行
+
++Use case: stylized-concept
+Create a production-oriented walking animation SAMPLE sprite sheet for CSU Pixel Campus from the approved reference character. Reference image is identity and style lock. Use ONLY the standing young adult MAN on the TOP row of reference. Keep black short tousled fringe, gray short-sleeve T-shirt, pale blue long trousers, white sneakers, BLACK BACKPACK with TWO shoulder straps, and folded dark eyeglasses hanging vertically at FRONT neckline. Back view shows backpack, never eyeglasses. Retain exact chibi pixel-art proportions, dark contours and restrained shading.
+Output square transparent PNG, 4 columns x 4 rows, exactly 16 separate full-body sprites, ideally 1280x1280. Each row is FOUR SEQUENTIAL walk-cycle phases in one fixed screen direction: row1 FRONT facing screen DOWN; row2 profile facing screen LEFT; row3 profile facing screen RIGHT; row4 BACK facing screen UP. NEVER change facing across a row.
+Columns show alternating walk steps: (1) left leg forward/right leg back and opposite arm swing, (2) passing pose feet near center, (3) right leg forward/left back opposite swing, (4) complementary passing pose. Real distinct leg and arm articulation, not merely moving unchanged sprite up/down. Clearly visible front/back foot alternation too. Head, torso, clothing, backpack and eyeglasses consistent across every frame. Backpack stays on back, eyeglasses stay centered at front neckline. No bag switching, no extra accessories.
+Strict evenly spaced grid; every sprite fully isolated within its own cell, at least 20 pixels blank padding from all cell edges. Consistent head size and body scale in every row, shoe baseline at same relative height inside each cell, minimal torso bob and no lateral jitter. Entire hair, hands and feet visible. No scooter on this sheet. No scene, text, numbers, titles, grid lines, cast shadow or checkerboard artwork.
+True transparent empty background alpha=0. OPAQUE subject interiors alpha=255, hard crisp pixel-art edges, no fog, gradient glow, semitransparent wash or backdrop. Preserve actual transparency.
+
+## 骑行
+
++Use case: stylized-concept
+Create a four-direction ELECTRIC SCOOTER riding animation SAMPLE sprite sheet for CSU Pixel Campus. Reference is the approved identity/style sheet; use ONLY the BOTTOM row man riding slate-blue and cream scooter as exact design reference.
+Square transparent PNG, ideally 1280x1280. STRICT 4 columns x 4 rows, exactly 16 separated complete person-and-scooter sprites. Rows: 1 FRONT toward screen DOWN; 2 SIDE toward screen LEFT; 3 SIDE toward screen RIGHT; 4 REAR toward screen UP. Four columns per row are four sequential subtle rolling-cycle animation phases. Never change direction inside a row.
+Young adult man: black short tousled hair, gray short-sleeve round-neck T-shirt, pale blue trousers, white sneakers, black BACKPACK and two shoulder straps, folded dark glasses hanging at FRONT neckline only. Same head/body size, face and garments all 16 sprites. Vehicle exactly as reference: muted blue body, cream front inset, black saddle and tires, round headlamp front, red lamp rear, visible mirrors. Scooter with step-through footboard, no pedals. Hands always grasp handlebars. Side view feet on footboard; front/back feet naturally match that side-view sitting position.
+Animate restrained movement: recognizable rolling tire tread / hub-spoke phase changes over 4 frames, very slight consistent torso and hair motion, one pixel seat compression cycle. No dramatic leaning, shape morphing, detached wheels or jumping. Keep wheel centers, wheel diameters, scooter wheelbase, mirror positions and ground-contact baseline consistent within each row. Do not horizontally translate the sprite across its cell.
+Strict isolated evenly spaced grid. Whole scooter and person including hair, shoes, both wheels and mirrors fit fully within own cell, generous blank padding at least 20 pixels per edge. Keep identical character scale all views. Reference's chibi pixel-art rendering: crisp pixel clusters and dark outlines, compact shading. No realism, no outlines of frames, no numbers, text or watermarks, no scenery, road, shadows, fog, gradient glow or checkerboard painted in.
+True transparent empty background alpha=0; solid subject interiors opaque alpha=255 with crisp non-feathered edges. Maintain real transparency.

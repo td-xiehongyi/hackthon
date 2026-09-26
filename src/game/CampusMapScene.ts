@@ -25,6 +25,7 @@ import type { OpenContext } from '@/app/place-session';
 import { validateAnnotation } from './map-data';
 import { activeInteractions, selectTarget, interactRequest, resolveReturnPosition, type ActiveInteraction } from './interaction/interaction';
 import { CharacterSprite, preloadCharacter } from './character/character-sprite';
+import { CHARACTER_CHOICES, type CharacterChoice } from './character/choices';
 import { bindMovementKeys, MovementKeys, type InteractKeyInfo } from './input/movement-keys';
 import {
   DEV_TUNING,
@@ -52,7 +53,6 @@ export interface CharacterStatus {
 }
 
 type MapCallbacks = {
-  onOpenTeaching?: () => void;
   onReady: () => void;
   onError: () => void;
   onZoom: (zoom: number) => void;
@@ -78,7 +78,7 @@ export const BLOCKED_WORLD: WalkableWorld = {
 export const UNCALIBRATED_START: Point = { x: Math.round(MAP_WIDTH_PX / 2), y: Math.round(MAP_HEIGHT_PX / 2) };
 
 /** 角色模式下的镜头倍率（开发调试值，不是已确认的地图显示比例）。 */
-const CHARACTER_ZOOM = 3;
+const CHARACTER_ZOOM = 1.2;
 const MAX_ZOOM = 6;
 
 export class CampusMapScene extends Phaser.Scene {
@@ -86,8 +86,7 @@ export class CampusMapScene extends Phaser.Scene {
   private mapHeight = 0;
   private minimumZoom = 1;
   private ready = false;
-  private teachingPoint = new Phaser.Math.Vector2(506, 1267);
-  private proximityTriggered = false;
+  private buildingHighlight: Phaser.GameObjects.Graphics | null = null;
   private viewMode: ViewMode = 'browse';
   private suspended = false;
   readonly keys = new MovementKeys();
@@ -106,6 +105,7 @@ export class CampusMapScene extends Phaser.Scene {
     private readonly callbacks: MapCallbacks,
     /** 加载完成后默认进入的模式：默认直接放出角色。 */
     private readonly initialMode: ViewMode = 'character',
+    private readonly characterChoice: CharacterChoice = CHARACTER_CHOICES[0],
   ) {
     super('campus-map');
   }
@@ -123,7 +123,7 @@ export class CampusMapScene extends Phaser.Scene {
         if (item.verificationStatus === 'verified') this.load.image(`occluder:${item.id}`, item.imagePath);
       }
     });
-    preloadCharacter(this);
+    preloadCharacter(this, this.characterChoice.dir);
   }
 
   create() {
@@ -133,7 +133,7 @@ export class CampusMapScene extends Phaser.Scene {
     this.mapHeight = source.height;
     this.add.image(0, 0, 'campus').setOrigin(0).setDepth(-1_000_000);
     this.cameras.main.setRoundPixels(true);
-    if (this.callbacks.onOpenTeaching) this.createTeachingHotspot();
+    this.buildingHighlight = this.add.graphics().setDepth(90_000);
     this.ready = true;
     this.setupWorld();
     for (const item of this.annotation?.occluders ?? []) {
@@ -142,7 +142,7 @@ export class CampusMapScene extends Phaser.Scene {
         .setDisplaySize(item.rect.width, item.rect.height).setDepth(item.depthAnchorY);
     }
 
-    const created = CharacterSprite.create(this);
+    const created = CharacterSprite.create(this, this.characterChoice.scale, this.characterChoice.hue);
     if ('error' in created) {
       this.callbacks.onCharacterError?.(created.error);
     } else {
@@ -154,7 +154,8 @@ export class CampusMapScene extends Phaser.Scene {
     this.fitToWindow();
 
     this.input.on('pointermove', (pointer: Phaser.Input.Pointer) => {
-      if (!pointer.isDown || this.viewMode !== 'browse') return;
+      if (!pointer.isDown || this.suspended || pointer.getDistance() < 4) return;
+      if (this.viewMode !== 'browse') this.setViewMode('browse');
       const camera = this.cameras.main;
       camera.scrollX -= (pointer.x - pointer.prevPosition.x) / camera.zoom;
       camera.scrollY -= (pointer.y - pointer.prevPosition.y) / camera.zoom;
@@ -186,7 +187,6 @@ export class CampusMapScene extends Phaser.Scene {
     this.updateTarget();
     this.character.update(this.state, deltaMs);
     this.publishStatus();
-    this.updateTeachingProximity();
   }
 
   /** 读取并校验标注；不可用时保留只读地图。 */
@@ -229,7 +229,25 @@ export class CampusMapScene extends Phaser.Scene {
     const target = this.keys.isSuspended() ? null : selectTarget(this.state.position, this.interactions);
     if (target === this.target) return;
     this.target = target;
+    this.updateBuildingHighlight();
     this.callbacks.onTarget?.(target);
+  }
+
+  private updateBuildingHighlight() {
+    const graphics = this.buildingHighlight;
+    if (!graphics) return;
+    graphics.clear();
+    const record = this.annotation?.interactions.find((item) => item.placeId === this.target);
+    const polygon = record?.highlightPolygon ?? record?.triggerPolygon;
+    if (!polygon?.length) return;
+    const points = polygon.map(({ x, y }) => new Phaser.Math.Vector2(x, y));
+    // 同一目标同时控制轮廓、提示和 E 键请求；不改变底图或碰撞范围。
+    graphics.fillStyle(0xffd35a, 0.24);
+    graphics.fillPoints(points, true);
+    graphics.lineStyle(7, 0xffcf40, 0.3);
+    graphics.strokePoints(points, true);
+    graphics.lineStyle(2, 0xfff3b0, 1);
+    graphics.strokePoints(points, true);
   }
 
   private handleInteractKey(info: InteractKeyInfo): boolean {
@@ -318,8 +336,8 @@ export class CampusMapScene extends Phaser.Scene {
       this.publishStatus(true);
     } else {
       camera.stopFollow();
-      this.character?.image.setVisible(false);
-      this.fitToWindow();
+      // 拖动时保留角色与镜头倍率，定位按钮可恢复跟随。
+      this.character?.image.setVisible(true);
     }
   }
 
@@ -329,56 +347,10 @@ export class CampusMapScene extends Phaser.Scene {
     this.syncKeySuspension();
   }
 
-  private createTeachingHotspot() {
-    // Source-image coordinates for the labelled teaching group on the current map.
-    // This is a discoverability hotspot, not a verified character entrance/return point.
-    const halo = this.add.circle(0, 0, 44, 0xf5cf65, 0.32)
-      .setStrokeStyle(3, 0xfff4b8, 0.92);
-    const marker = this.add.circle(0, 0, 27, 0x173f35, 1)
-      .setStrokeStyle(3, 0xfdf9dd, 1);
-    const glyph = this.add.text(0, -1, '课', {
-      color: '#fffbea',
-      fontFamily: '"Microsoft YaHei", "PingFang SC", sans-serif',
-      fontSize: '20px',
-      fontStyle: 'bold',
-    }).setOrigin(0.5);
-    const label = this.add.text(0, -59, '课表 · 蹭课', {
-      backgroundColor: '#fffbea',
-      color: '#173f35',
-      fontFamily: '"Microsoft YaHei", "PingFang SC", sans-serif',
-      fontSize: '14px',
-      fontStyle: 'bold',
-      padding: { x: 9, y: 6 },
-    }).setOrigin(0.5).setStroke('#173f35', 1);
-
-    const hotspot = this.add.container(this.teachingPoint.x, this.teachingPoint.y, [halo, marker, glyph, label]);
-    hotspot.setSize(152, 126).setInteractive({ useHandCursor: true });
-    hotspot.on('pointerover', () => {
-      halo.setScale(1.14);
-      label.setBackgroundColor('#f5cf65');
-    });
-    hotspot.on('pointerout', () => {
-      halo.setScale(1);
-      label.setBackgroundColor('#fffbea');
-    });
-    hotspot.setDepth(100_000);
-    hotspot.on('pointerup', () => { if (!this.suspended) this.callbacks.onOpenTeaching?.(); });
-
-  }
-
-  private updateTeachingProximity() {
-    if (this.suspended || !this.movementAvailable || !this.callbacks.onOpenTeaching) return;
-    const near = Phaser.Math.Distance.BetweenPoints(this.state.position, this.teachingPoint) <= 82;
-    if (near && !this.proximityTriggered) {
-      this.proximityTriggered = true;
-      this.callbacks.onOpenTeaching();
-    } else if (!near) this.proximityTriggered = false;
-  }
-
   fitToWindow() {
     if (!this.ready) return;
     const camera = this.cameras.main;
-    this.minimumZoom = Math.min(camera.width / this.mapWidth, camera.height / this.mapHeight, 1);
+    this.minimumZoom = Math.max(camera.width / this.mapWidth, camera.height / this.mapHeight);
     if (this.viewMode === 'character') {
       camera.setZoom(Math.max(CHARACTER_ZOOM, this.minimumZoom));
       this.updateCameraBounds();

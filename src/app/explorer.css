@@ -1,0 +1,51 @@
+.campus-shell { color: #254d3b; }
+.campus-shell > .workspace-single { margin: 0 auto; padding: 24px; }
+.campus-explorer { --explorer-paper: #fcfaf0; --explorer-line: #cad5ba; display: grid; grid-template-columns: 270px minmax(0, 1fr); height: 100dvh; overflow: hidden; }
+.explorer-sidebar { min-height: 0; display: flex; flex-direction: column; padding: 23px 22px 20px; border-right: 2px solid #254d3b; background-color: #eef3e3; background-image: linear-gradient(#cfdbbd88 1px, transparent 1px), linear-gradient(90deg, #cfdbbd88 1px, transparent 1px); background-size: 38px 38px; z-index: 2; }
+.explorer-sidebar-content { overflow-y: auto; min-height: 0; scrollbar-width: thin; padding: 2px 4px 16px 0; }
+.explorer-mini-heading { display: flex; align-items: center; justify-content: space-between; margin-bottom: 13px; }
+.explorer-mini-heading h1 { font-size: 14px; letter-spacing: 2px; }
+.explorer-mini-heading span { font: 10px monospace; color: #79866e; }
+.explorer-minimap { position: relative; width: 100%; aspect-ratio: 1; background: #e4ead6; border: 2px solid #254d3b; box-shadow: 4px 4px #c5d0b4; overflow: hidden; }
+.explorer-minimap svg { display: block; width: 100%; height: 100%; image-rendering: pixelated; }
+.explorer-mini-pending { position: absolute; bottom: 0; left: 0; right: 0; padding: 6px; font-size: 10px; text-align: center; background: #fcfaf0e8; }
+.explorer-student { margin-top: 25px; padding: 16px 15px; background: var(--explorer-paper); border: 1px solid #b9c6a7; box-shadow: 3px 3px #cbd5bd; }
+.explorer-student h2 { margin: 0 0 16px; font-size: 12px; letter-spacing: 1px; }
+.explorer-student-heading { display: flex; gap: 13px; align-items: center; }
+.explorer-portrait { width: 62px; height: 70px; flex-shrink: 0; display: grid; place-items: center; border: 1px solid var(--explorer-line); background: #e9eedb; }
+.explorer-student-name { min-width: 0; display: flex; flex-direction: column; gap: 7px; }
+.explorer-student-name span { font-size: 10px; color: #79866e; }
+.explorer-student-name strong { font-size: 17px; font-weight: 600; color: #89937d; }
+.explorer-student dl { margin: 16px 0 0; padding-top: 4px; border-top: 1px dashed var(--explorer-line); }
+.explorer-student dl > div { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin-top: 12px; }
+.explorer-student dt, .explorer-student dd { font-size: 11px; color: #79866e; }
+.explorer-student dd { margin: 0; color: #89937d; overflow-wrap: anywhere; text-align: right; }
+.explorer-sidebar-bottom { margin-top: auto; padding-top: 18px; flex-shrink: 0; }
+.explorer-home { width: 100%; display: flex; gap: 8px; align-items: center; padding: 13px 15px; color: #254d3b; font-size: 12px; border: 1px solid #254d3b; background: var(--explorer-paper); box-shadow: 3px 3px #c6d1b8; }
+.explorer-home span:last-child { margin-left: auto; }
+.explorer-home:hover, .explorer-map button:hover:not(:disabled) { background: #e3ead5; }
+.explorer-map { position: relative; min-width: 0; min-height: 0; overflow: hidden; }
+.explorer-map .map-canvas { width: 100%; height: 100%; background: #d8e5bd; }
+.explorer-map .map-canvas canvas { image-rendering: pixelated; }
+.explorer-compass { position: absolute; right: 24px; top: 24px; width: 43px; height: 56px; background: #fcfaf0ed; border: 1px solid #254d3b; display: flex; flex-direction: column; align-items: center; justify-content: center; font: 11px monospace; gap: 4px; box-shadow: 3px 3px #28493433; pointer-events: none; }
+.explorer-compass b { font-size: 20px; }
+.explorer-map-tools { position: absolute; right: 24px; bottom: 26px; display: flex; flex-direction: column; gap: 7px; }
+.explorer-map button { color: #254d3b; border: 1px solid #254d3b; border-radius: 0; background: #fcfaf0f2; }
+.explorer-map-tools button { width: 39px; height: 37px; font-size: 22px; box-shadow: 3px 3px #294b3c33; }
+.explorer-map-tools button:last-child { font-size: 20px; margin-top: 6px; }
+.explorer-map-status { position: absolute; left: 24px; bottom: 26px; font: 10px monospace; padding: 9px 12px; border: 1px solid #78916c; background: #fcfaf0e8; color: #617457; box-shadow: 3px 3px #294b3c22; }
+.explorer-map-status small { display: block; font-size: 9px; color: #79866e; margin-top: 5px; }
+.explorer-map .map-interact-prompt { bottom: 28px; margin: 0; border-radius: 0; border: 1px solid #254d3b; box-shadow: 3px 3px #294b3c33; background: #fcfaf0f5; color: #254d3b; font-size: 12px; max-width: calc(100% - 150px); white-space: normal; }
+.explorer-warning { position: absolute; left: 18px; top: 18px; right: 82px; z-index: 3; margin: 0; padding: 12px 15px; border: 1px solid #c6a55b; background: #fff7dfed; color: #6d5020; font-size: 12px; line-height: 1.7; }
+.explorer-return-error { position: fixed; top: 12px; left: 290px; right: 20px; z-index: 10; padding: 12px; background: #fff7df; color: #8a3521; }
+.explorer-touch-pad { display: none; }
+@media (min-width: 1800px) { .campus-explorer { grid-template-columns: 290px minmax(0, 1fr); } .explorer-sidebar { padding: 26px; } }
+@media (max-width: 900px) { .campus-explorer { grid-template-columns: 222px minmax(0, 1fr); } .explorer-sidebar { padding: 20px 16px; } .explorer-compass { right: 16px; top: 16px; } .explorer-map-status { left: 16px; bottom: 18px; } .explorer-map-tools { right: 16px; bottom: 18px; } }
+@media (max-width: 600px) {
+  .campus-explorer { grid-template-columns: 140px minmax(0, 1fr); } .explorer-sidebar { padding: 15px 10px; } .explorer-mini-heading { margin-bottom: 11px; } .explorer-mini-heading h1 { font-size: 12px; letter-spacing: 0; } .explorer-mini-heading span { font-size: 8px; } .explorer-minimap { box-shadow: 2px 2px #c5d0b4; }
+  .explorer-student { margin-top: 20px; padding: 12px 9px; } .explorer-student h2 { font-size: 11px; margin-bottom: 13px; } .explorer-student-heading { flex-direction: column; align-items: flex-start; gap: 10px; } .explorer-portrait { width: 55px; height: 61px; } .explorer-student-name { gap: 5px; } .explorer-student-name strong { font-size: 14px; } .explorer-student dl > div { flex-direction: column; gap: 5px; margin-top: 13px; } .explorer-student dt, .explorer-student dd { font-size: 10px; } .explorer-student dd { text-align: left; }
+  .explorer-home { padding: 11px 9px; font-size: 11px; gap: 4px; } .explorer-compass { top: 10px; right: 10px; width: 30px; height: 43px; font-size: 9px; } .explorer-compass b { font-size: 16px; } .explorer-map-tools { right: 10px; bottom: 15px; } .explorer-map-tools button { width: 30px; height: 30px; font-size: 19px; } .explorer-map-status { left: 10px; bottom: 15px; font-size: 8px; padding: 7px; max-width: calc(100% - 56px); } .explorer-map-status small { font-size: 8px; }
+  .explorer-touch-pad { display: grid; grid-template-columns: repeat(3, 30px); gap: 3px; position: absolute; left: 10px; bottom: 87px; } .explorer-touch-pad button { width: 30px; height: 30px; } .explorer-touch-pad button:first-child { grid-column: 2; } .explorer-touch-pad button:nth-child(2) { grid-column: 1; }
+  .explorer-map .map-interact-prompt { bottom: 169px; width: calc(100% - 20px); max-width: none; padding: 10px; font-size: 10px; } .explorer-warning { left: 10px; right: 50px; top: 10px; padding: 8px; font-size: 10px; } .explorer-return-error { left: 150px; right: 10px; font-size: 11px; }
+  .campus-shell > .workspace-single { padding: 10px; }
+}

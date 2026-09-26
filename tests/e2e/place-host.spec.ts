@@ -175,8 +175,9 @@ test('定位回调区分 unmapped / unknown-target，不放置虚假标记', asy
   await expect(result).toContainText('unknown-target');
 });
 
-test('首页：宿主已挂载但未标定前没有进入入口', async ({ page }) => {
+test('首页：出生位置远离互动区时，按 E 不打开地点', async ({ page }) => {
   await page.goto('/');
+  await page.getByRole('button', { name: '进入校园', exact: true }).click();
   await expect(page.getByRole('status', { name: '地图加载状态' })).toHaveText('地图已加载');
   await expect(page.getByRole('button', { name: '潇湘校区图书馆' })).toHaveCount(0);
   await expect(page.getByTestId('character-status')).toContainText('位置');

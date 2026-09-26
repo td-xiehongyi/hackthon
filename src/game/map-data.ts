@@ -42,6 +42,7 @@ export function validateAnnotation(value: unknown): string[] {
           if (!isPlaceId(item.placeId)) errors.push('未登记的互动地点');
           if (item.entrancePoint !== null && !validPoint(item.entrancePoint)) errors.push('入口坐标无效');
           if (item.triggerPolygon !== null && !validPolygon(item.triggerPolygon)) errors.push('互动范围无效');
+          if (item.highlightPolygon !== undefined && !validPolygon(item.highlightPolygon)) errors.push('建筑高亮轮廓无效');
           if (item.verificationStatus === 'verified' && (!item.entrancePoint || !item.triggerPolygon)) errors.push('已核验入口缺少坐标');
         }
         if (key === 'landmarks' && (typeof item.name !== 'string' || (item.anchor !== null && !validPoint(item.anchor)))) errors.push('地标无效');
