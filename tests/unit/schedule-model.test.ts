@@ -30,6 +30,11 @@ describe('课表周次与 WakeUp CSV', () => {
     expect(parseWeekExpression('第2至16周(双)').weeks).toEqual([2, 4, 6, 8, 10, 12, 14, 16]);
   });
 
+  test('支持 CSU 的从某周开始表达式并保留单双周', () => {
+    expect(parseWeekExpression('从第3周开始').weeks).toEqual(Array.from({ length: 18 }, (_, index) => index + 3));
+    expect(parseWeekExpression('从第3周开始(单周)').weeks).toEqual([3, 5, 7, 9, 11, 13, 15, 17, 19]);
+  });
+
   test('导入 WakeUp 七列格式并展开单周', () => {
     const preview = parseScheduleCsv([
       '课程名称,星期,开始节数,结束节数,老师,地点,周数',

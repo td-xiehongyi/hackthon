@@ -521,15 +521,15 @@ function CaImportModal({
       <section ref={dialogRef} className="import-modal ca-import-modal" role="dialog" aria-modal="true" aria-labelledby="ca-import-title" tabIndex={-1}>
         <header><div><span className="modal-kicker">教务系统辅助导入</span><h2 id="ca-import-title">从 CSU 教务系统带入课表</h2></div><button className="icon-button" type="button" aria-label="关闭" onClick={onClose}>×</button></header>
         <div className="ca-import-body">
-          <p>先打开官方统一认证并由你本人完成登录，再进入网上办事大厅的教务服务，打开“我的课表”。目前学校没有提供可供本页面跨站直接读取的公开接口，因此请复制课表表格内容粘贴到这里，或下载 CSV、TSV、HTML 等课表文件后使用下方的文件导入。我们不会读取或保存账号、密码，也不会代替你登录。</p>
+          <p>先打开官方统一认证并由你本人完成登录，再进入网上办事大厅的教务服务，打开“我的课表”。目前学校没有提供可供本页面跨站直接读取的公开接口，因此请复制课表表格或已登录页面返回的 JSON 粘贴到这里，或选择 CSV、TSV、HTML、JSON 文件导入。我们不会读取或保存账号、密码，也不会代替你登录。</p>
           <button className="secondary-button" type="button" onClick={() => { if (!openCsuSchedulePage()) setError('浏览器阻止了新标签页，请手动打开教务系统。'); }}>打开 CSU 教务系统</button>
           <a href={CSU_CA_SCHEDULE_URL} target="_blank" rel="noreferrer">打开 https://ca.csu.edu.cn/（官方登录页）</a>
           <div className="ca-import-file-action">
             <strong>已经下载课表文件？</strong>
             <button className="secondary-button" type="button" onClick={onChooseFile}>选择 CSV / TSV / HTML / JSON 文件</button>
-            <small>Excel 文件请先在教务系统中另存为 CSV；本页不会上传文件。</small>
+            <small>Excel 文件请先在教务系统中另存为 CSV；JSON 只在本机解析，本页不会上传文件。</small>
           </div>
-          <label><span>粘贴课表内容</span><textarea rows={9} value={source} onChange={(event) => { setSource(event.target.value); setError(''); }} placeholder="可粘贴网页表格、复制的 TSV/CSV 或课程信息文本" /></label>
+          <label><span>粘贴课表内容</span><textarea rows={9} value={source} onChange={(event) => { setSource(event.target.value); setError(''); }} placeholder="可粘贴已登录页面复制的 JSON、网页表格、TSV/CSV 或课程信息文本" /></label>
           {error && <p className="form-error" role="alert">{error}</p>}
         </div>
         <footer><p>解析后仍会进入原有预览、错误检查和追加/替换确认。</p><div><button className="secondary-button" type="button" onClick={onClose}>取消</button><button className="primary-button" type="button" onClick={() => { const preview = parseCsuScheduleText(source, { sourceLabel: 'CSU 教务系统' }); if (preview.status === 'invalid') { setError(preview.errors[0]?.message || '未识别到有效课表。'); return; } onPreview(preview); }}>解析并预览</button></div></footer>
@@ -703,7 +703,16 @@ export default function TeachingPage({ onBack }: { onBack: () => void }) {
       return;
     }
     try {
-      const text = await file.text();
+      // Older CSU exports are commonly GBK/GB18030 encoded. Decode UTF-8
+      // strictly first so a malformed byte sequence cannot turn into silent
+      // replacement characters, then fall back to the Chinese legacy codec.
+      const bytes = await file.arrayBuffer();
+      let text: string;
+      try {
+        text = new TextDecoder('utf-8', { fatal: true }).decode(bytes);
+      } catch {
+        text = new TextDecoder('gb18030').decode(bytes);
+      }
       const preview = parseCsuScheduleText(text, {
         existingCourses: courses,
         sourceLabel: file.name,
@@ -715,7 +724,7 @@ export default function TeachingPage({ onBack }: { onBack: () => void }) {
       setImportFilename(file.name);
       setImportPreview(preview);
     } catch {
-      setToast('无法读取文件，请使用 UTF-8 编码的 CSV、TSV、HTML 或 JSON。');
+      setToast('无法读取文件，请检查 CSV、TSV、HTML 或 JSON 编码。');
     } finally {
       if (fileInput.current) fileInput.current.value = '';
     }
