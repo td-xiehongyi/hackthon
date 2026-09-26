@@ -37,6 +37,22 @@ describe('CSU CA 教务课表导入适配器', () => {
     expect(JSON.stringify(preview)).not.toContain('should-not-be-read');
   });
 
+  test('保留被筛选表单包裹的课表表格，同时忽略表单控件', () => {
+    const html = `
+      <form>
+        <label>用户名</label><input value="student@example.com">
+        <table>
+          <tr><th>课程名称</th><th>星期</th><th>节次</th><th>周次</th></tr>
+          <tr><td>数据库系统</td><td>周二</td><td>3-4</td><td>1-16周</td></tr>
+        </table>
+      </form>`;
+    const preview = parseCaScheduleHtml(html);
+
+    expect(preview.status).toBe('ready');
+    expect(preview.courses[0]).toMatchObject({ name: '数据库系统', weekday: 2, startPeriod: 3, endPeriod: 4 });
+    expect(JSON.stringify(preview)).not.toContain('student@example.com');
+  });
+
   test('支持从 CA 页面复制的 TSV 和教学周/单双周字段', () => {
     const tsv = [
       '课程\t星期\t节次\t老师\t教室\t周次',

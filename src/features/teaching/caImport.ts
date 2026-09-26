@@ -133,16 +133,20 @@ const stripMarkup = (value: string): string =>
     .trim();
 
 const extractHtmlTables = (html: string): CellMatrix => {
-  // Scripts, styles, forms and input controls are intentionally removed before
-  // any extraction.  This prevents accidental parsing of a login form and
-  // keeps credentials out of all returned values.
+  // Remove executable content and form controls before extraction.  Keep the
+  // surrounding form markup itself out of the way, but retain its table
+  // content: some teaching-system pages wrap the schedule table in a form for
+  // filters or export actions.  Credential-looking rows are filtered again
+  // below, so values from a login panel never become course data.
   const safeHtml = html
     .replace(/<!--[\s\S]*?-->/g, ' ')
     .replace(/<script\b[\s\S]*?<\/script\s*>/gi, ' ')
     .replace(/<style\b[\s\S]*?<\/style\s*>/gi, ' ')
-    .replace(/<form\b[\s\S]*?<\/form\s*>/gi, ' ')
+    .replace(/<\/?form\b[^>]*>/gi, ' ')
     .replace(/<input\b[^>]*>/gi, ' ')
-    .replace(/<textarea\b[\s\S]*?<\/textarea\s*>/gi, ' ');
+    .replace(/<textarea\b[\s\S]*?<\/textarea\s*>/gi, ' ')
+    .replace(/<select\b[\s\S]*?<\/select\s*>/gi, ' ')
+    .replace(/<button\b[\s\S]*?<\/button\s*>/gi, ' ');
 
   const tables: string[][][] = [];
   const tablePattern = /<table\b[^>]*>([\s\S]*?)<\/table\s*>/gi;
