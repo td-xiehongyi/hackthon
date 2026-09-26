@@ -1,11 +1,21 @@
+import { useState } from 'react';
 import MapViewport from '../game/MapViewport';
+import StartScreen from './StartScreen';
+
+type View = 'start' | 'map';
 
 export default function App() {
+  const [view, setView] = useState<View>('start');
+  if (view === 'start') return <StartScreen onEnter={() => setView('map')} />;
   return (
     <main className="campus-app">
       <header className="app-header">
         <div className="brand-mark" aria-hidden="true">中南</div>
         <div><p className="eyebrow">CSU PIXEL CAMPUS</p><h1>中南大学像素校园</h1></div>
+        <button type="button" className="back-button" onClick={() => setView('start')}>
+          <svg aria-hidden="true" viewBox="0 0 12 12" width="10" height="10"><path d="M8 1H6v2h2zM6 3H4v2h2zM4 5H2v2h2zM6 7H4v2h2zM8 9H6v2h2z" fill="currentColor" /></svg>
+          返回首页
+        </button>
         <span className="preview-label">地图预览</span>
       </header>
       <div className="workspace">

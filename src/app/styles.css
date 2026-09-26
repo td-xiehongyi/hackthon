@@ -1,9 +1,33 @@
 :root {
+  /* 色彩令牌全部取自 output/中南大学像素校园-最终地图.png */
+  --bg: #eef3e4;            /* 外围浅草地 */
+  --surface: #fbfaf2;       /* 地标标签底 */
+  --surface-2: #e9edde;     /* 次级面板 */
+  --ink: #1f2e24;           /* 主文字，深墨绿 */
+  --ink-2: #4f6152;         /* 次文字 */
+  --ink-3: #74806e;         /* 弱文字 */
+  --primary: #3f7f4a;       /* 校区绿牌 */
+  --primary-deep: #2f6339;  /* 树冠深绿 */
+  --primary-ink: #254d3b;   /* 原品牌深绿，沿用 */
+  --water: #3c8fd6;         /* 后湖 / 玉带湖 */
+  --path: #e6d9a8;          /* 土黄步道 */
+  --path-deep: #c9b978;
+  --road: #c9ccc6;          /* 西二环马路 */
+  --track: #d9605a;         /* 跑道红 */
+  --blossom: #f2b6cf;       /* 樱花粉 */
+  --shadow: #c9d3b8;        /* 像素硬阴影 */
+  --font-pixel: "Fusion Pixel 12px", "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
   font-family: "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
-  color: #263c31;
-  background: #f4f5ee;
+  color: var(--ink);
+  background: var(--bg);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
+}
+@font-face {
+  font-family: "Fusion Pixel 12px";
+  src: url("/fonts/fusion-pixel/fusion-pixel-12px-proportional-zh_hans.otf.woff2") format("woff2");
+  font-weight: 400;
+  font-display: swap;
 }
 * { box-sizing: border-box; }
 body { margin: 0; }
@@ -16,7 +40,10 @@ button:focus-visible, a:focus-visible { outline: 3px solid #a27b26; outline-offs
 .brand-mark { background: #254d3b; color: #faf9ed; width: 48px; height: 48px; display: grid; place-items: center; font-weight: 800; font-size: 15px; box-shadow: 4px 4px 0 #d8dfc8; }
 .eyebrow { color: #71806e; font-size: 10px; letter-spacing: 2.4px; margin: 0 0 4px; }
 h1 { margin: 0; font-size: 21px; letter-spacing: 1px; }
-.preview-label { margin-left: auto; font-size: 12px; color: #627357; border: 1px solid #cfd8c4; padding: 7px 13px; border-radius: 4px; }
+.back-button { margin-left: auto; display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-pixel); font-size: 14px; color: var(--primary-ink); background: var(--surface); border: 2px solid var(--primary-ink); padding: 6px 12px; box-shadow: 3px 3px 0 var(--shadow); }
+.back-button:hover { background: var(--surface-2); }
+.back-button:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--shadow); }
+.preview-label { font-size: 12px; color: #627357; border: 1px solid #cfd8c4; padding: 7px 13px; border-radius: 4px; }
 .workspace { display: grid; grid-template-columns: 242px minmax(0, 1fr); gap: 32px; }
 .sidebar { padding: 26px 0 0; display: flex; flex-direction: column; align-items: flex-start; }
 .section-number { font-size: 10px; letter-spacing: 2px; color: #83917b; }
@@ -71,4 +98,74 @@ h2 { font-size: 35px; line-height: 1.55; font-weight: 600; margin: 17px 0 13px; 
   .map-controls { gap: 3px; }
   .map-controls output { min-width: 38px; }
   .map-controls .fit-button { padding: 0 7px; margin-left: 2px; }
+}
+
+/* ---------- 启动界面 ---------- */
+.start-screen { min-height: 100dvh; display: flex; flex-direction: column; max-width: 1720px; margin: 0 auto; padding: 0 36px 24px; background-image: linear-gradient(var(--shadow) 1px, transparent 1px), linear-gradient(90deg, var(--shadow) 1px, transparent 1px); background-size: 48px 48px; background-position: -1px -1px; }
+.start-header { min-height: 88px; display: flex; align-items: center; gap: 14px; }
+.start-header-title { font-family: var(--font-pixel); font-size: 18px; letter-spacing: 1px; }
+.version-tag { margin-left: auto; font-family: var(--font-pixel); font-size: 13px; color: var(--ink-2); background: var(--surface); border: 2px solid var(--path-deep); padding: 5px 10px; }
+.hero { flex: 1; display: grid; grid-template-columns: minmax(320px, 5fr) minmax(0, 7fr); gap: 48px; align-items: center; padding: 24px 0 40px; }
+.hero-copy { display: flex; flex-direction: column; align-items: flex-start; }
+.hero-copy .eyebrow { font-family: var(--font-pixel); font-size: 13px; color: var(--primary); letter-spacing: 3px; }
+.pixel-title { font-family: var(--font-pixel); font-weight: 400; font-size: clamp(44px, 5vw, 72px); line-height: 1.2; margin: 6px 0 20px; color: var(--primary-ink); text-shadow: 4px 4px 0 var(--shadow); }
+.hero-lead { font-size: 16px; line-height: 1.75; color: var(--ink-2); max-width: 30em; margin: 0 0 32px; }
+.hero-actions { display: flex; flex-wrap: wrap; gap: 14px; margin-bottom: 36px; }
+.pixel-button { display: inline-flex; align-items: center; gap: 10px; min-height: 52px; padding: 0 26px; font-family: var(--font-pixel); font-size: 20px; letter-spacing: 1px; text-decoration: none; border: 3px solid var(--primary-ink); cursor: pointer; transition: background-color 150ms ease, transform 80ms ease, box-shadow 80ms ease; }
+.pixel-button.primary { background: var(--primary); color: #fff; box-shadow: 5px 5px 0 var(--primary-ink); }
+.pixel-button.primary:hover { background: var(--primary-deep); }
+.pixel-button.ghost { background: var(--surface); color: var(--primary-ink); box-shadow: 5px 5px 0 var(--shadow); }
+.pixel-button.ghost:hover { background: var(--surface-2); }
+.pixel-button:active { transform: translate(3px, 3px); box-shadow: 2px 2px 0 var(--primary-ink); }
+.pixel-button:focus-visible { outline: 3px solid var(--water); outline-offset: 3px; }
+.control-hints { display: flex; flex-wrap: wrap; gap: 8px 28px; margin: 0; padding: 14px 18px; background: var(--surface); border: 2px solid var(--path-deep); box-shadow: 4px 4px 0 var(--shadow); }
+.control-hints > div { display: flex; align-items: center; gap: 12px; }
+.control-hints dt { font-size: 13px; color: var(--ink-3); }
+.control-hints dd { margin: 0; display: flex; gap: 4px; }
+.keycap { display: inline-grid; place-items: center; min-width: 28px; height: 28px; padding: 0 6px; font-family: var(--font-pixel); font-size: 14px; color: var(--ink); background: var(--surface-2); border: 2px solid var(--primary-ink); border-bottom-width: 4px; }
+.keycap-wide { min-width: 56px; }
+
+.viewfinder { margin: 0; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.viewfinder-frame { position: relative; aspect-ratio: 4 / 3; overflow: hidden; border: 4px solid var(--primary-ink); background: var(--surface-2); box-shadow: 8px 8px 0 var(--shadow); }
+.viewfinder-map { position: absolute; left: 0; top: 0; width: 100%; height: auto; image-rendering: pixelated; animation: viewfinder-pan 48s ease-in-out infinite alternate; will-change: transform; }
+.viewfinder-sprite { position: absolute; left: 47%; top: 62%; translate: -50% -50%; filter: drop-shadow(2px 3px 0 rgba(31, 46, 36, .35)); }
+.viewfinder-compass, .viewfinder-size { position: absolute; font-family: var(--font-pixel); font-size: 13px; background: var(--surface); border: 2px solid var(--ink); padding: 3px 7px; }
+.viewfinder-compass { right: 12px; top: 12px; }
+.viewfinder-size { left: 12px; bottom: 12px; color: var(--ink-2); }
+.viewfinder figcaption { font-family: var(--font-pixel); font-size: 13px; color: var(--ink-3); text-align: right; }
+@keyframes viewfinder-pan { from { transform: translateY(-12%); } to { transform: translateY(-62%); } }
+.pixel-sprite { display: inline-block; image-rendering: pixelated; background-repeat: no-repeat; background-position: var(--sprite-from); animation: sprite-play var(--sprite-duration) steps(var(--sprite-steps)) infinite; }
+@keyframes sprite-play { from { background-position: var(--sprite-from); } to { background-position: var(--sprite-to); } }
+
+.campus-strip { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.campus-card { position: relative; padding: 18px 18px 16px; background: var(--surface); border: 2px solid var(--path-deep); box-shadow: 4px 4px 0 var(--shadow); }
+.campus-card.interactive { border-color: var(--primary); }
+.campus-index { position: absolute; right: 14px; top: 12px; font-family: var(--font-pixel); font-size: 13px; color: var(--ink-3); }
+.campus-plate { display: inline-block; font-family: var(--font-pixel); font-size: 17px; color: #fff; background: var(--primary); padding: 4px 10px; border: 2px solid var(--primary-ink); }
+.campus-note { margin: 12px 0 0; font-size: 13px; line-height: 1.6; color: var(--ink-2); }
+.campus-card.interactive .campus-note { color: var(--primary-deep); }
+
+.start-footer { display: flex; align-items: center; gap: 10px; margin-top: 24px; padding: 12px 0 0; border-top: 2px dashed var(--path-deep); font-size: 12px; color: var(--ink-3); }
+.start-footer .status-dot { background: var(--path-deep); flex-shrink: 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  .viewfinder-map { animation: none; transform: translateY(-36%); }
+  .pixel-sprite { animation: none; }
+  .pixel-button { transition: none; }
+}
+@media (max-width: 1023px) {
+  .hero { grid-template-columns: minmax(0, 1fr); gap: 28px; padding-bottom: 28px; }
+  .viewfinder-frame { aspect-ratio: 16 / 9; }
+  .viewfinder { order: -1; }
+}
+@media (max-width: 767px) {
+  .start-screen { padding: 0 16px 20px; }
+  .start-header { min-height: 72px; }
+  .start-header-title { display: none; }
+  .pixel-title { font-size: 40px; }
+  .hero-actions { width: 100%; }
+  .pixel-button { flex: 1 1 100%; justify-content: center; min-height: 48px; font-size: 18px; }
+  .control-hints { width: 100%; gap: 10px 18px; }
+  .viewfinder-frame { aspect-ratio: 4 / 3; }
+  .campus-strip { grid-template-columns: minmax(0, 1fr); }
 }
