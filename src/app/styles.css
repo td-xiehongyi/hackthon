@@ -288,6 +288,11 @@ h2 { font-size: 35px; line-height: 1.55; font-weight: 600; margin: 17px 0 13px; 
 .import-panel li { margin: 8px 0; color: #5e705f; font-size: 10px; }
 .import-panel li span { width: 19px; height: 19px; margin-right: 8px; display: inline-grid; place-items: center; border: 1px solid #9caf9a; color: #426049; font-size: 9px; }
 .full-button { width: 100%; }
+.ca-import-body { padding: 22px 24px 0; display: grid; gap: 12px; }
+.ca-import-body > p { margin: 0; color: #5e705f; font-size: 11px; line-height: 1.8; }
+.ca-import-body > a { color: #496954; font-size: 10px; }
+.ca-import-body label { display: grid; gap: 6px; color: #5c705f; font-size: 10px; font-weight: 700; }
+.ca-import-body textarea { width: 100%; padding: 10px; border: 1px solid #cbd5c5; background: #fbfcf5; font-size: 12px; resize: vertical; }
 .text-button { width: 100%; margin-top: 10px; padding: 0; border: 0; background: none; color: #56745d; font-size: 10px; text-decoration: underline; }
 .browser-storage-note { margin-top: 20px; padding-top: 17px; display: flex; gap: 10px; border-top: 1px solid #dfe4da; }
 .browser-storage-note > i { width: 9px; height: 12px; margin-top: 2px; border: 2px solid #77917b; border-radius: 1px; box-shadow: inset 0 3px 0 #e0e9dd; }
@@ -435,6 +440,7 @@ h2 { font-size: 35px; line-height: 1.55; font-weight: 600; margin: 17px 0 13px; 
   .row-actions button { min-width: 44px; min-height: 44px; }
   .import-panel { display: block; }
   .import-illustration { margin-inline: auto; }
+  .ca-import-body { padding-inline: 16px; }
   .form-grid { grid-template-columns: 1fr; }
   .form-grid input, .form-grid select, .form-grid textarea { min-height: 44px; font-size: 16px; }
   .span-2 { grid-column: span 1; }
