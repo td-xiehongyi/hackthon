@@ -90,6 +90,22 @@ describe('CSU CA 教务课表导入适配器', () => {
     expect(invalid.errors[0].code).toBe('ca-no-schedule-table');
   });
 
+  test('支持 CSU 导出器常见的 JSON 课程标题格式', () => {
+    const payload = JSON.stringify([{
+      jc: 3,
+      xq: 2,
+      title: '课程名称：数据结构\n周次：1-16(单周)\n节次：03-04\n上课教师：刘老师\n上课地点：教学楼 A201\n',
+    }]);
+    const preview = parseCaScheduleText(payload);
+
+    expect(preview.status).toBe('ready');
+    expect(preview.source).toBe('json');
+    expect(preview.courses[0]).toMatchObject({
+      name: '数据结构', weekday: 2, startPeriod: 3, endPeriod: 4,
+      weeks: [1, 3, 5, 7, 9, 11, 13, 15], teacher: '刘老师', location: '教学楼 A201',
+    });
+  });
+
   test('只打开官方 CA 地址，不附加账号、密码或查询参数', () => {
     let opened = '';
     expect(openCsuSchedulePage((url) => {

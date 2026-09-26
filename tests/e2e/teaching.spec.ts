@@ -108,7 +108,7 @@ test('从教务辅助弹窗选择下载的 HTML 课表并进入统一预览', as
   await page.getByRole('button', { name: '从 CSU 教务系统导入' }).click();
   await expect(page.getByRole('heading', { name: '从 CSU 教务系统带入课表' })).toBeVisible();
 
-  await page.getByRole('button', { name: '选择 CSV / TSV / HTML 文件' }).click();
+  await page.getByRole('button', { name: '选择 CSV / TSV / HTML / JSON 文件' }).click();
   await page.locator('input[type="file"]').setInputFiles({
     name: 'csu-schedule.html',
     mimeType: 'text/html',

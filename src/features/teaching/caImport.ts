@@ -33,7 +33,7 @@ export interface CaScheduleImportOptions extends ParseScheduleCsvOptions {
   sourceLabel?: string;
 }
 
-export type CaScheduleSourceKind = 'dom' | 'html' | 'csv' | 'tsv' | 'text';
+export type CaScheduleSourceKind = 'dom' | 'html' | 'csv' | 'tsv' | 'json' | 'text';
 
 /** ImportPreview plus diagnostics about how the CA page was recognised. */
 export interface CaScheduleImportPreview extends ImportPreview {
@@ -565,6 +565,68 @@ const parseMatrix = (matrix: CellMatrix, options: CaScheduleImportOptions): CaSc
   };
 };
 
+/**
+ * Convert the JSON payload used by several CSU timetable exporters to the
+ * same canonical row model.  The exporter commonly puts course fields into a
+ * newline-delimited `title` string, for example `课程名称：…\n周次：…\n节次：…`.
+ * This parser is intentionally shape-limited and only consumes course fields;
+ * it never accepts credentials or arbitrary object values.
+ */
+const parseCsuJson = (input: string, options: CaScheduleImportOptions): CaScheduleImportPreview | null => {
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(input);
+  } catch {
+    return null;
+  }
+  const items = Array.isArray(parsed)
+    ? parsed
+    : parsed && typeof parsed === 'object' && Array.isArray((parsed as { courses?: unknown[] }).courses)
+      ? (parsed as { courses: unknown[] }).courses
+      : null;
+  if (!items) return null;
+
+  const rows: string[][] = [['课程名称', '星期', '开始节数', '结束节数', '老师', '地点', '周数', '单双周']];
+  let skippedRows = 0;
+  for (const item of items) {
+    if (!item || typeof item !== 'object') {
+      skippedRows += 1;
+      continue;
+    }
+    const raw = item as Record<string, unknown>;
+    const title = typeof raw.title === 'string' ? raw.title : '';
+    const lines = title.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
+    const value = (...labels: string[]) => {
+      for (const label of labels) {
+        const line = lines.find((candidate) => candidate.startsWith(`${label}：`) || candidate.startsWith(`${label}:`));
+        if (line) return line.replace(new RegExp(`^${label}\s*[:：]\s*`), '').trim();
+      }
+      return '';
+    };
+    const name = typeof raw.name === 'string' ? raw.name.trim() : value('课程名称', '课程名');
+    const teacher = typeof raw.teacher === 'string' ? raw.teacher.trim() : value('上课教师', '教师', '老师');
+    const location = typeof raw.location === 'string' ? raw.location.trim() : value('上课地点', '地点', '教室');
+    const weeks = typeof raw.weeks === 'string' ? raw.weeks.trim() : value('周次', '教学周');
+    const parity = typeof raw.weekParity === 'string' ? raw.weekParity.trim() : value('单双周');
+    const dayRaw = raw.weekday ?? raw.xq ?? value('星期', '上课星期');
+    // `jc` in the CSU payload is often only the first period; the title's
+    // labelled range (for example `03-04`) contains the complete span.
+    const labelledPeriods = value('节次', '上课节次');
+    const periodRaw = raw.periods ?? (labelledPeriods || raw.jc || '');
+    const weekday = typeof dayRaw === 'number' ? String(dayRaw) : String(dayRaw ?? '');
+    const periodText = String(periodRaw ?? '');
+    const periodParts = periodText.match(/\d+/g) ?? [];
+    if (!name && !title) {
+      skippedRows += 1;
+      continue;
+    }
+    rows.push([name, weekday, periodParts[0] ?? '', periodParts[1] ?? periodParts[0] ?? '', teacher, location, weeks, parity]);
+  }
+  if (rows.length === 1) return null;
+  const parsedPreview = parseMatrix({ rows, source: 'json', tableCount: 0, skippedRows }, options);
+  return { ...parsedPreview, source: 'json', skippedRows: parsedPreview.skippedRows + skippedRows, sourceLabel: options.sourceLabel };
+};
+
 /** Parse a rendered `Document`/`Element` from the official CA page. */
 export function parseCsuScheduleDom(
   source: CaScheduleDomSource,
@@ -588,6 +650,10 @@ export function parseCsuScheduleText(
   options: CaScheduleImportOptions = {},
 ): CaScheduleImportPreview {
   const trimmed = input.trimStart();
+  if (/^[\[{]/.test(trimmed)) {
+    const jsonPreview = parseCsuJson(trimmed, options);
+    if (jsonPreview) return jsonPreview;
+  }
   if (/<table\b/i.test(trimmed)) return parseCsuScheduleHtml(input, options);
   // A comma-delimited WakeUp export can be delegated without losing quoted
   // fields.  Header detection prevents arbitrary prose containing commas from

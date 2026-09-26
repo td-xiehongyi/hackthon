@@ -526,7 +526,7 @@ function CaImportModal({
           <a href={CSU_CA_SCHEDULE_URL} target="_blank" rel="noreferrer">打开 https://ca.csu.edu.cn/（官方登录页）</a>
           <div className="ca-import-file-action">
             <strong>已经下载课表文件？</strong>
-            <button className="secondary-button" type="button" onClick={onChooseFile}>选择 CSV / TSV / HTML 文件</button>
+            <button className="secondary-button" type="button" onClick={onChooseFile}>选择 CSV / TSV / HTML / JSON 文件</button>
             <small>Excel 文件请先在教务系统中另存为 CSV；本页不会上传文件。</small>
           </div>
           <label><span>粘贴课表内容</span><textarea rows={9} value={source} onChange={(event) => { setSource(event.target.value); setError(''); }} placeholder="可粘贴网页表格、复制的 TSV/CSV 或课程信息文本" /></label>
@@ -715,7 +715,7 @@ export default function TeachingPage({ onBack }: { onBack: () => void }) {
       setImportFilename(file.name);
       setImportPreview(preview);
     } catch {
-      setToast('无法读取文件，请使用 UTF-8 编码的 CSV、TSV 或 HTML。');
+      setToast('无法读取文件，请使用 UTF-8 编码的 CSV、TSV、HTML 或 JSON。');
     } finally {
       if (fileInput.current) fileInput.current.value = '';
     }
@@ -970,7 +970,7 @@ export default function TeachingPage({ onBack }: { onBack: () => void }) {
         </section>
       )}
 
-      <input ref={fileInput} className="visually-hidden" type="file" accept=".csv,.tsv,.txt,.html,.htm,text/csv,text/tab-separated-values,text/plain,text/html" onChange={(event) => void handleFile(event.target.files?.[0])} />
+      <input ref={fileInput} className="visually-hidden" type="file" accept=".csv,.tsv,.txt,.html,.htm,.json,text/csv,text/tab-separated-values,text/plain,text/html,application/json" onChange={(event) => void handleFile(event.target.files?.[0])} />
       {editing !== undefined && <CourseFormModal editing={editing} onClose={() => setEditing(undefined)} onSubmit={handleCourseSubmit} />}
       {importPreview && <ImportModal preview={importPreview} filename={importFilename} onClose={() => setImportPreview(null)} onConfirm={confirmImport} />}
       {caImportOpen && <CaImportModal onClose={() => setCaImportOpen(false)} onChooseFile={() => fileInput.current?.click()} onPreview={acceptCaPreview} />}
