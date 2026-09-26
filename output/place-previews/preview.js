@@ -33,6 +33,9 @@ function escapeHtml(value){return String(value).replace(/[&<>"']/g,c=>({'&':'&am
 const photos = {
   teaching:'__TEACHING_IMAGE__', library:'__LIBRARY_IMAGE__', stadium:'__STADIUM_IMAGE__'
 };
+const scenePhotos = {
+  teaching:'__SCENE_TEACHING__', library:'__SCENE_LIBRARY__', stadium:'__SCENE_STADIUM__'
+};
 const places = {
   teaching:{id:'xiaoxiang_teaching_group',name:'教学楼群',full:'潇湘校区教学楼群',num:'01',english:'A DAY OF LEARNING',title:'今天，也要学有所获。',subtitle:'把一周的计划，放进校园的日常。',tabs:[['today','calendar','我的课表'],['week','grid','完整周课表'],['manage','settings','课表管理'],['album','photo','地点相册']]},
   library:{id:'xiaoxiang_library',name:'图书馆',full:'潇湘校区图书馆',num:'02',english:'BETWEEN THE PAGES',title:'在书页之间，慢一点。',subtitle:'认识这处校园风景，收藏你眼中的图书馆。',tabs:[['intro','book','地点介绍'],['album','photo','地点相册']]},
@@ -62,18 +65,13 @@ const clubs=[
  {name:'示例音乐社',category:'文化艺术',symbol:'sun',desc:'从一首喜欢的歌开始，寻找一起演奏的朋友。'},
  {name:'示例编程社',category:'学术科技',symbol:'grid',desc:'交流程序设计与创意项目，让想法慢慢成为作品。'}
 ];
+const sceneAlt={
+ teaching:'潇湘校区教学楼群内景概念图 · 待核验美术',
+ library:'潇湘校区图书馆内景概念图 · 待核验美术',
+ stadium:'潇湘校区体育场（副场）外景概念图 · 待核验美术'
+};
 function sceneSvg(type){
- let shapes='';
- if(type==='teaching'){
-  shapes='<rect width="850" height="220" fill="#e9e0bc"/><rect y="151" width="850" height="69" fill="#c7bd8e"/><path d="M0 171H850M0 195H850M200 151 130 220M370 151 350 220M540 151 570 220M710 151 790 220" stroke="#e4d9b0" stroke-width="3"/><rect x="385" y="25" width="260" height="112" fill="#80957c"/><rect x="392" y="32" width="246" height="98" fill="#d9ead6"/><path d="M391 100 460 69 515 96 580 50 639 67V132H391Z" fill="#aabe8b"/><path d="M401 109 450 94 510 116 564 81 638 103V130H401Z" fill="#91aa71"/><path d="M473 32V130M555 32V130M391 77H639" stroke="#72896c" stroke-width="6"/><rect x="377" y="136" width="277" height="8" fill="#aa9f76"/><rect x="696" y="22" width="81" height="137" fill="#afa579"/><rect x="704" y="30" width="65" height="128" fill="#788969"/><rect x="712" y="39" width="49" height="56" fill="#c5d1b2"/><rect x="750" y="111" width="5" height="12" fill="#f0db95"/><rect x="501" y="169" width="131" height="9" fill="#826e47"/><rect x="510" y="178" width="7" height="24" fill="#6b6144"/><rect x="616" y="178" width="7" height="24" fill="#6b6144"/><rect x="511" y="154" width="110" height="8" fill="#a28957"/><path d="M511 156V175M621 156V175" stroke="#786745" stroke-width="5"/><rect x="809" y="135" width="27" height="30" fill="#a58453"/><path d="M822 139V90" stroke="#6e8c5a" stroke-width="6"/><path d="M797 102h20v19h-20M824 90h19v23h-19M807 74h23v24h-23" fill="#8da46c"/>';
- }else if(type==='library'){
-  shapes='<rect width="850" height="220" fill="#e1e3c7"/><rect y="161" width="850" height="59" fill="#c2c49d"/>';
-  for(let i=0;i<4;i++){const x=395+i*108;shapes+=`<rect x="${x}" y="20" width="87" height="145" fill="#7e8461"/><rect x="${x+7}" y="26" width="73" height="133" fill="#525f46"/>`;for(let r=0;r<3;r++){shapes+=`<rect x="${x+6}" y="${64+r*44}" width="75" height="5" fill="#a09c6b"/>`;for(let b=0;b<7;b++){const colors=['#bec191','#cbae7b','#8ea48b','#c7b696'];shapes+=`<rect x="${x+11+b*9}" y="${33+r*44+(b%3)*3}" width="7" height="${31-(b%3)*3}" fill="${colors[(i+b+r)%4]}"/>`;}}}
-  shapes+='<rect x="478" y="178" width="211" height="9" fill="#9e9165"/><rect x="491" y="186" width="9" height="34" fill="#7a7d54"/><rect x="667" y="186" width="9" height="34" fill="#7a7d54"/><path d="M569 150v27m-20-27h40l-10-22h-20Z" fill="#e2d59a" stroke="#969c66" stroke-width="3"/>';
- }else{
-  shapes='<rect width="850" height="220" fill="#d7e6cb"/><path d="M315 114h48V84h32v24h40V69h30v22h42V54h31v52h61V75h35v29h53V65h42v38h31V85h40v54H315Z" fill="#aac591"/><rect y="132" width="850" height="88" fill="#99b26e"/><path d="M350 214c60-96 201-106 384-94l73 83" fill="none" stroke="#c99577" stroke-width="62"/><path d="M352 219c64-94 201-103 380-90l67 80M353 228c67-94 201-103 374-90l67 80" fill="none" stroke="#e1c1a0" stroke-width="2"/><path d="M525 177h139v-31H525Zm69-31v31" fill="none" stroke="#dde4b2" stroke-width="2"/><path d="M757 119V69h51v59m-51-52h51" fill="none" stroke="#eff1d5" stroke-width="4"/><rect x="438" y="143" width="8" height="11" fill="#d3ac86"/><rect x="435" y="154" width="14" height="15" fill="#536c61"/><path d="m435 169-6 15m16-15 7 12M435 156l-11 8m24-8 11-7" stroke="#66795b" stroke-width="5"/>';
- }
- return `<svg class="scene" viewBox="0 0 850 220" preserveAspectRatio="xMidYMid slice" shape-rendering="crispEdges" aria-hidden="true">${shapes}</svg>`;
+ return `<img class="scene" src="${scenePhotos[type]}" alt="${sceneAlt[type]||sceneAlt.teaching}">`;
 }
 function head(title,subtitle,actions=''){return `<div class="content-head"><div><h3>${title}</h3><p>${subtitle}</p></div>${actions||'<span class="badge">演示数据</span>'}</div>`;}
 function button(label,action,ico='',secondary=false){return `<button class="btn${secondary?' secondary':''}" data-action="${action}">${ico?icon(ico):''}${label}</button>`;}
@@ -92,7 +90,7 @@ function render(){
  document.querySelectorAll('.segmented [data-place]').forEach(el=>{el.classList.toggle('active',el.dataset.place===place);el.setAttribute('aria-pressed',String(el.dataset.place===place));});
  $('#place-title').textContent=p.name;$('#place-code').textContent=`PLACE / ${p.num}`;$('#place-art').className=`place-art ${place}`;
  $('#place-nav').innerHTML=p.tabs.map(([id,ico,label])=>`<button data-tab="${id}" class="${tab===id?'active':''}" ${tab===id?'aria-current="page"':''}>${icon(ico)}${label}${id==='album'?'<span class="count">PHOTO</span>':''}</button>`).join('');
- $('#scene-hero').innerHTML=`${sceneSvg(place)}<div class="hero-copy"><div class="eyebrow">${p.english}</div><h2>${p.title}</h2><p>${p.subtitle}</p></div><span class="scene-caption">${place==='teaching'?'教学楼内':place==='library'?'阅读空间':'操场'} · 像素背景示意</span>`;
+ $('#scene-hero').innerHTML=`${sceneSvg(place)}<div class="hero-copy"><div class="eyebrow">${p.english}</div><h2>${p.title}</h2><p>${p.subtitle}</p></div><span class="scene-caption">${place==='teaching'?'教学楼内':place==='library'?'阅读空间':'操场'} · 概念图 · 待核验美术</span>`;
  $('#footer-place').textContent=p.full+' · '+(tab==='album'?'独立地点相册':'地点专属内容');
  renderContent();
 }
