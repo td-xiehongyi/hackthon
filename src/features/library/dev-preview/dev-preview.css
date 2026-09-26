@@ -1,0 +1,20 @@
+:root {
+  font-family: "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
+  color: #263c31;
+  background: #f4f5ee;
+}
+* { box-sizing: border-box; }
+body { margin: 0; }
+button { font: inherit; cursor: pointer; }
+button:disabled { cursor: default; opacity: .4; }
+.dev-preview { max-width: 920px; margin: 0 auto; padding: 24px 20px 40px; }
+.dev-preview-toolbar {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  margin-bottom: 18px; font-size: 13px; color: #71806e;
+}
+.dev-preview-toolbar select { font: inherit; padding: 6px 8px; }
+.dev-gallery-host {
+  background: #fcfdf7; border: 1px solid #d1d9c8; border-radius: 8px;
+  padding: 20px; display: flex; flex-direction: column; gap: 16px;
+}
+.dev-gallery-host h1 { margin: 0; font-size: 20px; }
