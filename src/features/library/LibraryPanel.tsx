@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import type { PlacePanelProps } from '../../shared/contracts';
 import PlaceGallery from '../../shared/gallery/PlaceGallery';
 import TimetableEditor from '../teaching/TimetableEditor';
+import DazeGame from './DazeGame';
 import './LibraryPanel.css';
 
 const CAMPUS_LABELS: Record<string, string> = {
@@ -18,7 +19,7 @@ export default function LibraryPanel({
 }: PlacePanelProps) {
   const [busy, setBusy] = useState(false);
   const [timetableDirty, setTimetableDirty] = useState(false);
-  const [activeTool, setActiveTool] = useState<'overview' | 'learning'>('overview');
+  const [activeTool, setActiveTool] = useState<'overview' | 'learning' | 'daze'>('overview');
   const [learningView, setLearningView] = useState<'follow' | 'timetable'>('follow');
 
   // 上传进行中注册关闭守卫，避免异步回调作用到已关闭的窗口。
@@ -59,6 +60,15 @@ export default function LibraryPanel({
           >
             学习
           </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={activeTool === 'daze'}
+            className={activeTool === 'daze' ? 'is-active' : ''}
+            onClick={() => setActiveTool('daze')}
+          >
+            发呆 · 小游戏
+          </button>
         </div>
 
         {activeTool === 'overview' ? (
@@ -68,7 +78,7 @@ export default function LibraryPanel({
             <h2>信息来源</h2>
             <p className="library-missing" role="status">来源信息缺失，待核验补充。</p>
           </div>
-        ) : (
+        ) : activeTool === 'learning' ? (
           <div role="tabpanel" className="library-learning">
             <div className="learning-tools" role="tablist" aria-label="学习工具">
               <button type="button" role="tab" aria-selected={learningView === 'follow'} className={learningView === 'follow' ? 'is-active' : ''} onClick={() => setLearningView('follow')}>Follow 订阅</button>
@@ -86,6 +96,8 @@ export default function LibraryPanel({
               <p className="learning-note">Folo（Follow）是外部学习工具，登录与订阅操作将在新标签页完成。</p>
             </> : <TimetableEditor buildings={buildings} onDirtyChange={setTimetableDirty} />}
           </div>
+        ) : (
+          <div role="tabpanel"><DazeGame /></div>
         )}
       </div>
 

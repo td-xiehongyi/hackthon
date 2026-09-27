@@ -1,0 +1,525 @@
+{
+  "stage": "E3",
+  "version": "0.3.0-rc.1",
+  "status": "integration-candidate",
+  "manifestProblems": [],
+  "stateCount": 16,
+  "frameReferences": 40,
+  "sources": [
+    {
+      "filename": "walk-cycle.png",
+      "bytes": 1282708,
+      "sha256": "dc2499b1c9799079710a48f39d819d0adc42f309d185cb82ec45d9122aa099e7",
+      "matchesApprovedE2": true
+    },
+    {
+      "filename": "ride-cycle.png",
+      "bytes": 1592454,
+      "sha256": "fd8a82e75ece58995458a8d5431960bd449f1dae2fc6876c24cfca41f0befb27",
+      "matchesApprovedE2": true
+    },
+    {
+      "filename": "manifest.json",
+      "bytes": 13720,
+      "sha256": "ba3010c6be4fb98ff5d891afa3cbd110ffa17004599be34fac2958df7c8d8f76",
+      "matchesApprovedE2": true
+    }
+  ],
+  "pngChecks": [
+    {
+      "file": "walk-cycle.png",
+      "width": 1254,
+      "height": 1254,
+      "transparent": 925708,
+      "partial": 646040,
+      "opaque": 768
+    },
+    {
+      "file": "ride-cycle.png",
+      "width": 1254,
+      "height": 1254,
+      "transparent": 857714,
+      "partial": 711618,
+      "opaque": 3184
+    }
+  ],
+  "states": [
+    {
+      "mode": "walk",
+      "facing": "down",
+      "action": "idle",
+      "frames": [
+        {
+          "subjectPixels": 30358,
+          "edgePixels": 0,
+          "anchor": {
+            "x": 161,
+            "y": 312
+          },
+          "durationMs": 700
+        }
+      ]
+    },
+    {
+      "mode": "walk",
+      "facing": "down",
+      "action": "move",
+      "frames": [
+        {
+          "subjectPixels": 31521,
+          "edgePixels": 0,
+          "anchor": {
+            "x": 180,
+            "y": 311
+          },
+          "durationMs": 150
+        },
+        {
+          "subjectPixels": 30358,
+          "edgePixels": 0,
+          "anchor": {
+            "x": 161,
+            "y": 312
+          },
+          "durationMs": 150
+        },
+        {
+          "subjectPixels": 30642,
+          "edgePixels": 0,
+          "anchor": {
+            "x": 152,
+            "y": 312
+          },
+          "durationMs": 150
+        },
+        {
+          "subjectPixels": 30779,
+          "edgePixels": 0,
+          "anchor": {
+            "x": 144,
+            "y": 311
+          },
+          "durationMs": 150
+        }
+      ]
+    },
+    {
+      "mode": "walk",
+      "facing": "left",
+      "action": "idle",
+      "frames": [
+        {
+          "subjectPixels": 31787,
+          "edgePixels": 0,
+          "anchor": {
+            "x": 154,
+            "y": 298
+          },
+          "durationMs": 700
+        }
+      ]
+    },
+    {
+      "mode": "walk",
+      "facing": "left",
+      "action": "move",
+      "frames": [
+        {
+          "subjectPixels": 33325,
+          "edgePixels": 0,
+          "anchor": {
+            "x": 168,
+            "y": 298
+          },
+          "durationMs": 150
+        },
+        {
+          "subjectPixels": 31787,
+          "edgePixels": 0,
+          "anchor": {
+            "x": 154,
+            "y": 298
+          },
+          "durationMs": 150
+        },
+        {
+          "subjectPixels": 32832,
+          "edgePixels": 0,
+          "anchor": {
+            "x": 150,
+            "y": 298
+          },
+          "durationMs": 150
+        },
+        {
+          "subjectPixels": 32288,
+          "edgePixels": 0,
+          "anchor": {
+            "x": 142,
+            "y": 298
+          },
+          "durationMs": 150
+        }
+      ]
+    },
+    {
+      "mode": "walk",
+      "facing": "right",
+      "action": "idle",
+      "frames": [
+        {
+          "subjectPixels": 32334,
+          "edgePixels": 0,
+          "anchor": {
+            "x": 165,
+            "y": 296
+          },
+          "durationMs": 700
+        }
+      ]
+    },
+    {
+      "mode": "walk",
+      "facing": "right",
+      "action": "move",
+      "frames": [
+        {
+          "subjectPixels": 33821,
+          "edgePixels": 0,
+          "anchor": {
+            "x": 179,
+            "y": 296
+          },
+          "durationMs": 150
+        },
+        {
+          "subjectPixels": 32334,
+          "edgePixels": 0,
+          "anchor": {
+            "x": 165,
+            "y": 296
+          },
+          "durationMs": 150
+        },
+        {
+          "subjectPixels": 33767,
+          "edgePixels": 0,
+          "anchor": {
+            "x": 160,
+            "y": 297
+          },
+          "durationMs": 150
+        },
+        {
+          "subjectPixels": 32696,
+          "edgePixels": 0,
+          "anchor": {
+            "x": 150,
+            "y": 297
+          },
+          "durationMs": 150
+        }
+      ]
+    },
+    {
+      "mode": "walk",
+      "facing": "up",
+      "action": "idle",
+      "frames": [
+        {
+          "subjectPixels": 31399,
+          "edgePixels": 0,
+          "anchor": {
+            "x": 164,
+            "y": 301
+          },
+          "durationMs": 700
+        }
+      ]
+    },
+    {
+      "mode": "walk",
+      "facing": "up",
+      "action": "move",
+      "frames": [
+        {
+          "subjectPixels": 31560,
+          "edgePixels": 0,
+          "anchor": {
+            "x": 175,
+            "y": 301
+          },
+          "durationMs": 150
+        },
+        {
+          "subjectPixels": 31399,
+          "edgePixels": 0,
+          "anchor": {
+            "x": 164,
+            "y": 301
+          },
+          "durationMs": 150
+        },
+        {
+          "subjectPixels": 31498,
+          "edgePixels": 0,
+          "anchor": {
+            "x": 153,
+            "y": 301
+          },
+          "durationMs": 150
+        },
+        {
+          "subjectPixels": 32449,
+          "edgePixels": 0,
+          "anchor": {
+            "x": 144,
+            "y": 301
+          },
+          "durationMs": 150
+        }
+      ]
+    },
+    {
+      "mode": "ride",
+      "facing": "down",
+      "action": "idle",
+      "frames": [
+        {
+          "subjectPixels": 34154,
+          "edgePixels": 0,
+          "anchor": {
+            "x": 160,
+            "y": 310
+          },
+          "durationMs": 700
+        }
+      ]
+    },
+    {
+      "mode": "ride",
+      "facing": "down",
+      "action": "move",
+      "frames": [
+        {
+          "subjectPixels": 34129,
+          "edgePixels": 0,
+          "anchor": {
+            "x": 164,
+            "y": 310
+          },
+          "durationMs": 180
+        },
+        {
+          "subjectPixels": 34154,
+          "edgePixels": 0,
+          "anchor": {
+            "x": 160,
+            "y": 310
+          },
+          "durationMs": 180
+        },
+        {
+          "subjectPixels": 34149,
+          "edgePixels": 0,
+          "anchor": {
+            "x": 154,
+            "y": 309
+          },
+          "durationMs": 180
+        },
+        {
+          "subjectPixels": 33994,
+          "edgePixels": 0,
+          "anchor": {
+            "x": 148,
+            "y": 309
+          },
+          "durationMs": 180
+        }
+      ]
+    },
+    {
+      "mode": "ride",
+      "facing": "left",
+      "action": "idle",
+      "frames": [
+        {
+          "subjectPixels": 43745,
+          "edgePixels": 0,
+          "anchor": {
+            "x": 144,
+            "y": 307
+          },
+          "durationMs": 700
+        }
+      ]
+    },
+    {
+      "mode": "ride",
+      "facing": "left",
+      "action": "move",
+      "frames": [
+        {
+          "subjectPixels": 43224,
+          "edgePixels": 0,
+          "anchor": {
+            "x": 149,
+            "y": 307
+          },
+          "durationMs": 180
+        },
+        {
+          "subjectPixels": 43745,
+          "edgePixels": 0,
+          "anchor": {
+            "x": 144,
+            "y": 307
+          },
+          "durationMs": 180
+        },
+        {
+          "subjectPixels": 43621,
+          "edgePixels": 0,
+          "anchor": {
+            "x": 139,
+            "y": 307
+          },
+          "durationMs": 180
+        },
+        {
+          "subjectPixels": 43678,
+          "edgePixels": 0,
+          "anchor": {
+            "x": 136,
+            "y": 307
+          },
+          "durationMs": 180
+        }
+      ]
+    },
+    {
+      "mode": "ride",
+      "facing": "right",
+      "action": "idle",
+      "frames": [
+        {
+          "subjectPixels": 44515,
+          "edgePixels": 0,
+          "anchor": {
+            "x": 173,
+            "y": 304
+          },
+          "durationMs": 700
+        }
+      ]
+    },
+    {
+      "mode": "ride",
+      "facing": "right",
+      "action": "move",
+      "frames": [
+        {
+          "subjectPixels": 44429,
+          "edgePixels": 0,
+          "anchor": {
+            "x": 176,
+            "y": 304
+          },
+          "durationMs": 180
+        },
+        {
+          "subjectPixels": 44515,
+          "edgePixels": 0,
+          "anchor": {
+            "x": 173,
+            "y": 304
+          },
+          "durationMs": 180
+        },
+        {
+          "subjectPixels": 44737,
+          "edgePixels": 0,
+          "anchor": {
+            "x": 167,
+            "y": 304
+          },
+          "durationMs": 180
+        },
+        {
+          "subjectPixels": 44582,
+          "edgePixels": 0,
+          "anchor": {
+            "x": 164,
+            "y": 304
+          },
+          "durationMs": 180
+        }
+      ]
+    },
+    {
+      "mode": "ride",
+      "facing": "up",
+      "action": "idle",
+      "frames": [
+        {
+          "subjectPixels": 32993,
+          "edgePixels": 0,
+          "anchor": {
+            "x": 160,
+            "y": 301
+          },
+          "durationMs": 700
+        }
+      ]
+    },
+    {
+      "mode": "ride",
+      "facing": "up",
+      "action": "move",
+      "frames": [
+        {
+          "subjectPixels": 32945,
+          "edgePixels": 0,
+          "anchor": {
+            "x": 165,
+            "y": 301
+          },
+          "durationMs": 180
+        },
+        {
+          "subjectPixels": 32993,
+          "edgePixels": 0,
+          "anchor": {
+            "x": 160,
+            "y": 301
+          },
+          "durationMs": 180
+        },
+        {
+          "subjectPixels": 33138,
+          "edgePixels": 0,
+          "anchor": {
+            "x": 155,
+            "y": 301
+          },
+          "durationMs": 180
+        },
+        {
+          "subjectPixels": 33151,
+          "edgePixels": 0,
+          "anchor": {
+            "x": 150,
+            "y": 301
+          },
+          "durationMs": 180
+        }
+      ]
+    }
+  ],
+  "limitations": [
+    "Partial-alpha interiors and edges retained from visually approved E2; opacity acceptance not passed.",
+    "Idle standing pose, alternating gait, tire markings, visual jitter and real occlusion remain unverified.",
+    "No homepage or selection-menu integration."
+  ]
+}

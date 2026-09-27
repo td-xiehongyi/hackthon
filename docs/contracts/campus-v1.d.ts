@@ -5,12 +5,16 @@ export type PlaceId =
   | "xiaoxiang_library"
   | "xiaoxiang_teaching_group"
   /** Xiaoxiang secondary stadium only; excludes the main stadium and other fields. */
-  | "xiaoxiang_sports_ground";
-export type FeatureKey = "library" | "teaching" | "stadium";
-export type PlaceIdentity = { name: string; campusId: "xiaoxiang" } & (
-  | { placeId: "xiaoxiang_library"; featureKey: "library" }
-  | { placeId: "xiaoxiang_teaching_group"; featureKey: "teaching" }
-  | { placeId: "xiaoxiang_sports_ground"; featureKey: "stadium" }
+  | "xiaoxiang_sports_ground"
+  | "lunan_canteen_2"
+  | "lunan_shenghua_dormitory";
+export type FeatureKey = "library" | "teaching" | "stadium" | "canteen" | "dormitory";
+export type PlaceIdentity = { name: string } & (
+  | { placeId: "xiaoxiang_library"; featureKey: "library"; campusId: "xiaoxiang" }
+  | { placeId: "xiaoxiang_teaching_group"; featureKey: "teaching"; campusId: "xiaoxiang" }
+  | { placeId: "xiaoxiang_sports_ground"; featureKey: "stadium"; campusId: "xiaoxiang" }
+  | { placeId: "lunan_canteen_2"; featureKey: "canteen"; campusId: "lunan" }
+  | { placeId: "lunan_shenghua_dormitory"; featureKey: "dormitory"; campusId: "lunan" }
 );
 
 export interface Point { x: number; y: number }
@@ -42,6 +46,8 @@ export interface InteractionRecord {
   entrancePoint: Point | null;
   /** Player ground-contact point must be inside this area when E is newly pressed. */
   triggerPolygon: Polygon | null;
+  /** Optional building/ground outline for highlighting; defaults to the trigger area. */
+  highlightPolygon?: Polygon;
   returnFallbackPointId: string | null;
 }
 export interface SafePoint {
@@ -59,7 +65,7 @@ export interface Occluder {
 }
 export interface MapAnnotation {
   schemaVersion: 1;
-  mapId: "csu-campus-v9";
+  mapId: "csu-campus-v20";
   imagePath: string;
   imageSha256: string;
   widthPx: 1041;

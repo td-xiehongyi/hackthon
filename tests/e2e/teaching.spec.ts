@@ -1,9 +1,7 @@
 import { expect, test, type Page } from '@playwright/test';
 
 const openTeaching = async (page: Page) => {
-  await page.goto('/');
-  await expect(page.getByRole('status', { name: '地图加载状态' })).toHaveText('地图已加载');
-  await page.getByRole('button', { name: '进入教学楼群', exact: true }).click();
+  await page.goto('/#teaching');
   await expect(page.getByRole('heading', { name: '课表与蹭课中心' })).toBeVisible();
 };
 
@@ -82,11 +80,11 @@ test('教学楼页支持小屏、横屏与减少动效', async ({ page }) => {
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
 });
 
-test('从教学楼页使用浏览器后退可返回原地图', async ({ page }) => {
+test('教学楼深链接可以返回校园探索页', async ({ page }) => {
   await openTeaching(page);
   await expect(page).toHaveURL(/#teaching$/);
-  await page.goBack();
-  await expect(page.getByRole('heading', { name: '中南大学像素校园' })).toBeVisible();
+  await page.getByRole('button', { name: '返回校园', exact: true }).click();
+  await expect(page.getByRole('heading', { name: '附近地图' })).toBeVisible();
 });
 
 test('教务系统辅助导入与兴趣关键词可用', async ({ page }) => {

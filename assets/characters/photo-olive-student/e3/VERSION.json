@@ -1,0 +1,31 @@
+{
+  "characterId": "photo-olive-student",
+  "version": "0.3.0-rc.1",
+  "status": "integration-candidate",
+  "appearanceApproved": true,
+  "animationSampleApproved": true,
+  "fullAcceptance": false,
+  "recommendedUniformScale": 0.1,
+  "files": [
+    {
+      "file": "walk-cycle.png",
+      "sha256": "dc2499b1c9799079710a48f39d819d0adc42f309d185cb82ec45d9122aa099e7"
+    },
+    {
+      "file": "ride-cycle.png",
+      "sha256": "fd8a82e75ece58995458a8d5431960bd449f1dae2fc6876c24cfca41f0befb27"
+    },
+    {
+      "file": "manifest.json",
+      "sha256": "ba3010c6be4fb98ff5d891afa3cbd110ffa17004599be34fac2958df7c8d8f76"
+    },
+    {
+      "file": "SOURCE.md",
+      "sha256": "b96bfe32b17a97ff6eda2aabf99abd6087dde7927e9bd1c0ca318356390772df"
+    },
+    {
+      "file": "PROMPTS.md",
+      "sha256": "6213f143bef9021efc3b8a14e47cdf8f46229b77c383f8be80b33ed3f6bddcd0"
+    }
+  ]
+}

@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>照片蓝眼长毛猫｜E2 动画候选预览</title>
+  <style>
+    :root { font-family: system-ui,sans-serif; color:#263641; background:#f5f1e9; }
+    body { max-width:1200px; margin:auto; padding:24px; }
+    p { line-height:1.5; } .warning { color:#8b4b22; }
+    .controls { display:flex; flex-wrap:wrap; gap:12px; align-items:center; margin:16px 0; }
+    button,select { padding:8px 12px; border:1px solid #8a9aa5; border-radius:8px; background:white; font:inherit; }
+    .cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:12px; }
+    figure { margin:0; padding:10px; border-radius:12px; background:white; box-shadow:0 2px 12px #26364116; }
+    figcaption { padding:4px; font-weight:700; }
+    canvas { display:block; width:100%; height:auto; image-rendering:pixelated; }
+    .checker { background-color:#fff; background-image:linear-gradient(45deg,#e9edf0 25%,transparent 25%),linear-gradient(-45deg,#e9edf0 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#e9edf0 75%),linear-gradient(-45deg,transparent 75%,#e9edf0 75%); background-size:24px 24px; background-position:0 0,0 12px,12px -12px,-12px 0; }
+    .map { position:relative; height:300px; overflow:hidden; border-radius:12px; background:#a8bba1 url('/maps/campus-v20.png') center 42%/520px auto no-repeat; }
+    .map canvas { position:absolute; left:50%; top:55%; width:120px; height:120px; transform:translate(-50%,-80%); }
+  </style>
+</head>
+<body>
+  <h1>照片蓝眼长毛猫 · E2 动画候选</h1>
+  <p class="warning">行走和骑车各四方向、每方向四帧。此页用于审阅动作；彩色边缘、帧间一致性和锚点仍待精修，尚未接入游戏。</p>
+  <p id="status">加载中…</p>
+  <div class="controls">
+    <button id="toggle">暂停</button>
+    <button id="step">单步</button>
+    <label>动作 <select id="action"><option value="move">移动</option><option value="idle">待机</option></select></label>
+    <label>速度 <select id="speed"><option value="1">1×</option><option value="0.5">0.5×</option><option value="2">2×</option></select></label>
+    <label>地图预览 <select id="map-mode"><option value="walk">步行</option><option value="ride">骑行</option></select></label>
+    <label>朝向 <select id="map-facing"><option value="down">朝下</option><option value="left">朝左</option><option value="right">朝右</option><option value="up">朝上</option></select></label>
+  </div>
+  <div class="cards" id="cards"></div>
+  <h2>地图候选比例</h2>
+  <p>仅检视角色与地图的视觉大小；不模拟移动、碰撞或遮挡。</p>
+  <div class="map"><canvas id="map-sprite" width="400" height="400"></canvas></div>
+  <script type="module">
+    const base = new URL('.', location.href);
+    const manifest = await fetch(new URL('manifest.json', base)).then(r => { if (!r.ok) throw Error('manifest 读取失败'); return r.json(); });
+    const images = new Map();
+    await Promise.all(manifest.sheets.map(async sheet => {
+      const image = new Image(); image.src = new URL(sheet.url, base).href; await image.decode();
+      if (image.width !== sheet.width || image.height !== sheet.height) throw Error(sheet.id + ' 图片尺寸不符');
+      images.set(sheet.id,image);
+    }));
+    const facingNames = {down:'正面',left:'朝左',right:'朝右',up:'背面'};
+    const clips = new Map(manifest.clips.map(clip => [`${clip.mode}/${clip.facing}/${clip.action}`,clip]));
+    const entries=[];
+    for (const mode of ['walk','ride']) for (const facing of ['down','left','right','up']) {
+      const figure=document.createElement('figure'), caption=document.createElement('figcaption'), canvas=document.createElement('canvas');
+      caption.textContent=(mode==='walk'?'步行':'骑行')+' · '+facingNames[facing];
+      canvas.width=400; canvas.height=400; canvas.className='checker';
+      figure.append(caption,canvas); document.querySelector('#cards').append(figure);
+      entries.push({mode,facing,canvas});
+    }
+    document.querySelector('#status').textContent='已加载 2 张 PNG，候选 manifest 含 '+manifest.clips.length+' 个状态入口';
+    let playing=true, elapsed=0, last=performance.now();
+    function draw(canvas,mode,facing,action,step) {
+      const clip=clips.get(`${mode}/${facing}/${action}`); if (!clip) return;
+      const frame=clip.frames[step%clip.frames.length], rect=frame.rect;
+      const ctx=canvas.getContext('2d'); ctx.clearRect(0,0,canvas.width,canvas.height); ctx.imageSmoothingEnabled=false;
+      const scale=mode==='walk'?0.86:0.78;
+      ctx.drawImage(images.get(frame.sheetId),rect.x,rect.y,rect.width,rect.height,
+        canvas.width/2-frame.anchor.x*scale,canvas.height*0.9-frame.anchor.y*scale,rect.width*scale,rect.height*scale);
+      if(canvas.id!=='map-sprite'){
+        ctx.strokeStyle='#c34442'; ctx.beginPath();ctx.moveTo(canvas.width/2-6,canvas.height*0.9);ctx.lineTo(canvas.width/2+6,canvas.height*0.9);ctx.stroke();
+      }
+    }
+    function frame(now) {
+      const dt=Math.max(0,Math.min(now-last,80));last=now;
+      if(playing)elapsed+=dt*Number(document.querySelector('#speed').value);
+      const action=document.querySelector('#action').value;
+      for(const e of entries){const clip=clips.get(`${e.mode}/${e.facing}/${action}`),step=Math.floor(elapsed/(e.mode==='walk'?180:160))%clip.frames.length;draw(e.canvas,e.mode,e.facing,action,step);}
+      const mode=document.querySelector('#map-mode').value,facing=document.querySelector('#map-facing').value;
+      const clip=clips.get(`${mode}/${facing}/${action}`),step=Math.floor(elapsed/(mode==='walk'?180:160))%clip.frames.length;
+      draw(document.querySelector('#map-sprite'),mode,facing,action,step);
+      requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+    document.querySelector('#toggle').onclick=e=>{playing=!playing;e.target.textContent=playing?'暂停':'播放';};
+    document.querySelector('#step').onclick=()=>{playing=false;document.querySelector('#toggle').textContent='播放';elapsed+=180;};
+  </script>
+</body>
+</html>

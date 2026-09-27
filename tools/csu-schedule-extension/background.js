@@ -1,6 +1,6 @@
 /* MV3 service worker: validates and relays user-triggered captures. */
 const CSU_URL = /^https?:\/\/csujwc\.its\.csu\.edu\.cn\//i;
-const APP_URL = /^http:\/\/(?:127\.0\.0\.1|localhost):517[34]\//i;
+const APP_URL = /^http:\/\/(?:127\.0\.0\.1|localhost):517[346]\//i;
 const STORE_KEY = 'latestCsuScheduleCapture';
 const MAX_COURSES = 500;
 const MAX_PAYLOAD_CHARS = 1_500_000;
@@ -89,6 +89,7 @@ const relayToOpenApps = async (payload) => {
   const tabs = await chrome.tabs.query({ url: [
     'http://127.0.0.1:5173/*', 'http://127.0.0.1:5174/*',
     'http://localhost:5173/*', 'http://localhost:5174/*',
+    'http://127.0.0.1:5176/*', 'http://localhost:5176/*',
   ] });
   const results = await Promise.all(tabs.filter(isAppTab).map((tab) => sendToTab(tab.id, {
     type: 'CSU_SCHEDULE_CAPTURED',

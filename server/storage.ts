@@ -47,7 +47,7 @@ export function emptyPhotoIndex(): PhotoIndex {
   return { schemaVersion: 1, photos: [], uploads: {} };
 }
 
-function readJson<T>(filePath: string): T {
+export function readJson<T>(filePath: string): T {
   if (!existsSync(filePath)) {
     throw new ApiError(503, 'STORAGE_DATA_INVALID', '数据文件缺失：' + path.basename(filePath));
   }
@@ -65,7 +65,7 @@ function readJson<T>(filePath: string): T {
 }
 
 /** 写入同一目录的临时文件并 fsync 后原子替换，避免 GET 读到半成品。 */
-function writeJsonAtomic(filePath: string, value: unknown): void {
+export function writeJsonAtomic(filePath: string, value: unknown): void {
   const dir = path.dirname(filePath);
   mkdirSync(dir, { recursive: true });
   const tmp = path.join(dir, `.tmp-${randomUUID()}.json`);

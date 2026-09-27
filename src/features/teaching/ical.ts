@@ -192,4 +192,3 @@ export function exportScheduleIcal(
   lines.push('END:VCALENDAR');
   return `${foldLines(lines)}\r\n`;
 }
-

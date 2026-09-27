@@ -23,4 +23,3 @@
 - CSU JSON 仍支持顶层数组和多层 `data/result/rows` 包装。
 - 同时接受 AISchedule/WakeUp 常见的 `day`、`sections`、`position`、`week`、`instructor` 等字段；所有输入最终都经过同一份课程、周次、节次和敏感字段校验。
 - 课表管理页可以按用户填写的“第 1 周周一”生成 `.ics` 文件。事件在浏览器本地展开到实际周次，单双周和自定义周次不会被压缩成可能不兼容的重复规则。
-

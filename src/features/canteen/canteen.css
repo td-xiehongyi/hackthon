@@ -1,0 +1,83 @@
+.canteen-panel { min-height: 100%; color: #294b38; background: #faf7eb; font-family: inherit; }
+.canteen-panel * { box-sizing: border-box; }
+.canteen-panel button { font: inherit; cursor: pointer; }
+.canteen-panel button:disabled { opacity: .55; cursor: default; }
+.canteen-service-note { margin: 0; padding: 12px 28px; color: #856335; background: #f3ecd7; font-size: 12px; }
+.canteen-service-note button { margin-left: 12px; padding: 5px 9px; }
+.canteen-review-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 24px; }
+.canteen-review-heading h3 { margin: 0; font-size: 18px; }
+.canteen-review-heading button, .canteen-form-footer button { padding: 9px 14px; border: 1px solid #a6b092; color: #294b38; background: #faf7eb; }
+.canteen-review-heading button, .canteen-form-footer button[type="submit"] { color: #fffbea; background: #315744; border-color: #315744; }
+.canteen-save-hint { color: #758067; font-size: 12px; line-height: 1.6; }
+.canteen-review-form { padding: 18px; margin: 16px 0; border: 1px solid #bac4a7; background: #eff0df; }
+.canteen-review-form fieldset { border: 0; padding: 0; margin: 0; min-width: 0; }
+.canteen-review-form legend { padding: 0 0 16px; font-size: 14px; font-weight: 600; }
+.canteen-review-form label { display: flex; flex-direction: column; gap: 8px; min-width: 0; font-size: 12px; }
+.canteen-review-fields { display: grid; grid-template-columns: 1fr 140px; gap: 16px; margin-bottom: 16px; }
+.canteen-review-form :is(input, select, textarea) { width: 100%; min-width: 0; max-width: 100%; padding: 10px; border: 1px solid #b5bea0; background: #fffdf3; color: #294b38; font: inherit; }
+.canteen-review-form :is(input, select, textarea):focus-visible { outline: 2px solid #b56c32; outline-offset: 2px; }
+.canteen-review-form textarea { resize: vertical; line-height: 1.7; }
+.canteen-form-footer { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-top: 12px; font-size: 11px; color: #758067; }
+.canteen-form-footer > div { display: flex; gap: 8px; }
+.canteen-save-error { color: #a14831; font-size: 13px; line-height: 1.6; }
+.canteen-saved { padding: 12px; color: #315744; background: #e3ead5; font-size: 13px; }
+.canteen-published time { display: block; margin-top: 6px; font-size: 11px; color: #7a866e; }
+.canteen-published p { white-space: pre-wrap; overflow-wrap: anywhere; }
+@media (max-width: 900px) { .canteen-review-fields { grid-template-columns: 1fr; } }
+.canteen-panel button:focus-visible, .canteen-detail h2:focus-visible { outline: 3px solid #b56c32; outline-offset: 4px; }
+.canteen-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; padding: 26px 28px 22px; border-bottom: 1px solid #cdd2b8; background: #e9ecd9; }
+.canteen-eyebrow { font-size: 11px; letter-spacing: 2px; color: #6b785d; }
+.canteen-header h1 { margin: 7px 0; font-size: 30px; letter-spacing: 4px; }
+.canteen-header p { margin: 0; font-size: 13px; color: #66755c; }
+.canteen-back, .canteen-list-back { padding: 9px 13px; color: #294b38; border: 1px solid #a6b092; background: #faf7eb; }
+.canteen-demo-note { margin: 0; padding: 10px 28px; font-size: 11px; line-height: 1.7; color: #846640; background: #f4ecd5; border-bottom: 1px solid #e1d6bc; }
+.canteen-floors { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; padding: 20px 28px 0; }
+.canteen-floors button { display: flex; justify-content: center; align-items: baseline; gap: 10px; padding: 13px 8px; color: #5a6f50; border: 1px solid #bbc5a4; background: #f1f1e3; }
+.canteen-floors button span { font-size: 12px; opacity: .65; }
+.canteen-floors button[aria-pressed="true"] { color: #fffbea; border-color: #315744; background: #315744; box-shadow: 3px 3px #bac5a5; }
+.canteen-body { padding: 24px 28px 28px; }
+.canteen-floor-heading { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+.canteen-floor-heading h2 { margin: 0 0 6px; font-size: 20px; }
+.canteen-floor-heading p, .canteen-floor-heading > span { margin: 0; color: #758067; font-size: 12px; }
+.canteen-windows { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+.canteen-window { min-width: 0; padding: 0; overflow: hidden; text-align: left; color: inherit; background: #fffdf3; border: 1px solid #c2c9ae; box-shadow: 3px 3px #dce0ca; transition: transform .15s, box-shadow .15s; }
+.canteen-window:hover { transform: translateY(-3px); box-shadow: 4px 6px #d1d8bf; }
+.canteen-window-image { position: relative; }
+.canteen-window img, .canteen-image-missing { display: block; width: 100%; aspect-ratio: 8 / 5; object-fit: cover; background: #e6ead6; }
+.canteen-image-missing { display: grid; place-items: center; color: #7b836b; font-size: 12px; }
+.canteen-window-image > span { position: absolute; top: 12px; left: 12px; padding: 5px 8px; color: #fffce7; background: #315744; font-size: 10px; letter-spacing: 1px; }
+.canteen-window-content { padding: 17px; }
+.canteen-window-content h3 { margin: 0 0 7px; font-size: 19px; }
+.canteen-window-content p { margin: 0; color: #78836d; font-size: 12px; }
+.canteen-window-footer { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-top: 20px; padding-top: 13px; border-top: 1px solid #e0e3cf; font-size: 11px; }
+.canteen-window-footer > span { color: #97713c; }
+.canteen-window-footer strong { font-size: 12px; }
+.canteen-detail-heading { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: center; gap: 24px; margin-top: 22px; }
+.canteen-detail-heading img { display: block; width: 100%; aspect-ratio: 8 / 5; object-fit: cover; border: 1px solid #c2c9ae; }
+.canteen-detail-heading h2 { margin: 10px 0; font-size: 25px; }
+.canteen-detail-heading p { font-size: 13px; color: #78836d; }
+.canteen-score { display: flex; align-items: baseline; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+.canteen-score strong { font-size: 25px; color: #a26b2f; }
+.canteen-score span { font-size: 11px; color: #78836d; }
+.canteen-detail > h3 { margin-top: 28px; font-size: 17px; }
+.canteen-detail > h3 span { font-size: 12px; font-weight: normal; color: #8a846b; }
+.canteen-reviews { list-style: none; margin: 0; padding: 0; }
+.canteen-reviews li { padding: 18px 0; border-top: 1px solid #d8ddc4; }
+.canteen-reviews li > div { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; font-size: 12px; }
+.canteen-reviews li > div span { color: #af7836; letter-spacing: 2px; }
+.canteen-reviews p { margin: 10px 0 0; font-size: 13px; line-height: 1.8; color: #67775c; }
+.canteen-empty { padding: 26px 16px; background: #f0f1e3; border: 1px dashed #bfc7aa; color: #77836b; font-size: 13px; line-height: 1.8; }
+@media (max-width: 1100px) {
+  .canteen-windows, .canteen-detail-heading { grid-template-columns: 1fr; }
+  .canteen-header, .canteen-body { padding: 20px; }
+  .canteen-floors { padding: 16px 20px 0; }
+  .canteen-demo-note { padding: 10px 20px; }
+}
+@media (max-width: 600px) {
+  .campus-shell .place-overlay:has(.canteen-panel) { left: 12px; width: calc(100vw - 24px); top: 16px; height: calc(100dvh - 32px); }
+  .canteen-header, .canteen-body { padding: 16px; }
+  .canteen-demo-note { padding: 9px 16px; }
+  .canteen-floors { padding: 16px 16px 0; gap: 6px; }
+  .canteen-floors button { gap: 5px; }
+}
+@media (prefers-reduced-motion: reduce) { .canteen-window { transition: none; } }

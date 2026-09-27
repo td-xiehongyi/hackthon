@@ -6,6 +6,8 @@
   text-rendering: optimizeLegibility;
 }
 * { box-sizing: border-box; }
+/* 显式规则：.workspace 的 display: grid 会覆盖浏览器默认的 [hidden] 样式。 */
+[hidden] { display: none !important; }
 body { margin: 0; }
 button, a { -webkit-tap-highlight-color: transparent; }
 button { font: inherit; cursor: pointer; }
@@ -512,4 +514,89 @@ h2 { font-size: 35px; line-height: 1.55; font-weight: 600; margin: 17px 0 13px; 
   .map-controls .dorm-entry-map-button { width: 30px; min-width: 30px; padding: 0; font-size: 0; }
   .map-controls .dorm-entry-map-button::after { content: "宿"; font-size: 11px; }
 }
+
+/* 地点功能页宿主与占位页面（阶段 1） */
+.workspace-single { grid-template-columns: minmax(0, 1fr); max-width: 1080px; }
+.place-panel { border: 1px solid #d1d9c8; border-radius: 8px; background: #fcfdf7; padding: 22px 24px 26px; box-shadow: 0 8px 32px #344d3a08; }
+.place-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; padding-bottom: 14px; border-bottom: 1px solid #dde2d5; }
+.place-header h2 { font-size: 22px; margin: 6px 0 4px; line-height: 1.4; letter-spacing: .5px; }
+.place-meta { margin: 0; font-size: 11px; color: #83917b; font-variant-numeric: tabular-nums; }
+.place-return { border: 1px solid #b7c4ac; background: #254d3b; color: #faf9ed; border-radius: 4px; padding: 8px 16px; font-size: 12px; white-space: nowrap; }
+.place-return:hover { background: #1d3d2f; }
+.place-notice { margin: 16px 0 0; padding: 10px 12px; background: #f3f0e2; border-left: 3px solid #c2a75c; font-size: 12px; color: #6d6446; }
+.place-facts { display: flex; flex-wrap: wrap; gap: 26px; margin: 16px 0 0; padding: 0; }
+.place-facts > div { display: flex; flex-direction: column; gap: 3px; }
+.place-facts dt { font-size: 10px; letter-spacing: 1.4px; color: #8d9c80; }
+.place-facts dd { margin: 0; font-size: 12px; color: #3f5743; word-break: break-all; }
+.place-body { margin-top: 20px; display: flex; flex-direction: column; gap: 12px; }
+.place-field { display: flex; flex-direction: column; gap: 7px; font-size: 12px; color: #5c6b57; }
+.place-field input { border: 1px solid #cfd8c4; border-radius: 4px; padding: 9px 11px; font: inherit; font-size: 13px; background: #f7f9f2; color: #263c31; }
+.place-field input:focus-visible { outline: 3px solid #a27b26; outline-offset: 2px; }
+.place-hint { margin: 0; font-size: 12px; color: #6f7d63; }
+.place-error { margin: 0; font-size: 12px; color: #8a3521; background: #f7ece7; border-left: 3px solid #a94c38; padding: 9px 12px; }
+.place-empty { font-size: 13px; color: #74806e; margin: 0; }
+.place-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.place-actions button { border: 1px solid #d5decb; background: #f4f7ed; color: #3f5743; border-radius: 4px; padding: 8px 13px; font-size: 12px; }
+.place-actions button:hover { background: #e3ebd8; }
+
+/* 开发测试场景（临时，仅开发模式） */
+.dev-banner { margin: 0 0 16px; padding: 10px 14px; background: #fbf1dc; border-left: 3px solid #c98a1d; font-size: 12px; line-height: 1.8; color: #6d5020; }
+.playground-layout { display: grid; grid-template-columns: minmax(0, 1fr) 260px; gap: 20px; }
+.playground-stage { height: calc(100dvh - 280px); }
+.playground-hud { display: flex; flex-direction: column; gap: 14px; font-size: 12px; }
+.playground-hud dl { margin: 0; display: grid; grid-template-columns: 1fr; gap: 8px; }
+.playground-hud dl > div { display: flex; justify-content: space-between; border-bottom: 1px solid #dde2d5; padding-bottom: 6px; }
+.playground-hud dt { color: #83917b; }
+.playground-hud dd { margin: 0; font-variant-numeric: tabular-nums; color: #263c31; }
+.playground-tuning { margin: 0; font-size: 11px; color: #7a6f4b; line-height: 1.7; }
+.playground-toggle { display: flex; align-items: center; gap: 8px; color: #5c6b57; }
+@media (max-width: 900px) { .playground-layout { grid-template-columns: minmax(0, 1fr); } }
+.interact-prompt { margin: 0; padding: 9px 12px; background: #254d3b; color: #fffdf2; border-radius: 4px; font-size: 13px; text-align: center; }
+.playground-teleports { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 11px; color: #7a6f4b; }
+.playground-teleports span { width: 100%; }
+.playground-teleports button { border: 1px dashed #cbb877; background: #fdfaef; color: #6d5a20; border-radius: 4px; padding: 5px 9px; font-size: 11px; }
+
+/* 地图模式切换与未标定提示 */
+.mode-switch { display: inline-flex; margin-right: 10px; border: 1px solid #d5decb; border-radius: 4px; overflow: hidden; }
+.map-controls .mode-switch button { border: 0; border-radius: 0; font-size: 12px; padding: 0 12px; min-width: 0; }
+.map-controls .mode-switch button[aria-pressed="true"] { background: #254d3b; color: #faf9ed; }
+.map-uncalibrated { margin: 0; padding: 8px 18px; font-size: 11px; line-height: 1.7; color: #6d5020; background: #fbf1dc; border-bottom: 1px solid #ecd9ae; }
+.map-canvas canvas:focus { outline: none; }
+.map-annotation-note { background: #eef3e6; color: #3f5743; border-bottom-color: #d5decb; }
+
+/* 地点功能页内容与共用相册 */
+.place-section { margin-top: 18px; font-size: 13px; line-height: 1.8; }
+.place-section h3, .gallery h3 { font-size: 13px; margin: 14px 0 6px; letter-spacing: .5px; }
+.place-missing { margin: 0; color: #8a7a4f; background: #f7f3e4; border-left: 3px solid #c9b46b; padding: 7px 11px; font-size: 12px; }
+.gallery { margin-top: 22px; padding-top: 16px; border-top: 1px solid #dde2d5; }
+.gallery-header { display: flex; align-items: center; justify-content: space-between; }
+.gallery-header h3 { margin: 0; }
+.gallery-actions button, .gallery .place-error button, .gallery-viewer button { border: 1px solid #b7c4ac; background: #254d3b; color: #faf9ed; border-radius: 4px; padding: 7px 14px; font-size: 12px; }
+.gallery .place-error button { margin-top: 6px; }
+.gallery-note { margin: 10px 0 0; font-size: 12px; color: #7a6f4b; }
+.gallery-policy { color: #74806e; }
+.gallery-status { margin: 10px 0 0; font-size: 12px; color: #5c6b57; }
+.gallery-ok { color: #2e6b3a; }
+.gallery .place-error { margin-top: 10px; }
+.gallery .place-error p { margin: 0; }
+.gallery-empty { margin: 14px 0 0; font-size: 12px; color: #83917b; padding: 26px; text-align: center; border: 1px dashed #d1d9c8; border-radius: 6px; }
+.gallery-grid { list-style: none; padding: 0; margin: 14px 0 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; }
+.gallery-thumb { padding: 0; border: 1px solid #d1d9c8; border-radius: 4px; overflow: hidden; background: #eef1e8; width: 100%; aspect-ratio: 1; }
+.gallery-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.gallery-viewer { position: fixed; inset: 0; background: #16221bee; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; z-index: 50; padding: 24px; color: #e7eadf; font-size: 12px; }
+.gallery-viewer img { max-width: 92vw; max-height: 78vh; object-fit: contain; border-radius: 4px; }
+.gallery-viewer p { margin: 0; }
+/* A：地点提示与保持原图坐标的定位总览。 */
+.map-interact-prompt { position: absolute; z-index: 2; left: 50%; bottom: 12px; transform: translateX(-50%); padding: 12px 20px; background: #254d3b; color: white; border-radius: 8px; white-space: nowrap; pointer-events: none; }
+.navigation-overview { width: min(900px, 92vw); max-height: 92vh; border: 1px solid #819885; border-radius: 14px; padding: 20px; background: #f8f7ef; }
+.navigation-overview::backdrop { background: #17281bcc; }
+.navigation-overview header { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+.navigation-overview[open] { display: flex; flex-direction: column; height: 92vh; color: #263c31; font-family: inherit; }
+.navigation-overview header, .navigation-overview > p, .navigation-overview > label, .navigation-overview > .place-actions { flex-shrink: 0; }
+.navigation-overview h2 { font-size: 22px; margin: 0; }
+.navigation-overview label { display: flex; align-items: center; gap: 12px; }
+.navigation-overview input { padding: 8px; border: 1px solid #b7c4ac; border-radius: 5px; }
+.navigation-overview svg { display: block; width: 100%; flex: 1; min-height: 120px; margin-top: 10px; }
+.navigation-overview header button, .sidebar > button { padding: 9px 13px; background: #254d3b; color: #faf9ed; border: 0; border-radius: 5px; font: inherit; font-size: 12px; cursor: pointer; }
+.stadium-page { width: 100%; }
 @media (max-width: 620px) { .timetable-overlay { padding: 10px; } .timetable-modal { max-height: calc(100dvh - 20px); padding: 18px 14px 22px; } .timetable-modal-head h2 { font-size: 22px; } }

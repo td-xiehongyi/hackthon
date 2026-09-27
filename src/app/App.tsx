@@ -1,39 +1,41 @@
-import { useCallback, useEffect, useState } from 'react';
+/**
+ * 应用首页：地图探索页 ↔ 地点功能页的宿主。
+ *
+ * v20 通行范围由颜色提取与人工规则合成、边界待核验。已核验的互动记录才开放 E 键入口。
+ * 原位返回、输入锁和定位总览接入同一宿主；互动区域按当前游戏底图配置。
+ */
+
+import { useCallback, useEffect, useRef, useState } from 'react';
 import TeachingPage from '../features/teaching/TeachingPage';
-import MapViewport from '../game/MapViewport';
-import TimetableEditor from '../features/teaching/TimetableEditor';
 import DormitoryPage from '../features/dormitory/DormitoryPage';
+import MapViewport from '../game/MapViewport';
+import type { MapAnnotation } from '../shared/contracts';
+import type { CampusMapScene } from '../game/CampusMapScene';
+import type { OpenContext } from './place-session';
+import PlaceHost, { type PlaceHostHandle } from './PlaceHost';
+import StartScreen from './StartScreen';
+import { readCampusProfile, saveCampusProfile, type CampusProfile } from './campus-profile';
+import './explorer.css';
+import './place-overlay.css';
+import { readCharacterChoice, saveCharacterChoice, type CharacterChoice } from '../game/character/choices';
 
 export default function App() {
-  const [page, setPage] = useState<'campus' | 'teaching' | 'dormitory'>(() => {
-    if (window.location.hash === '#teaching') return 'teaching';
-    if (window.location.hash === '#dormitory') return 'dormitory';
-    return 'campus';
-  });
-  const openTeaching = useCallback(() => {
-    if (window.location.hash !== '#teaching') {
-      window.history.pushState({ csuView: 'teaching' }, '', '#teaching');
-    }
-    setPage('teaching');
-  }, []);
+  const [profile, setProfile] = useState(readCampusProfile);
+  const updateProfile = (next: CampusProfile | null) => {
+    saveCampusProfile(next);
+    setProfile(next);
+  };
+  const [entered, setEntered] = useState(() => ['#teaching', '#dormitory'].includes(window.location.hash));
+  const [character, setCharacter] = useState(readCharacterChoice);
+  const [mapCharacter, setMapCharacter] = useState(character);
+  const [mapStarted, setMapStarted] = useState(() => ['#teaching', '#dormitory'].includes(window.location.hash));
+  const selectCharacter = (choice: CharacterChoice) => {
+    setCharacter(choice);
+    saveCharacterChoice(choice);
+  };
+  const [page, setPage] = useState<'campus' | 'teaching' | 'dormitory'>(() => window.location.hash === '#teaching' ? 'teaching' : window.location.hash === '#dormitory' ? 'dormitory' : 'campus');
   const returnToCampus = useCallback(() => {
-    if (window.history.state?.csuView === 'teaching') {
-      window.history.back();
-      return;
-    }
-    window.history.replaceState({}, '', `${window.location.pathname}${window.location.search}`);
-    setPage('campus');
-  }, []);
-
-  const openDormitory = useCallback(() => {
-    if (window.location.hash !== '#dormitory') {
-      window.history.pushState({ csuView: 'dormitory' }, '', '#dormitory');
-    }
-    setPage('dormitory');
-  }, []);
-
-  const returnFromDormitory = useCallback(() => {
-    if (window.history.state?.csuView === 'dormitory') {
+    if (['teaching', 'dormitory'].includes(window.history.state?.csuView)) {
       window.history.back();
       return;
     }
@@ -42,82 +44,63 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    const handleHistory = () => {
-      if (window.location.hash === '#teaching') setPage('teaching');
-      else if (window.location.hash === '#dormitory') setPage('dormitory');
-      else setPage('campus');
-    };
+    const handleHistory = () => setPage(window.location.hash === '#teaching' ? 'teaching' : window.location.hash === '#dormitory' ? 'dormitory' : 'campus');
     window.addEventListener('popstate', handleHistory);
     return () => window.removeEventListener('popstate', handleHistory);
   }, []);
-  const [timetableOpen, setTimetableOpen] = useState(false);
-  const [timetableDirty, setTimetableDirty] = useState(false);
+  const hostHandle = useRef<PlaceHostHandle | null>(null);
+  const [placeOpen, setPlaceOpen] = useState(false);
+  const mapScene = useRef<CampusMapScene | null>(null);
+  const [annotation, setAnnotation] = useState<MapAnnotation | null>(null);
+  const [returnError, setReturnError] = useState<string | null>(null);
+  const mapBlocked = !entered || page !== 'campus' || placeOpen || returnError !== null;
+  const blockedRef = useRef(mapBlocked);
+  blockedRef.current = mapBlocked;
+  const registerScene = useCallback((scene: CampusMapScene | null) => {
+    mapScene.current = scene;
+    scene?.setSuspended(blockedRef.current);
+  }, []);
+  useEffect(() => { mapScene.current?.setSuspended(mapBlocked); }, [mapBlocked]);
+  const requestOpen = useCallback((context: OpenContext) => { hostHandle.current?.requestOpen(context); }, []);
+  const validateOpen = useCallback((context: OpenContext) => mapScene.current?.canOpen(context) ?? false, []);
 
-  const closeTimetable = useCallback(() => {
-    if (timetableDirty && !window.confirm('课表表单还有未保存内容，确定关闭吗？')) return;
-    setTimetableOpen(false);
-  }, [timetableDirty]);
+  const registerHandle = useCallback((handle: PlaceHostHandle | null) => {
+    hostHandle.current = handle;
+  }, []);
 
-  useEffect(() => {
-    if (!timetableOpen) return;
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') closeTimetable();
-    };
-    window.addEventListener('keydown', onKeyDown);
-    return () => window.removeEventListener('keydown', onKeyDown);
-  }, [timetableOpen, closeTimetable]);
-
-  const openQuickTimetable = useCallback(() => {
-    setTimetableOpen(true);
+  // 正式地图接入角色后：暂停移动并清键 / 恢复按 E 时的原位置与朝向。
+  const onSuspendMap = useCallback(() => { mapScene.current?.setSuspended(true); }, []);
+  const onResumeMap = useCallback((context: OpenContext) => {
+    setReturnError(mapScene.current?.restore(context) ?? null);
+    requestAnimationFrame(() => document.querySelector<HTMLCanvasElement>('.map-canvas canvas')?.focus());
   }, []);
 
   return (
     <>
-    <main className="campus-app" hidden={page !== 'campus'}>
-      <header className="app-header">
-        <div className="brand-mark" aria-hidden="true">中南</div>
-        <div><p className="eyebrow">CSU PIXEL CAMPUS</p><h1>中南大学像素校园</h1></div>
-        <span className="preview-label">校园地图</span>
-        <button type="button" className="timetable-trigger" onClick={openQuickTimetable}>快速录入课表</button>
-      </header>
-      <div className="workspace">
-        <aside className="sidebar">
-          <div>
-            <span className="section-number">01 / CAMPUS MAP</span>
-            <h2>从这里，<br />看见校园。</h2>
-            <p className="intro">沿着道路与湖畔，浏览三个校区的像素风景。</p>
-          </div>
-          <div className="campus-list" aria-label="图中校区">
-            <div><span>01</span>岳麓山校区</div>
-            <div><span>02</span>麓南校区</div>
-            <div><span>03</span>潇湘校区</div>
-          </div>
-          <div className="preview-note">
-            <strong>教学楼群已开放 · 升华公寓群聊</strong>
-            <p>教学楼群与升华公寓群聊已开放</p>
-            <button type="button" onClick={openTeaching}>进入课表与蹭课中心</button>
-            <button type="button" className="dormitory-entry-button" onClick={openDormitory}>进入升华公寓群聊 <span aria-hidden="true">↗</span></button>
-            <button type="button" className="sidebar-timetable" onClick={openQuickTimetable}>快速录入个人课表 <span aria-hidden="true">↗</span></button>
-          </div>
-          <a className="original-link" href="/maps/campus-final-v9.png" target="_blank" rel="noreferrer">查看完整原图 <span aria-hidden="true">↗</span></a>
-        </aside>
-        <MapViewport active={page === 'campus'} onOpenTeaching={openTeaching} onOpenDormitory={openDormitory} />
-      </div>
-      {timetableOpen && page === 'campus' && (
-        <div className="timetable-overlay" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) closeTimetable(); }}>
-          <section className="timetable-modal" role="dialog" aria-modal="true" aria-labelledby="timetable-modal-title">
-            <header className="timetable-modal-head">
-              <div><span className="eyebrow">LIBRARY · STUDY</span><h2 id="timetable-modal-title">学习 · 我的课表</h2></div>
-              <button type="button" className="timetable-modal-close" aria-label="关闭课表录入" onClick={closeTimetable}>×</button>
-            </header>
-            <p className="timetable-modal-intro">按教务系统的星期与节次点击格子，录入你的课程。内容只保存在当前浏览器。</p>
-            <TimetableEditor onDirtyChange={setTimetableDirty} />
-          </section>
+    {!entered && <StartScreen character={character} onSelect={selectCharacter} profile={profile} onProfileChange={updateProfile} onEnter={() => {
+      setMapCharacter(character);
+      setMapStarted(true);
+      setEntered(true);
+    }} />}
+    <main className="campus-shell" hidden={!entered || page !== 'campus'}>
+      <PlaceHost
+        characterChoice={mapCharacter}
+        onSuspendMap={onSuspendMap}
+        onResumeMap={onResumeMap}
+        registerHandle={registerHandle}
+        onOpenChange={setPlaceOpen}
+        validateOpen={validateOpen}
+        annotation={annotation}
+      >
+        {/* 地图探索页：功能页打开时保留地图状态并暂停探索，因此保持挂载。 */}
+        <div>
+          {returnError && <p className="explorer-return-error" role="alert">{returnError}</p>}
+          {mapStarted && <MapViewport key={mapCharacter.id} characterChoice={mapCharacter} profile={profile} active={!mapBlocked} placeOpen={placeOpen} onReturnHome={() => setEntered(false)} registerScene={registerScene} onRequestOpen={requestOpen} onAnnotation={setAnnotation} />}
         </div>
-      )}
+      </PlaceHost>
     </main>
     {page === 'teaching' && <TeachingPage onBack={returnToCampus} />}
-    {page === 'dormitory' && <DormitoryPage onBack={returnFromDormitory} />}
+    {page === 'dormitory' && <DormitoryPage onBack={returnToCampus} />}
     </>
   );
 }

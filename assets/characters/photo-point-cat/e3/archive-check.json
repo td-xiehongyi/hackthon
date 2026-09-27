@@ -1,0 +1,42 @@
+{
+  "archive": "photo-point-cat-0.3.0-rc.1.zip",
+  "members": [
+    {
+      "file": "PROMPTS.md",
+      "size": 3027,
+      "sha256": "144861e7186ad43ae3bbe03c0d6259e0e5dffceb1232875ff6f11462c34d0d41",
+      "sameAsSource": true
+    },
+    {
+      "file": "SOURCE.md",
+      "size": 2839,
+      "sha256": "7baa089d8babfbf5aadede63fcafd6867cb101dd842f729b39cff949dcb9c2a4",
+      "sameAsSource": true
+    },
+    {
+      "file": "VERSION.json",
+      "size": 791,
+      "sha256": "8ba59f887d877c937e228bdb055ce5c81059fc4b5f2e5dbe609742d3bfd8dfbc",
+      "sameAsSource": true
+    },
+    {
+      "file": "manifest.json",
+      "size": 13700,
+      "sha256": "fb2509c0b2c64086bcc8e24251180e388f2a37cdf2692fa5d7e6b2af5758d961",
+      "sameAsSource": true
+    },
+    {
+      "file": "ride-cycle.png",
+      "size": 1767479,
+      "sha256": "7e55bb748901575a2bed69db594aee6a4d251be71bf36f2ddde365abf2b74141",
+      "sameAsSource": true
+    },
+    {
+      "file": "walk-cycle.png",
+      "size": 1089759,
+      "sha256": "44423798d30883b174c5e1cc4ae3ca54f4f92cc2d2e8b07af65716670c0b6fc2",
+      "sameAsSource": true
+    }
+  ],
+  "problems": []
+}

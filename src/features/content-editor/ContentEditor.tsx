@@ -40,9 +40,10 @@ export default function ContentEditor({ api, onRequestClose, registerCloseGuard 
   const [message, setMessage] = useState('');
   const [dirty, setDirty] = useState(false);
   const [clubFormDirty, setClubFormDirty] = useState(false);
+  const [activityFormDirty, setActivityFormDirty] = useState(false);
   const [editingClub, setEditingClub] = useState<{ mode: 'new' | 'edit'; club: Club } | null>(null);
   const [editingActivity, setEditingActivity] = useState<{ mode: 'new' | 'edit'; activity: Activity } | null>(null);
-  const hasUnsavedChanges = dirty || clubFormDirty;
+  const hasUnsavedChanges = dirty || clubFormDirty || activityFormDirty;
 
   useEffect(() => {
     let cancelled = false;
@@ -66,8 +67,8 @@ export default function ContentEditor({ api, onRequestClose, registerCloseGuard 
 
   useEffect(() => {
     if (!registerCloseGuard) return;
-    return registerCloseGuard(() => !hasUnsavedChanges);
-  }, [registerCloseGuard, hasUnsavedChanges]);
+    return registerCloseGuard(() => status !== 'saving' && (!hasUnsavedChanges || window.confirm('有未保存的修改，确定离开？')));
+  }, [registerCloseGuard, hasUnsavedChanges, status]);
 
   function mutate(fn: (d: PublicContent) => PublicContent) {
     setDraft((d) => (d ? fn(d) : d));
@@ -127,11 +128,11 @@ export default function ContentEditor({ api, onRequestClose, registerCloseGuard 
       setStatus('saved');
       setMessage('保存成功');
     } catch (e) {
-      const err = e as ApiError;
-      if (err?.error?.code === 'REVISION_CONFLICT') {
+      const err = e as ApiError & { code?: string; message?: string };
+      if ((err?.error?.code ?? err?.code) === 'REVISION_CONFLICT') {
         setMessage('版本冲突：内容已被其他会话更新。草稿已保留，请「重新加载」核对后重试。');
       } else {
-        setMessage(err?.error?.message ?? '保存失败');
+        setMessage(err?.error?.message ?? err?.message ?? '保存失败');
       }
       setStatus('error');
     }
@@ -187,7 +188,8 @@ export default function ContentEditor({ api, onRequestClose, registerCloseGuard 
   }
 
   function handleClose() {
-    if (hasUnsavedChanges && !window.confirm('有未保存的修改，确定离开？')) return;
+    if (status === 'saving') return;
+    if (!registerCloseGuard && hasUnsavedChanges && !window.confirm('有未保存的修改，确定离开？')) return;
     onRequestClose?.();
   }
 
@@ -196,11 +198,12 @@ export default function ContentEditor({ api, onRequestClose, registerCloseGuard 
     [draft],
   );
 
-  if (status === 'loading') return <section className="ce-panel"><p className="ce-state">正在加载编辑器…</p></section>;
+  if (status === 'loading') return <section className="ce-panel"><p className="ce-state">正在加载编辑器…</p>{onRequestClose && <button onClick={handleClose}>关闭</button>}</section>;
   if (!draft || !saved) {
     return (
       <section className="ce-panel">
         <p className="ce-state ce-error" role="alert">{message || '读取失败'}</p>
+        {onRequestClose && <button onClick={handleClose}>关闭</button>}
       </section>
     );
   }
@@ -266,6 +269,7 @@ export default function ContentEditor({ api, onRequestClose, registerCloseGuard 
           onCancel={() => setEditingActivity(null)}
           onSubmit={upsertActivity}
           onDelete={deleteActivity}
+          onDirtyChange={setActivityFormDirty}
         />
       </div>
 
@@ -350,6 +354,7 @@ function ActivitySection(props: {
   onCancel: () => void;
   onSubmit: (activity: Activity) => void;
   onDelete: (id: string) => void;
+  onDirtyChange: (dirty: boolean) => void;
 }) {
   const clubName = (id: string) => props.clubs.find((c) => c.id === id)?.name ?? `（${id}）`;
   return (
@@ -362,6 +367,7 @@ function ActivitySection(props: {
         <ActivityForm
           key={props.editing.activity.id}
           initial={props.editing.activity}
+          onDirtyChange={props.onDirtyChange}
           clubs={props.clubs}
           onCancel={props.onCancel}
           onSubmit={props.onSubmit}
@@ -429,13 +435,18 @@ function ClubForm({ initial, onCancel, onSubmit, onDirtyChange }: {
   );
 }
 
-function ActivityForm({ initial, clubs, onCancel, onSubmit }: {
+function ActivityForm({ initial, clubs, onCancel, onSubmit, onDirtyChange }: {
   initial: Activity;
   clubs: Club[];
   onCancel: () => void;
   onSubmit: (activity: Activity) => void;
+  onDirtyChange: (dirty: boolean) => void;
 }) {
   const [a, setA] = useState<Activity>(initial);
+  useEffect(() => {
+    onDirtyChange(JSON.stringify(a) !== JSON.stringify(initial));
+    return () => onDirtyChange(false);
+  }, [a, initial, onDirtyChange]);
 
   return (
     <form className="ce-form" onSubmit={(e) => { e.preventDefault(); onSubmit(a); }}>

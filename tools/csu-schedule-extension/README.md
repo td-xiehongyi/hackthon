@@ -12,12 +12,12 @@
 
 2. 在 Chrome/Edge 打开 `chrome://extensions` 或 `edge://extensions`，开启“开发者模式”。
 3. 选择“加载已解压的扩展程序”，选择本目录 `tools/csu-schedule-extension`。
-4. 打开 `http://127.0.0.1:5173/#teaching`，进入“课表管理 → 从 CSU 教务系统导入”。
+4. 打开 `http://127.0.0.1:5176/#teaching`（一键启动；默认开发服务为 5173），进入“课表管理 → 从 CSU 教务系统导入”。
 
 扩展目前允许的页面只有：
 
 - `csujwc.its.csu.edu.cn` 的旧版教务课表页面；
-- 本项目的 `127.0.0.1:5173`、`127.0.0.1:5174`、`localhost:5173` 或 `localhost:5174` 页面。
+- 本项目的 `127.0.0.1:5173`、`127.0.0.1:5174`、`localhost:5173` 、`localhost:5174`、`127.0.0.1:5176` 或 `localhost:5176` 页面。
 
 请先在 `https://ca.csu.edu.cn/` 或网上办事大厅完成官方登录，再按学校页面跳转进入旧版教务课表页。CA/ehall 入口不在扩展匹配范围内，扩展也不会读取登录页、密码、验证码或 Cookie。
 

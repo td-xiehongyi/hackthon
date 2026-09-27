@@ -9,6 +9,11 @@ test('教学楼群停车场展示二维码端口并支持筛选与详情', async
   await expect(page.getByText('全部端口').locator('..').getByRole('strong')).toHaveText('10');
   await expect(page.getByRole('list', { name: '充电端口列表' }).getByRole('listitem')).toHaveCount(10);
   await expect(page.getByText('照片状态')).toBeVisible();
+  const response = await page.request.get('/api/parking/status');
+  expect(response.ok()).toBe(true);
+  const status = await response.json();
+  expect(status).toMatchObject({ live: false, source: 'photo-demo' });
+  expect(status.data).toHaveLength(10);
 
   await page.getByRole('button', { name: '未占用', exact: true }).click();
   await expect(page.getByText('显示 7 / 10 个端口')).toBeVisible();

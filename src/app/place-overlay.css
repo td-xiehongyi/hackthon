@@ -1,0 +1,110 @@
+/* 与确认的静态预览共用尺寸：保留左栏，面板右移、加宽，四周露出校园。 */
+.campus-shell {
+  --place-rail: 270px;
+  --place-left: calc(var(--place-rail) + 32px + clamp(32px, 6.1vw, 88px));
+  --place-width: min(960px, calc(100vw - var(--place-left) - 80px));
+  --place-height: min(800px, calc(100dvh - 112px));
+}
+.campus-shell .place-overlay {
+  position: fixed; z-index: 5; left: var(--place-left); top: calc((100dvh - var(--place-height)) / 2);
+  width: var(--place-width); height: var(--place-height); max-width: none; margin: 0; padding: 0;
+  display: block; overflow: auto; overscroll-behavior: contain; scrollbar-width: thin;
+  color: #254d3b; background: #faf7eb; border: 2px solid #294834; outline: 1px solid #d6d8b5;
+  box-shadow: 6px 6px #29483440, 0 18px 45px #203c292b;
+}
+.campus-shell .place-overlay > * { min-width: 0; }
+.campus-shell .place-overlay .place-error { margin: 12px; }
+.campus-shell .is-paused .explorer-map-tools,
+.campus-shell .is-paused .explorer-map-status,
+.campus-shell .is-paused .explorer-touch-pad { display: none; }
+.campus-shell .place-overlay :is(.library-panel, .stadium-panel, .ce-panel) {
+  max-width: none; width: 100%; margin: 0; padding: 24px; border: 0; border-radius: 0; background: transparent;
+}
+.campus-shell .place-overlay :is(.library-header, .sp-header) {
+  align-items: center; gap: 16px; padding-bottom: 18px; border-bottom: 1px solid #d2d7be;
+}
+.campus-shell .place-overlay :is(.library-header h1, .sp-header h1) { color: #254d3b; font-size: 22px; }
+.campus-shell .place-overlay :is(.library-back, .sp-back) { border-radius: 0; white-space: nowrap; font-size: 12px; }
+.campus-shell .place-overlay :is(.library-tabs, .sp-tabs) { flex-wrap: wrap; gap: 6px; }
+.campus-shell .place-overlay :is(.library-tabs button, .sp-tab) { border-radius: 0; padding: 9px 13px; font-size: 12px; }
+.campus-shell .place-overlay :is(.library-tabs button.is-active, .sp-tab.is-active) { background: #315744; color: #fffbe7; border-color: #315744; }
+.campus-shell .place-overlay .place-actions { padding: 16px 24px 0; }
+.campus-shell .place-overlay .teaching-page { min-height: 0; background: #faf7eb; }
+.campus-shell .place-overlay .teaching-header { min-height: 0; padding: 22px 24px; flex-wrap: wrap; gap: 12px; color: #254d3b; background: #e9ecd9; border-bottom: 1px solid #d2d7be; }
+.campus-shell .place-overlay .teaching-title-mark { display: none; }
+.campus-shell .place-overlay .teaching-title h1 { color: #254d3b; font-size: 22px; white-space: normal; }
+.campus-shell .place-overlay .teaching-title p { color: #71806e; }
+.campus-shell .place-overlay .back-to-map { order: 3; margin-left: auto; border: 1px solid #a8b298; background: #f5f5e8; color: #254d3b; }
+.campus-shell .place-overlay .teaching-statuses { order: 4; width: 100%; margin-left: 0; flex-wrap: wrap; gap: 12px; }
+.campus-shell .place-overlay :is(.save-state, .sharing-switch) { color: #617457; }
+.campus-shell .place-overlay .teaching-nav-row { padding: 10px 24px; flex-wrap: wrap; gap: 12px; min-height: 0; background: #e9ecd9; }
+.campus-shell .place-overlay .teaching-tabs { min-width: 0; max-width: 100%; overflow-x: auto; }
+.campus-shell .place-overlay .teaching-tabs button { min-width: max-content; padding: 10px 13px; font-size: 12px; }
+.campus-shell .place-overlay .teaching-tabs button.active { background: #315744; color: #fffbe7; }
+.campus-shell .place-overlay .teaching-tabs button.active::after { display: none; }
+.campus-shell .place-overlay :is(.schedule-view, .discover-view, .manage-view) { padding: 24px; }
+.campus-shell .place-overlay :is(.section-heading, .heading-actions) { flex-wrap: wrap; }
+.campus-shell .place-overlay .schedule-scroll { max-height: 460px; }
+.campus-shell .place-overlay .schedule-grid { min-width: 700px; grid-template-columns: 48px repeat(7, minmax(90px, 1fr)); }
+.campus-shell .place-overlay > section > .gallery { margin: 0 24px 24px; }
+.campus-shell .place-overlay > section > button { margin: 0 24px 18px; padding: 8px 12px; color: #315744; background: #f5f5e8; border: 1px solid #a8b298; }
+/* 次级表单和相册预览也留在面板范围，左侧校园信息仍可见。 */
+.campus-shell .place-overlay :is(.modal-backdrop, .gallery-lightbox) {
+  left: var(--place-left); right: auto; top: calc((100dvh - var(--place-height)) / 2); bottom: auto;
+  width: var(--place-width); height: var(--place-height); padding: 16px; overflow: auto;
+}
+.campus-shell .place-overlay .gallery-lightbox img { max-width: 100%; max-height: 100%; }
+.campus-shell .place-overlay .course-modal { width: 100%; max-height: 100%; }
+/* 小游戏沿用实际逻辑，仅把棋盘尺寸约束到面板内。 */
+.campus-shell .place-overlay .daze-game { margin-top: 12px; box-shadow: 4px 4px #dce4d2; padding: 18px; }
+.campus-shell .place-overlay .daze-head { flex-wrap: wrap; }
+.campus-shell .place-overlay .daze-head h2 { color: var(--chalk); font-size: 24px; }
+.campus-shell .place-overlay .daze-board { height: clamp(250px, 35dvh, 350px); min-height: 0; }
+/* 宿舍沿用地点浮层，按面板宽度切换楼栋列表与聊天布局。 */
+.place-overlay .dorm-page { min-height: 100%; container: dorm-panel / inline-size; }
+.place-overlay .dorm-header { flex-wrap: wrap; padding: 16px; gap: 10px; }
+.place-overlay .dorm-heading h1 { white-space: normal; }
+.place-overlay .dorm-header-actions { flex-wrap: wrap; }
+.place-overlay .dorm-workspace > * { min-width: 0; }
+@container dorm-panel (max-width: 650px) {
+  .place-overlay .dorm-intro { flex-direction: column; align-items: stretch; gap: 16px; padding: 20px 12px; }
+  .place-overlay .dorm-intro h2 { font-size: 25px; }
+  .place-overlay .dorm-hero-card { width: 100%; }
+  .place-overlay .dorm-workspace { grid-template-columns: minmax(0, 1fr); padding: 0 12px 20px; }
+  .place-overlay .dorm-building-panel { padding: 12px; }
+  .place-overlay .dorm-building-list { display: none; }
+  .place-overlay .dorm-mobile-select { display: grid; gap: 6px; }
+  .place-overlay .dorm-mobile-select select { width: 100%; }
+  .place-overlay .dorm-chat-head, .place-overlay .dorm-footer { flex-direction: column; align-items: flex-start; }
+  .place-overlay .dorm-chat-actions, .place-overlay .dorm-composer-foot { flex-wrap: wrap; }
+  .place-overlay .dorm-heading, .place-overlay .dorm-header-actions { width: 100%; }
+  .place-overlay .dorm-live { display: none; }
+}
+@media (min-width: 1800px) {
+  .campus-shell { --place-rail: 290px; --place-left: calc(var(--place-rail) + 136px); --place-width: min(1040px, calc(100vw - var(--place-left) - 80px)); }
+}
+@media (max-width: 1150px) {
+  .campus-shell { --place-left: calc(var(--place-rail) + 46px); --place-width: calc(100vw - var(--place-left) - 68px); }
+  .campus-shell .place-overlay :is(.discover-layout, .manage-layout) { grid-template-columns: 1fr; }
+}
+@media (max-width: 900px) { .campus-shell { --place-rail: 222px; } }
+@media (max-width: 760px) {
+  .campus-shell { --place-left: calc(var(--place-rail) + 20px); --place-width: calc(100vw - var(--place-left) - 36px); --place-height: calc(100dvh - 64px); }
+  .campus-shell .place-overlay :is(.library-panel, .stadium-panel, .ce-panel, .schedule-view, .discover-view, .manage-view) { padding: 12px; }
+  .campus-shell .place-overlay :is(.library-header, .sp-header) { flex-direction: column; align-items: flex-start; gap: 10px; }
+  .campus-shell .place-overlay :is(.library-header h1, .sp-header h1, .teaching-title h1) { font-size: 18px; }
+  .campus-shell .place-overlay :is(.teaching-header, .teaching-nav-row) { padding: 14px 12px; }
+  .campus-shell .place-overlay .teaching-nav-row .week-picker { margin: 0; flex-wrap: wrap; gap: 4px; }
+  .campus-shell .place-overlay .back-to-map { margin: 0; }
+  .campus-shell .place-overlay .teaching-tabs button { padding: 8px; font-size: 11px; }
+  .campus-shell .place-overlay :is(.library-tabs, .sp-tabs) { gap: 4px; }
+  .campus-shell .place-overlay :is(.library-tabs button, .sp-tab) { padding: 8px; font-size: 11px; }
+  .campus-shell .place-overlay :is(input, select, textarea) { max-width: 100%; min-width: 0; }
+  .campus-shell .place-overlay .daze-game { padding: 10px; }
+  .campus-shell .place-overlay .daze-head h2 { font-size: 19px; }
+  .campus-shell .place-overlay .daze-start { padding: 24px 4px; }
+  .campus-shell .place-overlay .daze-ending { inset: 5%; padding: 10px; }
+  .campus-shell .place-overlay .follow-launch { flex-wrap: wrap; }
+  .campus-shell .place-overlay > section > .gallery { margin: 0 12px 12px; }
+}
+@media (max-width: 600px) { .campus-shell { --place-rail: 140px; --place-left: 154px; --place-width: calc(100vw - 186px); } }

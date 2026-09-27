@@ -1,0 +1,41 @@
+{
+  "characterId": "photo-olive-student",
+  "version": "0.3.0-rc.2",
+  "status": "integration-candidate",
+  "appearanceApproved": true,
+  "animationSampleApproved": true,
+  "sideWalkRevisionApproved": true,
+  "approvedOn": "2026-09-27",
+  "fullAcceptance": false,
+  "recommendedUniformScale": 0.1,
+  "files": [
+    {
+      "file": "walk-cycle.png",
+      "sha256": "dc2499b1c9799079710a48f39d819d0adc42f309d185cb82ec45d9122aa099e7"
+    },
+    {
+      "file": "ride-cycle.png",
+      "sha256": "fd8a82e75ece58995458a8d5431960bd449f1dae2fc6876c24cfca41f0befb27"
+    },
+    {
+      "file": "walk-sides-v2.png",
+      "sha256": "b04bc10cabc5cd5a78be24980cf08b87808aee6f058f63d79385ad7bb1d710fe"
+    },
+    {
+      "file": "manifest.json",
+      "sha256": "ef7e0bed343b2f1304340fc93470de8d55b8f1d286c1fee11c14ffaba3d321d1"
+    },
+    {
+      "file": "SOURCE.md",
+      "sha256": "342fc4943cca023973bf243c4bcd9a180a7be9e50a77b5e54ca65a5671321844"
+    },
+    {
+      "file": "PROMPTS.md",
+      "sha256": "f59410ac6b1155132e4007da396628265af44098b031a2563e60213948ddf2c4"
+    },
+    {
+      "file": "BASE-PROMPTS.md",
+      "sha256": "6213f143bef9021efc3b8a14e47cdf8f46229b77c383f8be80b33ed3f6bddcd0"
+    }
+  ]
+}
