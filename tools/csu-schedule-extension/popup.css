@@ -16,10 +16,12 @@ h1 { margin: 5px 0 7px; font-size: 21px; line-height: 1.2; }
 button { width: 100%; min-height: 44px; border-radius: 7px; font: inherit; font-weight: 700; cursor: pointer; }
 button:focus-visible { outline: 3px solid #e5b83b; outline-offset: 2px; }
 .primary { border: 1px solid #1e503d; background: #1e503d; color: #fff; }
-.primary:disabled { opacity: .6; cursor: wait; }
+.primary:disabled, .secondary:disabled { opacity: .6; cursor: wait; }
 .secondary { border: 1px solid #b9cbbb; background: #f4f7ef; color: #315843; }
 .status { min-height: 20px; margin: 9px 2px; }
 .status.error { color: #9b4436; }
+.setup-hint { display: grid; gap: 4px; margin: 10px 0; padding: 10px; border: 1px solid #e4b75a; border-radius: 7px; background: #fff7df; color: #674b18; font-size: 12px; line-height: 1.5; }
+.setup-hint strong { font-size: 12px; }
 .latest { margin: 13px 0; padding: 11px; border: 1px solid #d5dfd0; background: #f4f7ef; }
 .latest h2 { margin: 0 0 3px; font-size: 12px; }
 .latest p { margin: 0; }
