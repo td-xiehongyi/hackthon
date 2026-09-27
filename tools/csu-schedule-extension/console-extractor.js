@@ -18,6 +18,7 @@
   const HOST_ID = 'csu-schedule-console-extractor';
   const SOURCE = 'csu-console-extractor';
   const VERSION = 1;
+  const CSU_HOST = /^csujwc\.its\.csu\.edu\.cn$/i;
   const MAX_COURSES = 500;
   const MAX_SCRIPT_TEXT = 700_000;
   const WEEKDAYS = ['一', '二', '三', '四', '五', '六', '日'];
@@ -436,6 +437,9 @@
 
   const captureSchedule = () => {
     if (typeof document === 'undefined') return { ok: false, error: '当前环境没有可读取的网页文档。' };
+    if (typeof location !== 'undefined' && location.hostname && !CSU_HOST.test(location.hostname)) {
+      return { ok: false, error: '请切换到已登录的 csujwc.its.csu.edu.cn“我的课表”页面后再提取。' };
+    }
     const documents = collectDocuments(document);
     const courses = [];
     let tableCount = 0;
