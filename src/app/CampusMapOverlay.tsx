@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { MAP_IMAGE_PATH, MAP_WIDTH_PX, MAP_HEIGHT_PX } from '../shared/contracts';
+import { MAP_DISPLAY_IMAGE_PATH, MAP_WIDTH_PX, MAP_HEIGHT_PX } from '../shared/contracts';
 import type { CharacterStatus } from '../game/CampusMapScene';
 import './campus-map-overlay.css';
 
@@ -107,7 +107,7 @@ export default function CampusMapOverlay({ character, onClose }: {
         }}
         onPointerCancel={() => { drag.current = null; }}
         onLostPointerCapture={() => { drag.current = null; }}>
-        <image href={MAP_IMAGE_PATH} width={MAP_WIDTH_PX} height={MAP_HEIGHT_PX} />
+        <image href={MAP_DISPLAY_IMAGE_PATH} width={MAP_WIDTH_PX} height={MAP_HEIGHT_PX} />
         {character && <g>
           <circle cx={character.x} cy={character.y} r={16 / current.scale} fill="#d63535" fillOpacity="0.25" />
           <circle data-testid="map-player-marker" cx={character.x} cy={character.y} r={8 / current.scale} fill="#d63535" stroke="white" strokeWidth={3 / current.scale} />

@@ -93,8 +93,8 @@ describe('v20 通行标注', () => {
     expect(annotation.geographyStatus).toBe('pending');
   });
 
-  test('五处地图交互可用且入口可站立；地理、安全点和楼座仍保留待核验状态', () => {
-    expect(activeInteractions(annotation.interactions)).toHaveLength(5);
+  test('六处地图交互可用且入口可站立；地理、安全点和楼座仍保留待核验状态', () => {
+    expect(activeInteractions(annotation.interactions)).toHaveLength(6);
     for (const interaction of annotation.interactions) {
       expect(footprintFits(interaction.entrancePoint!, DEV_TUNING.rideFootprint, world), interaction.placeId).toBe(true);
       expect(polygonProblems(interaction.highlightPolygon!)).toEqual([]);
@@ -103,6 +103,7 @@ describe('v20 通行标注', () => {
     expect(annotation.buildings).toEqual([]);
     expect(annotation.interactions.map((r) => r.placeId).sort()).toEqual([
       'lunan_canteen_2', 'lunan_shenghua_dormitory', 'xiaoxiang_library', 'xiaoxiang_sports_ground', 'xiaoxiang_teaching_group',
+      'yuelushan_heping_hall',
     ]);
   });
 

@@ -3,6 +3,8 @@ import type { PlacePanelProps } from '../../shared/contracts';
 import { averageRating, CANTEEN_FLOORS, type CanteenWindow, type PublishedCanteenReview } from './data';
 import { loadReviews, publishReview } from './reviews-api';
 import './canteen.css';
+import PlaceArtwork from '../../shared/PlaceArtwork';
+import GuardedPlaceGallery from '../../shared/gallery/GuardedPlaceGallery';
 
 function WindowImage({ window }: { window: CanteenWindow }) {
   const [failed, setFailed] = useState(false);
@@ -13,7 +15,8 @@ function WindowImage({ window }: { window: CanteenWindow }) {
 
 interface ReviewDraft { author: string; rating: number; text: string; id: string }
 
-export default function CanteenPanel({ onRequestClose, registerCloseGuard }: PlacePanelProps) {
+export default function CanteenPanel({ place, onRequestClose, registerCloseGuard }: PlacePanelProps) {
+  const [tab, setTab] = useState<'windows' | 'gallery'>('windows');
   const [floorLevel, setFloorLevel] = useState(1);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [published, setPublished] = useState<PublishedCanteenReview[]>([]);
@@ -82,8 +85,14 @@ export default function CanteenPanel({ onRequestClose, registerCloseGuard }: Pla
   return <section className="canteen-panel" aria-labelledby="canteen-title">
     <header className="canteen-header">
       <div><span className="canteen-eyebrow">麓南校区 · 校园食光</span><h1 id="canteen-title">二食堂</h1><p>上几楼，吃点什么？</p></div>
+      <PlaceArtwork kind="canteen" />
       <button type="button" className="canteen-back" disabled={saving} onClick={onRequestClose}>返回校园</button>
     </header>
+    <nav className="place-feature-tabs" role="tablist" aria-label="食堂功能">
+      <button type="button" role="tab" aria-selected={tab === 'windows'} onClick={() => setTab('windows')}>楼层与评价</button>
+      <button type="button" role="tab" aria-selected={tab === 'gallery'} onClick={() => setTab('gallery')}>地点相册</button>
+    </nav>
+    <div hidden={tab !== 'windows'} role="tabpanel" aria-label="楼层与评价内容">
     <p className="canteen-demo-note">示例体验：窗口名称、楼层分布和插画为演示内容。示例评价已单独标注，你发布的评价会保存。</p>
     {loadState === 'loading' && <p className="canteen-service-note" role="status">正在读取已保存的评价…</p>}
     {loadState === 'error' && <div className="canteen-service-note" role="alert">{loadError}<button type="button" onClick={() => setReload(value => value + 1)}>重新读取</button></div>}
@@ -151,6 +160,10 @@ export default function CanteenPanel({ onRequestClose, registerCloseGuard }: Pla
         </button>)}</div>
         {floor.windows.length === 0 && <p className="canteen-empty">本层窗口资料待补充。</p>}
       </section>}
+    </div>
+    </div>
+    <div className="place-album-panel" hidden={tab !== 'gallery'} role="tabpanel" aria-label="地点相册内容">
+      <GuardedPlaceGallery place={place} registerCloseGuard={registerCloseGuard} />
     </div>
   </section>;
 }

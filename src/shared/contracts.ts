@@ -15,6 +15,8 @@ export const COORDINATE_SYSTEM = 'image-pixels-top-left' as const;
 export const MAP_WIDTH_PX = 1041 as const;
 export const MAP_HEIGHT_PX = 1511 as const;
 export const MAP_IMAGE_PATH = '/maps/campus-v20.png' as const;
+/** 南门外观替换版；原底图继续作为通行标注与坐标校验的依据。 */
+export const MAP_DISPLAY_IMAGE_PATH = '/maps/campus-v20-south-gate.png' as const;
 export const MAP_IMAGE_SHA256 =
   '2502f84dbbc3d15940ac42c7d07a7e3b319bb1804c71a955cc95b61306f0f410' as const;
 
@@ -28,14 +30,16 @@ export type PlaceId =
   /** 仅潇湘校区体育场（副场）；不含体育场（鸟巢）及其他运动场。 */
   | 'xiaoxiang_sports_ground'
   | 'lunan_canteen_2'
-  | 'lunan_shenghua_dormitory';
-export type FeatureKey = 'library' | 'teaching' | 'stadium' | 'canteen' | 'dormitory';
+  | 'lunan_shenghua_dormitory'
+  | 'yuelushan_heping_hall';
+export type FeatureKey = 'library' | 'teaching' | 'stadium' | 'canteen' | 'dormitory' | 'heritage';
 export type PlaceIdentity = { name: string } & (
   | { placeId: 'xiaoxiang_library'; featureKey: 'library'; campusId: 'xiaoxiang' }
   | { placeId: 'xiaoxiang_teaching_group'; featureKey: 'teaching'; campusId: 'xiaoxiang' }
   | { placeId: 'xiaoxiang_sports_ground'; featureKey: 'stadium'; campusId: 'xiaoxiang' }
   | { placeId: 'lunan_canteen_2'; featureKey: 'canteen'; campusId: 'lunan' }
   | { placeId: 'lunan_shenghua_dormitory'; featureKey: 'dormitory'; campusId: 'lunan' }
+  | { placeId: 'yuelushan_heping_hall'; featureKey: 'heritage'; campusId: 'yuelushan' }
 );
 
 export interface Point { x: number; y: number }

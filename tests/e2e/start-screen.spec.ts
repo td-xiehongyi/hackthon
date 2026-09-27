@@ -6,20 +6,20 @@ test('首页选择现有照片角色、记住选择，并带入校园后返回',
   await page.goto('/');
   await expect(page.getByRole('heading', { name: '选择角色' })).toBeVisible();
   await expect(page.locator('canvas')).toHaveCount(0);
-  for (const name of ['粉白开衫女生', '棕发绿包女生', '灰衣黑包男生', '圆框眼镜男生', '照片蓝眼长毛猫', '临时测试角色']) {
+  for (const name of ['小颖', '顾哈哈', 'Joy', '小黄鸭', 'Loopy', '小奶鸡']) {
     await expect(page.getByRole('button', { name: `选择${name}`, exact: true })).toBeVisible();
   }
   await expect(page.locator('.start-character-pending')).toHaveCount(0);
-  await page.getByRole('button', { name: '选择棕发绿包女生', exact: true }).click();
-  await expect(page.getByRole('button', { name: '选择棕发绿包女生', exact: true })).toHaveAttribute('aria-pressed', 'true');
+  await page.getByRole('button', { name: '选择顾哈哈', exact: true }).click();
+  await expect(page.getByRole('button', { name: '选择顾哈哈', exact: true })).toHaveAttribute('aria-pressed', 'true');
   await page.reload();
-  await expect(page.getByRole('button', { name: '选择棕发绿包女生', exact: true })).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByRole('button', { name: '选择顾哈哈', exact: true })).toHaveAttribute('aria-pressed', 'true');
   await page.getByRole('button', { name: '下一个角色' }).click();
-  await expect(page.getByRole('button', { name: '选择灰衣黑包男生', exact: true })).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByRole('button', { name: '选择Joy', exact: true })).toHaveAttribute('aria-pressed', 'true');
   await page.getByRole('button', { name: '上一个角色' }).click();
   await page.getByRole('button', { name: '进入校园', exact: true }).click();
   await expect(page.getByRole('status', { name: '地图加载状态' })).toHaveText('地图已加载');
-  await expect(page.getByTestId('character-status')).toContainText('棕发绿包女生');
+  await expect(page.getByTestId('character-status')).toContainText('顾哈哈');
   await expect(page.locator('canvas')).toBeVisible();
   const status = page.getByTestId('character-status');
   const before = (await status.innerText()).match(/位置 \d+, \d+/)![0];
@@ -28,7 +28,7 @@ test('首页选择现有照片角色、记住选择，并带入校园后返回',
   finally { await page.keyboard.up('KeyA'); }
   await page.getByRole('button', { name: '返回首页', exact: true }).click();
   await expect(page.getByRole('heading', { name: '选择角色' })).toBeVisible();
-  await expect(page.getByRole('button', { name: '选择棕发绿包女生', exact: true })).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByRole('button', { name: '选择顾哈哈', exact: true })).toHaveAttribute('aria-pressed', 'true');
   expect(errors).toEqual([]);
 });
 

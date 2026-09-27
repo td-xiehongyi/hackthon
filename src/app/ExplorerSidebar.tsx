@@ -1,5 +1,5 @@
 import type { CharacterStatus } from '../game/CampusMapScene';
-import { MAP_IMAGE_PATH, MAP_WIDTH_PX, MAP_HEIGHT_PX } from '../shared/contracts';
+import { MAP_DISPLAY_IMAGE_PATH, MAP_WIDTH_PX, MAP_HEIGHT_PX } from '../shared/contracts';
 import type { CharacterChoice } from '../game/character/choices';
 import CharacterPreview from '../game/character/CharacterPreview';
 import type { CampusProfile } from './campus-profile';
@@ -22,7 +22,7 @@ export default function ExplorerSidebar({ character, choice, onReturnHome, retur
         <div className="explorer-mini-heading"><h1>附近地图</h1><span>北 ↑</span></div>
         <div className="explorer-minimap">
           <svg role="img" aria-label="角色附近的校园小地图" viewBox={`${left} ${top} ${size} ${size}`}>
-            <image href={MAP_IMAGE_PATH} width={MAP_WIDTH_PX} height={MAP_HEIGHT_PX} />
+            <image href={MAP_DISPLAY_IMAGE_PATH} width={MAP_WIDTH_PX} height={MAP_HEIGHT_PX} />
             {character && <circle cx={character.x} cy={character.y} r="7" fill="#ffe692" stroke="#254d3b" strokeWidth="3" />}
           </svg>
           {!character && <span className="explorer-mini-pending">角色尚未就绪</span>}

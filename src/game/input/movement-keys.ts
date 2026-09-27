@@ -96,17 +96,24 @@ export interface InteractKeyInfo {
 /**
  * 把 MovementKeys 接到 window/document 上，返回解绑函数。
  * onInteractKey 在每次 E 的 keydown 时调用（含自动重复与输入框中的按键，由调用方按规则过滤）。
+ * onMoveIntent 仅在输入框外新按 WASD 时调用，让场景先结束自由浏览再接收本次按键。
  */
 export function bindMovementKeys(
   keys: MovementKeys,
   target: Window = window,
   onInteractKey?: (info: InteractKeyInfo) => boolean,
+  onMoveIntent?: () => void,
 ): () => void {
   const onDown = (event: KeyboardEvent) => {
     if (event.code === INTERACT_CODE && onInteractKey) {
       const handled = onInteractKey({ repeat: event.repeat, editable: isEditableTarget(event.target) });
       if (handled) event.preventDefault();
       return;
+    }
+    const control = CONTROL_BY_CODE.get(event.code);
+    if (control && control !== 'ride' && !event.repeat && !event.isComposing &&
+      !event.ctrlKey && !event.metaKey && !event.altKey && !isEditableTarget(event.target)) {
+      onMoveIntent?.();
     }
     if (keys.keyDown(event)) event.preventDefault();
   };

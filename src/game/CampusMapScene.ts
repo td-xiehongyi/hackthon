@@ -16,6 +16,7 @@ import {
   MAP_HEIGHT_PX,
   MAP_ID,
   MAP_IMAGE_PATH,
+  MAP_DISPLAY_IMAGE_PATH,
   MAP_WIDTH_PX,
   type MapAnnotation,
   type Point,
@@ -25,6 +26,8 @@ import type { OpenContext } from '@/app/place-session';
 import { validateAnnotation } from './map-data';
 import { activeInteractions, selectTarget, interactRequest, resolveReturnPosition, type ActiveInteraction } from './interaction/interaction';
 import { CharacterSprite, preloadCharacter } from './character/character-sprite';
+import { SouthGatePolice } from './SouthGatePolice';
+import { SOUTH_GATE_POLICE } from './south-gate-reminder';
 import { CHARACTER_CHOICES, type CharacterChoice } from './character/choices';
 import { bindMovementKeys, MovementKeys, type InteractKeyInfo } from './input/movement-keys';
 import {
@@ -101,6 +104,7 @@ export class CampusMapScene extends Phaser.Scene {
   private target: PlaceId | null = null;
   private movementAvailable = false;
   private overlay: Phaser.GameObjects.Image | null = null;
+  private southGatePolice: SouthGatePolice | null = null;
 
   constructor(
     private readonly callbacks: MapCallbacks,
@@ -116,7 +120,8 @@ export class CampusMapScene extends Phaser.Scene {
       if (file.key === 'campus') this.callbacks.onError();
       else if (file.key !== 'annotation') this.callbacks.onCharacterError?.('角色素材加载失败');
     });
-    this.load.image('campus', MAP_IMAGE_PATH);
+    this.load.image('campus', MAP_DISPLAY_IMAGE_PATH);
+    this.load.image(SOUTH_GATE_POLICE.texture, SOUTH_GATE_POLICE.image);
     this.load.json('annotation', ANNOTATION_PATH);
     this.load.once('filecomplete-json-annotation', (_key: string, _type: string, data: unknown) => {
       if (validateAnnotation(data).length) return;
@@ -133,6 +138,10 @@ export class CampusMapScene extends Phaser.Scene {
     this.mapWidth = source.width;
     this.mapHeight = source.height;
     this.add.image(0, 0, 'campus').setOrigin(0).setDepth(-1_000_000);
+    this.addSouthGateForeground();
+    if (this.textures.exists(SOUTH_GATE_POLICE.texture)) {
+      this.southGatePolice = new SouthGatePolice(this, () => this.syncKeySuspension());
+    }
     this.cameras.main.setRoundPixels(true);
     this.buildingHighlight = this.add.graphics().setDepth(90_000);
     this.ready = true;
@@ -155,7 +164,7 @@ export class CampusMapScene extends Phaser.Scene {
     this.fitToWindow();
 
     this.input.on('pointermove', (pointer: Phaser.Input.Pointer) => {
-      if (!pointer.isDown || this.suspended || pointer.getDistance() < 4) return;
+      if (!pointer.isDown || this.suspended || this.southGatePolice?.isBlocking || pointer.getDistance() < 4) return;
       if (this.viewMode !== 'browse') this.setViewMode('browse');
       const camera = this.cameras.main;
       camera.scrollX -= (pointer.x - pointer.prevPosition.x) / camera.zoom;
@@ -168,7 +177,11 @@ export class CampusMapScene extends Phaser.Scene {
       deltaY: number,
     ) => this.changeZoom(Math.exp(-deltaY * 0.001)));
 
-    this.unbindKeys = bindMovementKeys(this.keys, window, (info) => this.handleInteractKey(info));
+    this.unbindKeys = bindMovementKeys(this.keys, window, (info) => this.handleInteractKey(info), () => {
+      if (this.viewMode === 'browse' && !this.suspended && !this.southGatePolice?.isBlocking && !this.input.activePointer.isDown) {
+        this.setViewMode('character', false);
+      }
+    });
     this.syncKeySuspension();
 
     this.scale.on('resize', this.fitToWindow, this);
@@ -182,9 +195,49 @@ export class CampusMapScene extends Phaser.Scene {
     else this.callbacks.onViewModeChange?.('browse');
   }
 
+  /** 复用底图原像素，只让门框参与脚底深度排序；门洞和周围地面保持透明。 */
+  private addSouthGateForeground() {
+    const texture = this.textures.createCanvas('south-gate-foreground', 110, 69);
+    if (!texture) return;
+    const context = texture.context;
+    context.translate(-282, -345);
+    context.beginPath();
+    const outlines = [
+      // 左门柱、柱头和石座。
+      [[298, 347], [316, 347], [316, 351], [313, 355], [313, 363], [317, 368], [315, 377],
+        [314, 401], [317, 404], [317, 412], [295, 412], [295, 405], [298, 401], [299, 378],
+        [297, 374], [297, 366], [299, 363], [299, 355], [297, 350]],
+      // 横梁与牌匾。
+      [[312, 355], [364, 355], [366, 371], [361, 375], [316, 375], [311, 371]],
+      // 右门柱和石座；右侧原有“南门”标牌像素保持原样。
+      [[363, 347], [379, 347], [380, 351], [377, 355], [377, 365], [378, 401],
+        [381, 404], [381, 412], [360, 412], [360, 405], [362, 401], [362, 378],
+        [359, 373], [360, 366], [363, 363], [363, 355], [361, 351]],
+    ];
+    for (const points of outlines) {
+      context.moveTo(points[0]![0]!, points[0]![1]!);
+      for (const [x, y] of points.slice(1)) context.lineTo(x!, y!);
+      context.closePath();
+    }
+    for (const x of [321, 333, 345, 356]) context.rect(x, 351, 3, 5);
+    context.clip();
+    context.drawImage(this.textures.get('campus').getSourceImage() as HTMLImageElement, 0, 0);
+    texture.refresh();
+    this.add.image(282, 345, texture.key).setOrigin(0).setDepth(413);
+  }
+
   update(_time: number, deltaMs: number) {
-    if (!this.character || this.viewMode !== 'character') return;
-    this.state = step(this.state, this.keys.snapshot(), deltaMs / 1000, this.world, DEV_TUNING);
+    if (!this.character || this.viewMode !== 'character') {
+      this.southGatePolice?.hide();
+      return;
+    }
+    const wasBlocked = this.southGatePolice?.isBlocking;
+    if (!wasBlocked) this.state = step(this.state, this.keys.snapshot(), deltaMs / 1000, this.world, DEV_TUNING);
+    this.southGatePolice?.update(this.state, !this.suspended);
+    if (this.southGatePolice?.isBlocking) {
+      this.state = { ...this.state, mode: 'walk', moving: false };
+      if (!wasBlocked) this.syncKeySuspension();
+    }
     this.updateTarget();
     this.character.update(this.state, deltaMs);
     this.publishStatus();
@@ -277,6 +330,7 @@ export class CampusMapScene extends Phaser.Scene {
   }
 
   teleport(id: string): string | null {
+    if (this.southGatePolice?.isBlocking) return '请先关闭地图，点击警察对话框后通行。';
     const safe = this.annotation?.safePoints.find((p) => p.id === id && p.verificationStatus === 'verified' && p.usage.includes('teleport'));
     if (!safe || !this.movementAvailable || !footprintFits(safe.position, DEV_TUNING.rideFootprint, this.world)) {
       return '该落点尚未核验或无法容纳角色，已保留当前位置。';
@@ -323,8 +377,9 @@ export class CampusMapScene extends Phaser.Scene {
     return this.character !== null;
   }
 
-  /** 切换浏览/角色模式。浏览模式下移动键不驱动角色。 */
-  setViewMode(mode: ViewMode) {
+  /** 新按 WASD 可结束自由浏览；显式定位恢复默认缩放，键盘恢复保留当前缩放。 */
+  setViewMode(mode: ViewMode, resetZoom = true) {
+    if (mode === 'browse' && this.southGatePolice?.isBlocking) return;
     if (!this.ready || (mode === 'character' && (!this.character || !this.movementAvailable))) return;
     this.viewMode = mode;
     this.callbacks.onViewModeChange?.(mode);
@@ -333,7 +388,7 @@ export class CampusMapScene extends Phaser.Scene {
     if (mode === 'character') {
       this.character!.image.setVisible(true);
       // 显式点击定位仍恢复默认镜头；地点返回只适配视口，不重置用户倍率。
-      this.characterZoom = CHARACTER_ZOOM;
+      this.characterZoom = resetZoom ? CHARACTER_ZOOM : camera.zoom;
       this.fitToWindow();
       camera.startFollow(this.character!.image, true);
       this.publishStatus(true);
@@ -376,7 +431,8 @@ export class CampusMapScene extends Phaser.Scene {
   }
 
   private syncKeySuspension() {
-    this.keys.setSuspended(this.suspended || this.viewMode !== 'character');
+    this.keys.setSuspended(this.suspended || this.viewMode !== 'character' || !!this.southGatePolice?.isBlocking);
+    if (this.suspended || this.viewMode !== 'character') this.southGatePolice?.hide();
     this.updateTarget();
   }
 

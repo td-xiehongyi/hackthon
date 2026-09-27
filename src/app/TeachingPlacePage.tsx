@@ -8,8 +8,7 @@ export default function TeachingPlacePage({ place, onRequestClose, onLocate, reg
   const [uploading, setUploading] = useState(false);
   useEffect(() => uploading ? registerCloseGuard(() => false) : undefined, [uploading, registerCloseGuard]);
   return <section aria-label={place.name}>
-    <TeachingPage onBack={onRequestClose} />
+    <TeachingPage onBack={onRequestClose} gallery={<PlaceGallery placeId={place.placeId} onActivityChange={setUploading} />} />
     <button type="button" onClick={() => void onLocate({ kind: 'place', placeId: place.placeId })}>定位本地点</button>
-    <PlaceGallery placeId={place.placeId} onActivityChange={setUploading} />
   </section>;
 }

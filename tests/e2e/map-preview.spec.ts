@@ -1,5 +1,6 @@
 import { dragMap } from './helpers/campus';
 import { expect, test } from '@playwright/test';
+import { MAP_DISPLAY_IMAGE_PATH } from '../../src/shared/contracts';
 
 test('地图可加载、缩放、拖动并恢复角色跟随', async ({ page }) => {
   const errors: string[] = [];
@@ -43,7 +44,7 @@ test('地图可加载、缩放、拖动并恢复角色跟随', async ({ page }) 
 });
 
 test('图片读取失败时明确提示，不能显示加载成功', async ({ page }) => {
-  await page.route('**/maps/campus-v20.png', (route) => route.abort());
+  await page.route(`**${MAP_DISPLAY_IMAGE_PATH}`, (route) => route.abort());
   await page.goto('/');
   await page.getByRole('button', { name: '进入校园', exact: true }).click();
   await expect(page.getByRole('alert')).toContainText('地图加载失败');

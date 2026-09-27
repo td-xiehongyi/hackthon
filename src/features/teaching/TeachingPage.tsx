@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useRef, useState, type FormEvent, type RefObject } from 'react';
+import { useEffect, useMemo, useRef, useState, type FormEvent, type RefObject, type ReactNode } from 'react';
+import PlaceArtwork from '../../shared/PlaceArtwork';
 import {
   DEFAULT_MAX_PERIOD,
   DEFAULT_MAX_WEEK,
@@ -31,7 +32,7 @@ import { readCsuExtensionMessage } from './csuExtensionBridge';
 import { exportScheduleIcal } from './ical';
 import ParkingPanel from '../parking/ParkingPanel';
 
-type TeachingTab = 'schedule' | 'discover' | 'manage' | 'parking';
+type TeachingTab = 'schedule' | 'discover' | 'manage' | 'parking' | 'gallery';
 type SaveState = { kind: 'saved' | 'saving' | 'error'; message: string };
 type CommunityState = 'loading' | 'ready' | 'offline' | 'disabled';
 
@@ -628,7 +629,7 @@ function CaImportModal({
   );
 }
 
-export default function TeachingPage({ onBack }: { onBack: () => void }) {
+export default function TeachingPage({ onBack, gallery }: { onBack: () => void; gallery?: ReactNode }) {
   const initialLoad = useMemo(() => loadCourses(), []);
   const [courses, setCourses] = useState<Course[]>(initialLoad.courses);
   const [tab, setTab] = useState<TeachingTab>('schedule');
@@ -917,7 +918,8 @@ export default function TeachingPage({ onBack }: { onBack: () => void }) {
           <p>潇湘校区 · 教学楼群</p>
           <h1>课表与蹭课中心</h1>
         </div>
-        <div className="teaching-statuses">
+        <PlaceArtwork kind="teaching" />
+        <div className="teaching-statuses" hidden={tab === 'gallery'}>
           <div className={`save-state ${saveState.kind}`}><i /> <span>{saveState.message}</span></div>
           <label className="sharing-switch" title="只上传课程字段，聚合结果不显示用户身份">
             <input type="checkbox" checked={sharing} disabled={communityState === 'loading'} onChange={(event) => void handleSharing(event.target.checked)} />
@@ -933,8 +935,9 @@ export default function TeachingPage({ onBack }: { onBack: () => void }) {
           <button type="button" aria-current={tab === 'discover' ? 'page' : undefined} className={tab === 'discover' ? 'active' : ''} onClick={() => setTab('discover')}><span aria-hidden="true">✦</span>蹭课发现</button>
           <button type="button" aria-current={tab === 'manage' ? 'page' : undefined} className={tab === 'manage' ? 'active' : ''} onClick={() => setTab('manage')}><span aria-hidden="true">≡</span>课表管理</button>
           <button type="button" aria-current={tab === 'parking' ? 'page' : undefined} className={tab === 'parking' ? 'active' : ''} onClick={() => setTab('parking')}><span aria-hidden="true">▣</span>停车场</button>
+          {gallery && <button type="button" aria-current={tab === 'gallery' ? 'page' : undefined} className={tab === 'gallery' ? 'active' : ''} onClick={() => setTab('gallery')}>地点相册</button>}
         </nav>
-        {tab !== 'parking' && <WeekPicker week={week} onChange={setWeek} />}
+        {tab !== 'parking' && tab !== 'gallery' && <WeekPicker week={week} onChange={setWeek} />}
       </div>
 
       {tab === 'schedule' && (
@@ -1120,6 +1123,7 @@ export default function TeachingPage({ onBack }: { onBack: () => void }) {
       )}
 
       {tab === 'parking' && <ParkingPanel onBack={() => setTab('schedule')} pollLive />}
+      {gallery && <div className="place-album-panel" hidden={tab !== 'gallery'}>{gallery}</div>}
 
       <input ref={fileInput} className="visually-hidden" type="file" accept=".csv,.tsv,.txt,.html,.htm,.json,text/csv,text/tab-separated-values,text/plain,text/html,application/json" onChange={(event) => void handleFile(event.target.files?.[0])} />
       {editing !== undefined && <CourseFormModal editing={editing} onClose={() => setEditing(undefined)} onSubmit={handleCourseSubmit} />}

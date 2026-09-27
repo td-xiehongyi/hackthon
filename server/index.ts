@@ -5,7 +5,7 @@ const config = loadConfig();
 const app = buildApp(config);
 
 if (config.imagePolicy === 'configured') {
-  console.warn('[campus-server] 开发测试配置：图片政策由环境变量启用（非用户确认政策）。');
+  console.log(`[campus-server] 地点相册已启用，单张最大 ${config.maxFileBytes / 1024 / 1024} MB，照片保存在本机。`);
 }
 
 app

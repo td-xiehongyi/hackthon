@@ -29,7 +29,8 @@ import LibraryPanel from '../features/library/LibraryPanel';
 import TeachingPlacePage from './TeachingPlacePage';
 import StadiumPage from './StadiumPage';
 import CanteenPanel from '../features/canteen/CanteenPanel';
-import DormitoryPage from '../features/dormitory/DormitoryPage';
+import DormitoryPlacePage from './DormitoryPlacePage';
+import HepingHallPanel from '../features/heritage/HepingHallPanel';
 import NavigationOverview from './NavigationOverview';
 import { resolveNavigation, type NavigationResolution } from '@/game/map-data';
 import type { CharacterChoice } from '@/game/character/choices';
@@ -40,7 +41,8 @@ const PANELS: Record<FeatureKey, ComponentType<PlacePanelProps>> = {
   teaching: TeachingPlacePage,
   stadium: StadiumPage,
   canteen: CanteenPanel,
-  dormitory: ({ onRequestClose }) => <DormitoryPage onBack={onRequestClose} />,
+  dormitory: DormitoryPlacePage,
+  heritage: HepingHallPanel,
 };
 
 export interface PlaceHostHandle {

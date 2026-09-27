@@ -42,6 +42,12 @@ export const PLACE_REGISTRY = [
     name: '麓南校区升华公寓',
     campusId: 'lunan',
   },
+  {
+    placeId: 'yuelushan_heping_hall',
+    featureKey: 'heritage',
+    name: '岳麓山校区和平楼',
+    campusId: 'yuelushan',
+  },
 ] as const satisfies readonly PlaceIdentity[];
 
 export const PLACE_IDS: readonly PlaceId[] = PLACE_REGISTRY.map((place) => place.placeId);

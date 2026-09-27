@@ -86,7 +86,7 @@ export default function MapViewport({ characterChoice = CHARACTER_CHOICES[0], ac
         scale: { mode: Phaser.Scale.RESIZE, width: '100%', height: '100%' },
         scene: [map],
       });
-      game.canvas.setAttribute('aria-label', '校园地图：浏览模式可拖动与缩放；角色模式用 WASD 移动、按住 Shift 骑行');
+      game.canvas.setAttribute('aria-label', '校园地图：拖动与缩放浏览，按 WASD 恢复角色移动，按住 Shift 骑行');
       game.canvas.setAttribute('role', 'img');
       game.canvas.tabIndex = 0;
       const canvas = game.canvas;
@@ -140,6 +140,7 @@ export default function MapViewport({ characterChoice = CHARACTER_CHOICES[0], ac
           <span>{viewMode === 'character' ? '角色跟随' : '自由浏览'}</span> · <output aria-label="当前缩放">{ready ? Math.round(zoom * 100) + '%' : '—'}</output>
           <small>{characterChoice.name} · {character?.mode === 'ride' ? '骑行' : '步行'}</small>
           <small>M 查看地图</small>
+          {viewMode === 'browse' && characterAvailable && <small>按 WASD 继续行走 · ⌖ 回到角色</small>}
         </div>
         {character && <span data-testid="character-status" className="visually-hidden">
           {characterChoice.name} ·

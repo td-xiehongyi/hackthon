@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import type { Capabilities, PhotoMeta, PlaceId } from '../contracts';
 import { ApiClientError, NetworkError, campusApi, newUploadRequestId } from '../api/client';
 import './PlaceGallery.css';
+import PlaceArtwork from '../PlaceArtwork';
 
 type UploadState =
   | { kind: 'idle' }
@@ -134,6 +135,7 @@ export default function PlaceGallery({ placeId, onActivityChange }: PlaceGallery
         <input
           ref={fileInputRef}
           type="file"
+          aria-label="选择地点照片"
           accept={accepted}
           style={{ display: 'none' }}
           onChange={onFileChange}
@@ -155,6 +157,7 @@ export default function PlaceGallery({ placeId, onActivityChange }: PlaceGallery
       )}
       {!loading && !loadError && photos.length === 0 && (
         <div className="gallery-empty">
+          <PlaceArtwork kind="album" />
           <p>还没有图片，上传第一张吧。</p>
         </div>
       )}
@@ -169,6 +172,8 @@ export default function PlaceGallery({ placeId, onActivityChange }: PlaceGallery
           ))}
         </ul>
       )}
+
+      {capabilities?.imagePolicy.status === 'configured' && <p className="gallery-policy">支持 {capabilities.imagePolicy.acceptedMimeTypes.map(type => type.split('/')[1].toUpperCase()).join(' / ')} · 单张最大 {Math.round(capabilities.imagePolicy.maxFileBytes / 1024 / 1024)} MB · 照片保存在本机，按地点分别收录</p>}
 
       {viewing && (
         <div className="gallery-lightbox" role="dialog" aria-label="图片大图预览" onClick={() => setViewing(null)}>

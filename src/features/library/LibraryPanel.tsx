@@ -4,6 +4,10 @@ import PlaceGallery from '../../shared/gallery/PlaceGallery';
 import TimetableEditor from '../teaching/TimetableEditor';
 import DazeGame from './DazeGame';
 import './LibraryPanel.css';
+import PlaceArtwork from '../../shared/PlaceArtwork';
+import '../../shared/place-introduction.css';
+
+// 馆情资料核对：https://lib.csu.edu.cn/gk/bgjs.htm
 
 const CAMPUS_LABELS: Record<string, string> = {
   yuelushan: '岳麓山校区',
@@ -19,7 +23,7 @@ export default function LibraryPanel({
 }: PlacePanelProps) {
   const [busy, setBusy] = useState(false);
   const [timetableDirty, setTimetableDirty] = useState(false);
-  const [activeTool, setActiveTool] = useState<'overview' | 'learning' | 'daze'>('overview');
+  const [activeTool, setActiveTool] = useState<'overview' | 'learning' | 'daze' | 'gallery'>('overview');
   const [learningView, setLearningView] = useState<'follow' | 'timetable'>('follow');
 
   // 上传进行中注册关闭守卫，避免异步回调作用到已关闭的窗口。
@@ -37,6 +41,7 @@ export default function LibraryPanel({
           <h1>{place.name}</h1>
           <p className="library-campus">{CAMPUS_LABELS[place.campusId] ?? place.campusId}</p>
         </div>
+        <PlaceArtwork kind="library" />
         <button type="button" className="library-back" onClick={onRequestClose}>返回校园</button>
       </header>
 
@@ -69,14 +74,17 @@ export default function LibraryPanel({
           >
             发呆 · 小游戏
           </button>
+          <button type="button" role="tab" aria-selected={activeTool === 'gallery'} className={activeTool === 'gallery' ? 'is-active' : ''} onClick={() => setActiveTool('gallery')}>地点相册</button>
         </div>
 
         {activeTool === 'overview' ? (
-          <div role="tabpanel" className="library-overview">
+          <div role="tabpanel" className="library-overview place-introduction">
             <h2>地点介绍</h2>
-            <p className="library-missing" role="status">简介内容缺失，待核验补充。</p>
-            <h2>信息来源</h2>
-            <p className="library-missing" role="status">来源信息缺失，待核验补充。</p>
+            <p>潇湘校区图书馆是中南大学图书馆的馆舍之一，为师生提供阅读、自习和文献查阅空间，也是校园里的日常学习场所。</p>
+            <h2>阅读与学习</h2>
+            <p>中南大学图书馆的馆藏覆盖冶金、材料、地质、采矿、土木建筑、交通运输、医学等多个学科。纸质图书、电子期刊与学位论文等资源，为课程学习、课题研究和兴趣阅读提供支持。</p>
+            <h2>从这里开始你的学习时光</h2>
+            <p>在这里整理学习计划，打开「学习」查看课程安排或继续 Follow 订阅；想休息时，可以切换到「发呆 · 小游戏」，也可以在「地点相册」记录你的校园学习日常。</p>
           </div>
         ) : activeTool === 'learning' ? (
           <div role="tabpanel" className="library-learning">
@@ -96,12 +104,14 @@ export default function LibraryPanel({
               <p className="learning-note">Folo（Follow）是外部学习工具，登录与订阅操作将在新标签页完成。</p>
             </> : <TimetableEditor buildings={buildings} onDirtyChange={setTimetableDirty} />}
           </div>
-        ) : (
+        ) : activeTool === 'daze' ? (
           <div role="tabpanel"><DazeGame /></div>
-        )}
+        ) : null}
       </div>
 
-      <PlaceGallery placeId={place.placeId} onActivityChange={setBusy} />
+      <div className="place-album-panel" hidden={activeTool !== 'gallery'} role="tabpanel" aria-label="地点相册内容">
+        <PlaceGallery placeId={place.placeId} onActivityChange={setBusy} />
+      </div>
     </section>
   );
 }

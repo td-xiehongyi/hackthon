@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { MAP_IMAGE_PATH } from '../shared/contracts';
+import { MAP_DISPLAY_IMAGE_PATH } from '../shared/contracts';
 import { CHARACTER_CHOICES, type CharacterChoice } from '../game/character/choices';
 import CharacterPreview from '../game/character/CharacterPreview';
 import StartTools from './StartTools';
@@ -10,11 +10,12 @@ interface Props {
   character: CharacterChoice;
   onSelect: (character: CharacterChoice) => void;
   onEnter: () => void;
+  onImportScene: () => void;
   profile: CampusProfile | null;
   onProfileChange: (profile: CampusProfile | null) => void;
 }
 
-export default function StartScreen({ character, onSelect, onEnter, profile, onProfileChange }: Props) {
+export default function StartScreen({ character, onSelect, onEnter, onImportScene, profile, onProfileChange }: Props) {
   const mapDialog = useRef<HTMLDialogElement>(null);
   function cycle(direction: number) {
     const index = CHARACTER_CHOICES.findIndex(choice => choice.id === character.id);
@@ -47,6 +48,7 @@ export default function StartScreen({ character, onSelect, onEnter, profile, onP
                   <CharacterPreview character={choice} /><span>{choice.name}</span>
                 </button>
               ))}
+              <div className="start-character-import" role="img" aria-label="导入角色（即将开放）" title="导入角色（即将开放）">+</div>
             </div>
           </section>
 
@@ -55,6 +57,7 @@ export default function StartScreen({ character, onSelect, onEnter, profile, onP
             <div className="start-actions">
               <button type="button" className="start-enter" onClick={onEnter}><span aria-hidden="true">›</span> 进入校园</button>
               <button type="button" onClick={openMap}>查看完整地图</button>
+              <button type="button" onClick={onImportScene}>导入场景 ZIP</button>
             </div>
             <div className="start-controls" aria-label="操作快捷键">
               <span>移动</span><div><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd></div>
@@ -65,7 +68,7 @@ export default function StartScreen({ character, onSelect, onEnter, profile, onP
 
           <figure className="start-map">
             <button type="button" className="start-map-image" aria-label="放大校园地图预览" onClick={openMap}>
-              <img src={MAP_IMAGE_PATH} alt="中南大学三个校区的像素地图预览" />
+              <img src={MAP_DISPLAY_IMAGE_PATH} alt="中南大学三个校区的像素地图预览" />
               <span className="start-north">北 ▲</span><span className="start-map-tag">CSU / CAMPUS MAP</span>
             </button>
             <figcaption>沿着熟悉的路，发现不一样的校园。 ↗</figcaption>
@@ -76,7 +79,7 @@ export default function StartScreen({ character, onSelect, onEnter, profile, onP
 
       <dialog ref={mapDialog} className="start-dialog start-map-dialog" aria-labelledby="full-map-title">
         <header><h2 id="full-map-title">完整校园地图</h2><button type="button" aria-label="关闭完整地图" onClick={() => mapDialog.current?.close()}>×</button></header>
-        <div className="start-full-map"><img src={MAP_IMAGE_PATH} alt="中南大学完整校园地图" /></div>
+        <div className="start-full-map"><img src={MAP_DISPLAY_IMAGE_PATH} alt="中南大学完整校园地图" /></div>
       </dialog>
     </main>
   );

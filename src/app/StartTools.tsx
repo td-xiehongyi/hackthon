@@ -1,5 +1,6 @@
 import { useRef, useState, type FormEvent } from 'react';
 import type { CampusProfile } from './campus-profile';
+import { useMusicSettings } from './BackgroundMusic';
 
 interface Props {
   profile: CampusProfile | null;
@@ -10,7 +11,7 @@ const EMPTY_PROFILE: CampusProfile = { name: '', college: '', studentId: '' };
 
 export default function StartTools({ profile, onProfileChange }: Props) {
   const profileDialog = useRef<HTMLDialogElement>(null);
-  const musicDialog = useRef<HTMLDialogElement>(null);
+  const openMusicSettings = useMusicSettings();
   const [draft, setDraft] = useState<CampusProfile>(EMPTY_PROFILE);
   const [error, setError] = useState('');
 
@@ -43,7 +44,7 @@ export default function StartTools({ profile, onProfileChange }: Props) {
         <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="7" r="4" /><path d="M4 21v-3a8 8 0 0 1 16 0v3" /></svg>
         {profile && <span className="start-profile-dot" aria-hidden="true" />}
       </button>
-      <button type="button" aria-label="背景音乐" title="背景音乐 · 待添加" onClick={() => musicDialog.current?.showModal()}>
+      <button type="button" aria-label="背景音乐" title="背景音乐与音量" onClick={openMusicSettings}>
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18V5l11-2v13M9 9l11-2" /><ellipse cx="6" cy="18" rx="3" ry="2.5" /><ellipse cx="17" cy="16" rx="3" ry="2.5" /></svg>
       </button>
     </div>
@@ -61,10 +62,6 @@ export default function StartTools({ profile, onProfileChange }: Props) {
           <button type="submit" className="start-profile-save">{profile ? '保存修改' : '保存并登录'}</button>
         </div>
       </form>
-    </dialog>
-    <dialog ref={musicDialog} className="start-dialog start-music-dialog" aria-labelledby="music-dialog-title">
-      <header><h2 id="music-dialog-title">背景音乐</h2><button type="button" aria-label="关闭背景音乐" onClick={() => musicDialog.current?.close()}>×</button></header>
-      <div className="start-music-empty"><span aria-hidden="true">♫</span><h3>背景音乐尚未添加</h3><p>音乐加入后，可在这里播放或暂停。</p><button type="button" disabled>播放背景音乐</button></div>
     </dialog>
   </>;
 }

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { MAP_IMAGE_PATH, MAP_WIDTH_PX, MAP_HEIGHT_PX, type MapAnnotation, type Point, type NavigationTarget } from '@/shared/contracts';
+import { MAP_DISPLAY_IMAGE_PATH, MAP_WIDTH_PX, MAP_HEIGHT_PX, type MapAnnotation, type Point, type NavigationTarget } from '@/shared/contracts';
 import { PLACE_REGISTRY } from '@/shared/place-registry';
 import { resolveNavigation } from '@/game/map-data';
 
@@ -45,7 +45,7 @@ export default function NavigationOverview({ marker = null, annotation = null, o
       }}>前往 {p.id}</button>)}
     </div>}
     <svg viewBox={`0 0 ${MAP_WIDTH_PX} ${MAP_HEIGHT_PX}`} role="img" aria-label={`${selected?.label ?? '校园'}的地图位置`}>
-      <image href={MAP_IMAGE_PATH} width={MAP_WIDTH_PX} height={MAP_HEIGHT_PX} />
+      <image href={MAP_DISPLAY_IMAGE_PATH} width={MAP_WIDTH_PX} height={MAP_HEIGHT_PX} />
       {selected && <circle data-testid="navigation-marker" cx={selected.point.x} cy={selected.point.y} r="16" fill="#e44336" stroke="white" strokeWidth="5" />}
     </svg>
   </dialog>;

@@ -1,6 +1,7 @@
 import { createRoot } from 'react-dom/client';
 import { lazy, Suspense } from 'react';
 import App from './app/App';
+import BackgroundMusic from './app/BackgroundMusic';
 import './app/styles.css';
 
 /**
@@ -14,6 +15,6 @@ createRoot(document.getElementById('root')!).render(
   DevPlayground && wantsPlayground ? (
     <Suspense fallback={null}><DevPlayground /></Suspense>
   ) : (
-    <App />
+    <BackgroundMusic><App /></BackgroundMusic>
   ),
 );

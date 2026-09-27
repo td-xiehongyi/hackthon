@@ -5,7 +5,7 @@
  * 原位返回、输入锁和定位总览接入同一宿主；互动区域按当前游戏底图配置。
  */
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react';
 import TeachingPage from '../features/teaching/TeachingPage';
 import DormitoryPage from '../features/dormitory/DormitoryPage';
 import MapViewport from '../game/MapViewport';
@@ -18,6 +18,9 @@ import { readCampusProfile, saveCampusProfile, type CampusProfile } from './camp
 import './explorer.css';
 import './place-overlay.css';
 import { readCharacterChoice, saveCharacterChoice, type CharacterChoice } from '../game/character/choices';
+
+const ScenePackagePage = lazy(() => import('../features/scene-package/ScenePackagePage'));
+const pageFromHash = () => window.location.hash === '#scenes' ? 'scenes' : window.location.hash === '#teaching' ? 'teaching' : window.location.hash === '#dormitory' ? 'dormitory' : 'campus';
 
 export default function App() {
   const [profile, setProfile] = useState(readCampusProfile);
@@ -33,7 +36,16 @@ export default function App() {
     setCharacter(choice);
     saveCharacterChoice(choice);
   };
-  const [page, setPage] = useState<'campus' | 'teaching' | 'dormitory'>(() => window.location.hash === '#teaching' ? 'teaching' : window.location.hash === '#dormitory' ? 'dormitory' : 'campus');
+  const [page, setPage] = useState<'campus' | 'teaching' | 'dormitory' | 'scenes'>(pageFromHash);
+  const openScenes = () => {
+    window.history.pushState({ csuView: 'scenes' }, '', '#scenes');
+    setPage('scenes');
+  };
+  const returnHome = () => {
+    window.history.replaceState({}, '', `${window.location.pathname}${window.location.search}`);
+    setEntered(false);
+    setPage('campus');
+  };
   const returnToCampus = useCallback(() => {
     if (['teaching', 'dormitory'].includes(window.history.state?.csuView)) {
       window.history.back();
@@ -44,7 +56,7 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    const handleHistory = () => setPage(window.location.hash === '#teaching' ? 'teaching' : window.location.hash === '#dormitory' ? 'dormitory' : 'campus');
+    const handleHistory = () => setPage(pageFromHash());
     window.addEventListener('popstate', handleHistory);
     return () => window.removeEventListener('popstate', handleHistory);
   }, []);
@@ -77,7 +89,7 @@ export default function App() {
 
   return (
     <>
-    {!entered && <StartScreen character={character} onSelect={selectCharacter} profile={profile} onProfileChange={updateProfile} onEnter={() => {
+    {!entered && page === 'campus' && <StartScreen character={character} onSelect={selectCharacter} profile={profile} onProfileChange={updateProfile} onImportScene={openScenes} onEnter={() => {
       setMapCharacter(character);
       setMapStarted(true);
       setEntered(true);
@@ -101,6 +113,7 @@ export default function App() {
     </main>
     {page === 'teaching' && <TeachingPage onBack={returnToCampus} />}
     {page === 'dormitory' && <DormitoryPage onBack={returnToCampus} />}
+    {page === 'scenes' && <Suspense fallback={<p role="status">正在打开场景导入…</p>}><ScenePackagePage character={character} onBack={returnHome} /></Suspense>}
     </>
   );
 }

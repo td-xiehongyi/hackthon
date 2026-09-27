@@ -62,6 +62,7 @@ test('逆时针一圈成功；持续 Shift 后角色淡入再从头顶警告，�
   await page.screenshot({ path: testInfo.outputPath('campus-run-guard-fade.png') });
   await page.clock.runFor(180);
   await expect(warning).toBeVisible();
+  await expect(page.locator('audio[loop]')).toHaveAttribute('src', /campus-run\.mp3$/);
   await expect(guard).toHaveCSS('opacity', '1');
   const alpha = await guard.evaluate((el: HTMLImageElement) => {
     const canvas = document.createElement('canvas');
@@ -102,10 +103,12 @@ test('逆时针一圈成功；持续 Shift 后角色淡入再从头顶警告，�
   await expect(game).toHaveAttribute('data-status', 'running');
   await steerTo(page, 500, 420);
   await expect(game.getByRole('status')).toHaveText('校园跑成功！你已完成一圈。');
+  await expect(page.locator('audio[loop]')).toHaveAttribute('src', /campus-background\.mp3$/);
   await expect(game.getByRole('progressbar')).toHaveAttribute('aria-valuenow', '8');
   await expect(page.getByTestId('character-status')).toHaveText(mapPosition!);
   await page.screenshot({ path: testInfo.outputPath('campus-run-success.png') });
   await page.getByRole('button', { name: '再跑一圈' }).click();
+  await expect(page.locator('audio[loop]')).toHaveAttribute('src', /campus-run\.mp3$/);
   await expect(game.getByRole('progressbar')).toHaveAttribute('aria-valuenow', '0');
   await page.keyboard.down('ShiftRight');
   await page.clock.runFor(1120);
@@ -176,7 +179,7 @@ test('社团接口失败仍可跑步；素材失败显示重试并阻止开跑',
   await enterCampusAt(page, 425, 934);
   await page.keyboard.press('KeyE');
   await page.getByRole('tab', { name: '校园跑', exact: true }).click();
-  await expect(page.getByRole('alert')).toContainText('操场或角色图片加载失败');
+  await expect(page.getByLabel('校园跑小游戏', { exact: true }).getByRole('alert')).toContainText('操场或角色图片加载失败');
   expect(failedRequests).toBeGreaterThan(0);
   await expect(page.getByRole('button', { name: '等待素材加载' })).toBeDisabled();
   await page.unroute('**/scenes/campus-run-guard-transparent-v2.png');

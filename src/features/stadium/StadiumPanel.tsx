@@ -23,6 +23,7 @@ import {
 } from './domain';
 import './stadium.css';
 import PlaceGallery from '../../shared/gallery/PlaceGallery';
+import PlaceArtwork from '../../shared/PlaceArtwork';
 import CampusRun from './CampusRun';
 import type { CharacterChoice } from '@/game/character/choices';
 
@@ -108,6 +109,7 @@ export default function StadiumPanel(props: StadiumPanelProps) {
           <p className="sp-eyebrow">潇湘校区 · 互动地点</p>
           <h1>{place.name}</h1>
         </div>
+        <PlaceArtwork kind="stadium" />
         <button className="sp-back" onClick={onRequestClose}>返回校园</button>
       </header>
 
@@ -119,8 +121,8 @@ export default function StadiumPanel(props: StadiumPanelProps) {
       </nav>
 
       {tab === 'running' && <CampusRun characterChoice={props.characterChoice} />}
-      {tab !== 'running' && loadState === 'loading' && <p className="sp-state">正在加载社团与活动…</p>}
-      {tab !== 'running' && loadState === 'error' && (
+      {(tab === 'clubs' || tab === 'activities') && loadState === 'loading' && <p className="sp-state">正在加载社团与活动…</p>}
+      {(tab === 'clubs' || tab === 'activities') && loadState === 'error' && (
         <p className="sp-state sp-error" role="alert">{errorMessage}</p>
       )}
 
@@ -144,11 +146,11 @@ export default function StadiumPanel(props: StadiumPanelProps) {
               now={now}
             />
           )}
-          {tab === 'gallery' && (
-            <PlaceGallery placeId={place.placeId} onActivityChange={setUploading} />
-          )}
         </>
       )}
+      <div className="place-album-panel" hidden={tab !== 'gallery'} role="tabpanel" aria-label="地点相册内容">
+        <PlaceGallery placeId={place.placeId} onActivityChange={setUploading} />
+      </div>
     </section>
   );
 }

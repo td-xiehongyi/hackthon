@@ -4,6 +4,8 @@ import { readCharacterChoice, type CharacterChoice } from '@/game/character/choi
 import { ClipPlayer } from '@/game/character/clip-player';
 import { validateManifest } from '@/game/character/manifest';
 import { createRun, resumeRun, RUN_CHECKPOINTS, stepRun, GUARD_FADE_MS, type RunState } from './campus-run';
+import { useCampusRunMusic } from '@/app/BackgroundMusic';
+import { playPoliceWarning } from '@/shared/police-warning-audio';
 import './campus-run.css';
 
 const BACKGROUND = '/scenes/campus-running-track-v1.png';
@@ -17,6 +19,7 @@ export default function CampusRun({ characterChoice }: { characterChoice?: Chara
   const [fallback] = useState(readCharacterChoice);
   const character = characterChoice ?? fallback;
   const [run, setRun] = useState(createRun);
+  useCampusRunMusic(run.status !== 'ready' && run.status !== 'success');
   const state = useRef(run);
   const keys = useRef(new Set<string>());
   const board = useRef<SVGSVGElement>(null);
@@ -133,7 +136,10 @@ export default function CampusRun({ characterChoice }: { characterChoice?: Chara
   }, [assets]);
 
   useEffect(() => {
-    if (run.status === 'warning') bubble.current?.focus({ preventScroll: true });
+    if (run.status === 'warning') {
+      bubble.current?.focus({ preventScroll: true });
+      return playPoliceWarning();
+    }
   }, [run.status]);
 
   const sheet = assets?.manifest.sheets.find(sheet => sheet.id === frame?.sheetId);
@@ -184,7 +190,7 @@ export default function CampusRun({ characterChoice }: { characterChoice?: Chara
       <img className="campus-run-guard" src={GUARD} alt="抱臂提醒禁止骑电动车的角色"
         style={{ opacity: run.guardElapsedMs / GUARD_FADE_MS }} />
       {run.status === 'warning' && <div ref={bubble} className="campus-run-warning-bubble" role="dialog" aria-modal="false" aria-labelledby="campus-run-warning-title" tabIndex={-1}>
-        <h3 id="campus-run-warning-title">操场禁止骑电动车！！！</h3><p>下车步行，已有打卡进度会保留。</p>
+        <h3 id="campus-run-warning-title">操场禁止骑电动车！！！</h3>
       </div>}
     </div>}
     </div>

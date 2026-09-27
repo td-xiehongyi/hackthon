@@ -1,0 +1,7 @@
+.place-introduction { color: #536353; font-size: 14px; line-height: 1.9; }
+.place-introduction h2 { margin: 22px 0 8px; color: #254d3b; font-size: 16px; }
+.place-introduction h2:first-child { margin-top: 0; }
+.place-introduction p { margin: 0 0 16px; }
+.place-introduction-photo { margin: 0 0 24px; }
+.place-introduction-photo img { display: block; width: 100%; height: auto; max-height: 280px; object-fit: contain; background: #e9ecd9; border: 1px solid #d2d7be; }
+.place-introduction-photo figcaption { margin-top: 8px; color: #71806e; font-size: 12px; }

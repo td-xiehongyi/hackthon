@@ -28,14 +28,15 @@ describe('共享契约固定值', () => {
 });
 
 describe('地点注册表', () => {
-  test('注册五个地点且顺序与工具链约定一致', () => {
-    expect(PLACE_REGISTRY).toHaveLength(5);
+  test('注册六个地点且顺序与工具链约定一致', () => {
+    expect(PLACE_REGISTRY).toHaveLength(6);
     expect(PLACE_IDS).toEqual([
       'xiaoxiang_library',
       'xiaoxiang_teaching_group',
       'xiaoxiang_sports_ground',
       'lunan_canteen_2',
       'lunan_shenghua_dormitory',
+      'yuelushan_heping_hall',
     ]);
   });
 
@@ -47,11 +48,17 @@ describe('地点注册表', () => {
       ['xiaoxiang_sports_ground', 'stadium'],
       ['lunan_canteen_2', 'canteen'],
       ['lunan_shenghua_dormitory', 'dormitory'],
+      ['yuelushan_heping_hall', 'heritage'],
     ]);
   });
 
   test('显示名称与校区归属正确', () => {
     for (const place of PLACE_REGISTRY) {
+      if (place.placeId === 'yuelushan_heping_hall') {
+        expect(place.campusId).toBe('yuelushan');
+        expect(place.name).toBe('岳麓山校区和平楼');
+        continue;
+      }
       if (place.placeId === 'lunan_shenghua_dormitory') {
         expect(place.campusId).toBe('lunan');
         expect(place.name).toBe('麓南校区升华公寓');

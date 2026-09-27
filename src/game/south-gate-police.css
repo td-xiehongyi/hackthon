@@ -1,0 +1,31 @@
+.map-canvas:has(> .south-gate-police-bubble) { position: relative; }
+.explorer-map .south-gate-police-bubble {
+  position: absolute;
+  transform: translate(-50%, -100%);
+  padding: 10px 15px;
+  border: 2px solid #293c54;
+  border-radius: 10px;
+  background: #fffbea;
+  color: #25364a;
+  box-shadow: 3px 3px 0 #293c5433;
+  font: 700 15px/1.4 system-ui, sans-serif;
+  width: max-content;
+  max-width: calc(100% - 24px);
+  white-space: normal;
+  cursor: pointer;
+  pointer-events: auto;
+  z-index: 4;
+}
+.south-gate-police-bubble:focus-visible { outline: 3px solid #cf9328; outline-offset: 3px; }
+.south-gate-police-bubble::after {
+  content: '';
+  position: absolute;
+  bottom: -7px;
+  left: calc(50% - 5px);
+  width: 10px;
+  height: 10px;
+  background: #fffbea;
+  border-right: 2px solid #293c54;
+  border-bottom: 2px solid #293c54;
+  transform: rotate(45deg);
+}

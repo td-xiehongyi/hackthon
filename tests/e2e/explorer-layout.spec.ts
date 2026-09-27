@@ -4,7 +4,7 @@ test('正式探索页应用预览布局，附近地图跟随真实角色，返�
   const errors: string[] = [];
   page.on('pageerror', error => errors.push(error.message));
   await page.goto('/');
-  await page.getByRole('button', { name: '选择棕发绿包女生', exact: true }).click();
+  await page.getByRole('button', { name: '选择顾哈哈', exact: true }).click();
   await page.getByRole('button', { name: '进入校园', exact: true }).click();
   await expect(page.getByRole('region', { name: '个人信息' })).toBeVisible();
   await expect(page.getByRole('status', { name: '地图加载状态' })).toHaveText('地图已加载');
@@ -28,6 +28,6 @@ test('正式探索页应用预览布局，附近地图跟随真实角色，返�
     expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth || document.documentElement.scrollHeight > innerHeight)).toBe(false);
   }
   await page.getByRole('button', { name: '返回首页', exact: true }).click();
-  await expect(page.getByRole('button', { name: '选择棕发绿包女生', exact: true })).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByRole('button', { name: '选择顾哈哈', exact: true })).toHaveAttribute('aria-pressed', 'true');
   expect(errors).toEqual([]);
 });

@@ -45,9 +45,8 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): ServerConfig {
     ? path.resolve(PROJECT_ROOT, env.CAMPUS_DATA_ROOT)
     : path.join(PROJECT_ROOT, 'data');
 
-  // 图片政策：格式/大小/容量未由用户确认，正式保持 pending；
-  // 仅当显式设置 CAMPUS_IMAGE_POLICY=dev 时才作为“开发测试配置”启用。
-  const imagePolicy: ImagePolicyStatus = env.CAMPUS_IMAGE_POLICY === 'dev' ? 'configured' : 'pending';
+  // 本机地点相册默认可用；保留 pending 作为显式停用开关，兼容旧 dev 配置。
+  const imagePolicy: ImagePolicyStatus = env.CAMPUS_IMAGE_POLICY === 'pending' ? 'pending' : 'configured';
 
   const acceptedMimeTypes = ['image/png', 'image/jpeg', 'image/webp', 'image/gif'];
   const maxFileBytes = parsePositiveInt('CAMPUS_MAX_FILE_BYTES', env.CAMPUS_MAX_FILE_BYTES, 10 * 1024 * 1024);

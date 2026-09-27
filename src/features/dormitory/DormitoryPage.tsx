@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import './dormitory.css';
+import PlaceArtwork from '../../shared/PlaceArtwork';
 
 type DormBuilding = {
   id: string;
@@ -138,7 +139,8 @@ function fromRemoteMessage(value: unknown): ChatMessage | null {
   };
 }
 
-export default function DormitoryPage({ onBack }: { onBack: () => void }) {
+export default function DormitoryPage({ onBack, gallery }: { onBack: () => void; gallery?: ReactNode }) {
+  const [tab, setTab] = useState<'chat' | 'gallery'>('chat');
   const [state, setState] = useState<DormitoryState>(createInitialState);
   const [draft, setDraft] = useState('');
   const [notice, setNotice] = useState('');
@@ -290,6 +292,7 @@ export default function DormitoryPage({ onBack }: { onBack: () => void }) {
           <p>LN · SHENGHUA RESIDENCE</p>
           <h1>升华公寓 · 楼栋群聊</h1>
         </div>
+        <PlaceArtwork kind="dormitory" />
         <div className="dorm-header-actions">
           <span className="dorm-live"><i /> 本机群聊体验版</span>
           <button
@@ -311,6 +314,11 @@ export default function DormitoryPage({ onBack }: { onBack: () => void }) {
         )}
       </header>
 
+      {gallery && <nav className="place-feature-tabs" role="tablist" aria-label="公寓功能">
+        <button type="button" role="tab" aria-selected={tab === 'chat'} onClick={() => setTab('chat')}>楼栋群聊</button>
+        <button type="button" role="tab" aria-selected={tab === 'gallery'} onClick={() => setTab('gallery')}>地点相册</button>
+      </nav>}
+      <div hidden={tab !== 'chat'}>
       <section className="dorm-intro" aria-labelledby="dorm-intro-title">
         <div>
           <p className="dorm-kicker">麓南校区 · 升华公寓组团</p>
@@ -415,6 +423,8 @@ export default function DormitoryPage({ onBack }: { onBack: () => void }) {
       </div>
       <p className="dorm-notice" role="status" aria-live="polite">{notice}</p>
       <footer className="dorm-footer"><span>灵感参考：ChatUI / Chat UI Kit 的会话列表与消息输入结构</span><span>消息优先保存到本机群聊服务；服务离线时退回浏览器本地</span></footer>
+      </div>
+      {gallery && <div className="place-album-panel" hidden={tab !== 'gallery'} role="tabpanel" aria-label="地点相册内容">{gallery}</div>}
     </main>
   );
 }
