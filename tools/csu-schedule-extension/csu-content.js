@@ -544,13 +544,15 @@
       setStatus(result.error, true);
       return;
     }
-    setStatus(`已抓取 ${result.payload.courses.length} 门课程，正在发送…`, false);
+    setStatus(`已抓取 ${result.payload.courses.length} 门课程，正在生成下载…`, false);
     try {
       chrome.runtime.sendMessage({ type: 'CSU_CAPTURE_RESULT', payload: result.payload }, (response) => {
         const runtimeError = chrome.runtime.lastError;
         if (runtimeError) { setStatus(`发送失败：${runtimeError.message}`, true); return; }
         if (!response || response.ok === false) { setStatus(response && response.error ? response.error : '本机课表页面未连接。', true); return; }
-        setStatus(`已发送 ${result.payload.courses.length} 门课程，可回到课表页面确认导入。`, false);
+        setStatus(response.downloaded
+          ? `已下载 ${response.downloadFilename || '课表 CSV'}；${response.delivered ? '也已发送到课表页面。' : '文件可直接导入课表页面。'}`
+          : `课程已抓取，但 CSV 下载失败${response.downloadError ? `：${response.downloadError}` : ''}。`, !response.downloaded);
       });
     } catch (error) {
       setStatus(`扩展通信失败：${error instanceof Error ? error.message : String(error)}`, true);
@@ -587,7 +589,7 @@
     const head = document.createElement('div'); head.className = 'head';
     const title = document.createElement('strong'); title.textContent = 'CSU 课表抓取助手';
     const close = document.createElement('button'); close.className = 'close'; close.type = 'button'; close.setAttribute('aria-label', '关闭抓取助手'); close.textContent = '×';
-    const grab = document.createElement('button'); grab.className = 'grab'; grab.type = 'button'; grab.textContent = '抓取当前课表';
+    const grab = document.createElement('button'); grab.className = 'grab'; grab.type = 'button'; grab.textContent = '一键下载课表 CSV';
     const status = document.createElement('p'); status.className = 'status'; status.setAttribute('role', 'status'); status.setAttribute('aria-live', 'polite'); status.textContent = '只读取已显示的课表，不读取密码。';
     head.append(title, close); panel.append(head, grab, status); shadow.appendChild(panel);
     const setStatus = (message, error) => { status.textContent = message; status.classList.toggle('error', Boolean(error)); };
@@ -602,7 +604,6 @@
   chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     if (!message || message.type !== 'CSU_CAPTURE_NOW') return undefined;
     const result = captureSchedule();
-    if (!result.ok) { sendResponse(result); return undefined; }
     sendResponse(result);
     return undefined;
   });

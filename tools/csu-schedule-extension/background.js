@@ -1,9 +1,75 @@
-/* MV3 service worker: validates and relays user-triggered captures. */
+/* MV3 service worker: validates, downloads and relays user-triggered captures. */
 const CSU_URL = /^https?:\/\/csujwc\.its\.csu\.edu\.cn\//i;
 const APP_URL = /^http:\/\/(?:127\.0\.0\.1|localhost):517[346]\//i;
 const STORE_KEY = 'latestCsuScheduleCapture';
 const MAX_COURSES = 500;
 const MAX_PAYLOAD_CHARS = 1_500_000;
+const WEEKDAYS = ['一', '二', '三', '四', '五', '六', '日'];
+
+const csvText = (value) => String(value == null ? '' : value)
+  .normalize('NFKC')
+  .replace(/\u00a0/g, ' ')
+  .replace(/[\u200b\ufeff]/g, '')
+  .replace(/[ \t]+/g, ' ')
+  .trim();
+
+const csvCell = (value) => {
+  const raw = csvText(value);
+  // Prevent spreadsheet applications from treating imported course text as
+  // a formula. Full-width variants are caught because csvText applies NFKC.
+  const safe = /^[=+\-@\t\r]/.test(raw) ? `'${raw}` : raw;
+  return /[",\r\n]/.test(safe) ? `"${safe.replace(/"/g, '""')}"` : safe;
+};
+
+const weeksWithParity = (course) => {
+  let weeks = csvText(course.weeks);
+  if (!weeks || /(?:单|双|odd|even)/i.test(weeks)) return weeks;
+  const parity = csvText(course.weekParity).toLocaleLowerCase();
+  if (parity === 'odd' || parity === '单' || parity === '单周') weeks += '单';
+  if (parity === 'even' || parity === '双' || parity === '双周') weeks += '双';
+  return weeks;
+};
+
+/** Build the UTF-8 BOM CSV accepted by WakeUp and this project's importer. */
+const buildScheduleCsv = (payload) => {
+  const rows = [['课程名称', '星期', '开始节数', '结束节数', '老师', '地点', '周数', '兴趣标签']];
+  const courses = Array.isArray(payload?.courses) ? payload.courses : [];
+  courses.forEach((course) => {
+    const weekday = Number(course.weekday);
+    rows.push([
+      csvText(course.name),
+      Number.isInteger(weekday) && weekday >= 1 && weekday <= 7 ? `星期${WEEKDAYS[weekday - 1]}` : '',
+      Number.isInteger(Number(course.startPeriod)) ? String(Number(course.startPeriod)) : '',
+      Number.isInteger(Number(course.endPeriod)) ? String(Number(course.endPeriod)) : '',
+      csvText(course.teacher),
+      csvText(course.location || course.buildingName),
+      weeksWithParity(course),
+      Array.isArray(course.tags) ? course.tags.map(csvText).filter(Boolean).join('|') : '',
+    ]);
+  });
+  return `\uFEFF${rows.map((row) => row.map(csvCell).join(',')).join('\r\n')}\r\n`;
+};
+
+const scheduleDownloadFilename = (payload, fallbackDate = new Date()) => {
+  const capturedAt = new Date(payload?.capturedAt || fallbackDate);
+  const date = Number.isNaN(capturedAt.getTime()) ? fallbackDate : capturedAt;
+  const stamp = date.toISOString()
+    .replace(/[-:]/g, '')
+    .replace(/\.\d{3}Z$/, 'Z')
+    .replace('T', '-');
+  return `CSU课表-${stamp}.csv`;
+};
+
+/** Encode without relying on a temporary page or blob URL in the MV3 worker. */
+const scheduleCsvDataUrl = (csv) => {
+  const bytes = new TextEncoder().encode(csv);
+  let binary = '';
+  const chunkSize = 32_768;
+  for (let offset = 0; offset < bytes.length; offset += chunkSize) {
+    binary += String.fromCharCode(...bytes.subarray(offset, offset + chunkSize));
+  }
+  return `data:text/csv;charset=utf-8;base64,${btoa(binary)}`;
+};
 
 const isCsuTab = (tab) => Boolean(tab && typeof tab.url === 'string' && CSU_URL.test(tab.url));
 const isAppTab = (tab) => Boolean(tab && typeof tab.url === 'string' && APP_URL.test(tab.url));
@@ -91,11 +157,73 @@ const relayToOpenApps = async (payload) => {
     'http://localhost:5173/*', 'http://localhost:5174/*',
     'http://127.0.0.1:5176/*', 'http://localhost:5176/*',
   ] });
-  const results = await Promise.all(tabs.filter(isAppTab).map((tab) => sendToTab(tab.id, {
+  const results = await Promise.all(tabs.filter((tab) => isAppTab(tab) && tab.id != null).map((tab) => sendToTab(tab.id, {
     type: 'CSU_SCHEDULE_CAPTURED',
     payload,
   })));
   return results.filter(Boolean).length;
+};
+
+const downloadScheduleCsv = async (payload) => {
+  const filename = scheduleDownloadFilename(payload);
+  const url = scheduleCsvDataUrl(buildScheduleCsv(payload));
+  const downloadId = await new Promise((resolve, reject) => {
+    chrome.downloads.download({ url, filename, saveAs: false, conflictAction: 'uniquify' }, (value) => {
+      const runtimeError = chrome.runtime.lastError;
+      if (runtimeError) {
+        reject(new Error(runtimeError.message));
+        return;
+      }
+      if (!Number.isInteger(value)) {
+        reject(new Error('浏览器没有创建下载任务。'));
+        return;
+      }
+      resolve(value);
+    });
+  });
+  return { downloadId, downloadFilename: filename };
+};
+
+const processCapture = async (payload) => {
+  let cached = false;
+  let cacheError;
+  try {
+    await saveLatest(payload);
+    cached = true;
+  } catch (error) {
+    cacheError = error instanceof Error ? error.message : String(error);
+  }
+  let delivered = 0;
+  let relayError;
+  try {
+    delivered = await relayToOpenApps(payload);
+  } catch (error) {
+    relayError = error instanceof Error ? error.message : String(error);
+  }
+  try {
+    const download = await downloadScheduleCsv(payload);
+    return {
+      ok: true,
+      cached,
+      cacheError,
+      delivered,
+      relayError,
+      courseCount: payload.courses.length,
+      downloaded: true,
+      ...download,
+    };
+  } catch (error) {
+    return {
+      ok: true,
+      cached,
+      cacheError,
+      delivered,
+      relayError,
+      courseCount: payload.courses.length,
+      downloaded: false,
+      downloadError: error instanceof Error ? error.message : String(error),
+    };
+  }
 };
 
 const responseError = (sendResponse, error) => {
@@ -117,11 +245,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     }
     (async () => {
       try {
-        await saveLatest(payload);
-        const delivered = await relayToOpenApps(payload);
-        sendResponse({ ok: true, delivered, courseCount: payload.courses.length });
+        sendResponse(await processCapture(payload));
       } catch (error) {
-        responseError(sendResponse, `本地转发失败：${error instanceof Error ? error.message : String(error)}`);
+        responseError(sendResponse, `本地保存失败：${error instanceof Error ? error.message : String(error)}`);
       }
     })();
     return true;
@@ -142,7 +268,16 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             resolve(runtimeError ? { ok: false, error: runtimeError.message } : (value || { ok: false, error: '课表页面尚未准备好。' }));
           });
         });
-        sendResponse(result);
+        if (!result || result.ok === false) {
+          sendResponse(result);
+          return;
+        }
+        const payload = validatePayload(result.payload);
+        if (!payload) {
+          responseError(sendResponse, '抓取结果为空或格式不受支持。');
+          return;
+        }
+        sendResponse(await processCapture(payload));
       } catch (error) {
         responseError(sendResponse, error instanceof Error ? error.message : String(error));
       }
