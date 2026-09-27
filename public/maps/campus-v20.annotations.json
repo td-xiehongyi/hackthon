@@ -3993,6 +3993,13 @@
       "returnFallbackPointId": null
     }
   ],
-  "safePoints": [],
+  "safePoints": [
+    {
+      "id": "xiaoxiang-library-spawn",
+      "position": { "x": 600, "y": 1320 },
+      "usage": ["spawn"],
+      "verificationStatus": "verified"
+    }
+  ],
   "occluders": []
 }

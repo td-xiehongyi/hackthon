@@ -8,7 +8,7 @@
  * 通行范围来自 public/maps/campus-v20.annotations.json：底图提取叠加独立人工修正规则。
  * 状态为 pending（边界待用户核对）。草地、操场、路旁与建筑旁树木开放，桥面连接两岸。
  * 标注加载失败或不匹配时停用移动，保留地图浏览并明确提示。
- * 出生点尚未确认（D-04）：暂取地图中心附近第一个可站立的位置。
+ * 出生点使用标注中已核验的潇湘校区图书馆入口；缺失时回退到地图中心附近可站立的位置。
  */
 
 import * as Phaser from 'phaser';
@@ -77,7 +77,7 @@ export const BLOCKED_WORLD: WalkableWorld = {
   collisionAreas: [],
 };
 
-/** 未标定出生点前的临时起点：地图中心。 */
+/** 已核验出生点不可用时的兜底起点：地图中心。 */
 export const UNCALIBRATED_START: Point = { x: Math.round(MAP_WIDTH_PX / 2), y: Math.round(MAP_HEIGHT_PX / 2) };
 
 /** 已确认的初始角色镜头倍率；交互返回时沿用用户当前选择。 */

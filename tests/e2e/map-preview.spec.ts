@@ -1,4 +1,4 @@
-import { dragMap } from './helpers/campus';
+import { dragMap, enterCampusAt } from './helpers/campus';
 import { expect, test } from '@playwright/test';
 import { MAP_DISPLAY_IMAGE_PATH } from '../../src/shared/contracts';
 
@@ -9,6 +9,12 @@ test('地图可加载、缩放、拖动并恢复角色跟随', async ({ page }) 
   await page.getByRole('button', { name: '进入校园', exact: true }).click();
   await expect(page.getByRole('heading', { name: '附近地图' })).toBeVisible();
   await expect(page.getByRole('status', { name: '地图加载状态' })).toHaveText('地图已加载');
+  await expect(page.getByTestId('character-status')).toContainText('位置 600, 1320');
+  await expect(page.getByTestId('interact-prompt')).toContainText('图书馆');
+  await page.keyboard.press('KeyE');
+  await expect(page.getByRole('heading', { name: '潇湘校区图书馆', exact: true })).toBeVisible();
+  await page.getByRole('button', { name: '返回校园', exact: true }).click();
+  await expect(page.getByTestId('character-status')).toContainText('位置 600, 1320');
   const canvas = page.locator('canvas');
   await expect(canvas).toBeVisible();
   const zoom = page.getByLabel('当前缩放');
@@ -55,8 +61,8 @@ test('图片读取失败时明确提示，不能显示加载成功', async ({ pa
 test('角色模式：打开即放出角色，按通行标注跑动与骑行，被障碍挡住，镜头跟随', async ({ page }) => {
   const errors: string[] = [];
   page.on('pageerror', (error) => errors.push(error.message));
-  await page.goto('/');
-  await page.getByRole('button', { name: '进入校园', exact: true }).click();
+  // 碰撞用例固定从二食堂南侧开始，不依赖正式出生点。
+  await enterCampusAt(page, 521, 756);
   await expect(page.getByRole('status', { name: '地图加载状态' })).toHaveText('地图已加载');
   const status = page.getByTestId('character-status');
   const pos = async () => {
