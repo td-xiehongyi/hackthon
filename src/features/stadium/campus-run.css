@@ -1,0 +1,50 @@
+.campus-run { color: #254d3b; padding: 16px; background: #edf0dd; border: 1px solid #b7c5a6; }
+.campus-run-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.campus-run-kicker { font-size: 11px; letter-spacing: 2px; color: #637957; }
+.campus-run-heading h2 { margin: 4px 0; font-size: 26px; }
+.campus-run-count { font-size: 26px; color: #315744; }
+.campus-run-count small { font-size: 12px; font-weight: 500; }
+.campus-run-instructions { margin: 10px 0; font-size: 12px; line-height: 1.7; }
+.campus-run-progress { height: 5px; background: #d4ddc5; margin: 12px 0; }
+.campus-run-progress span { display: block; height: 100%; background: #4f7740; transition: width 180ms ease; }
+.campus-run-stage { position: relative; container-type: inline-size; }
+.campus-run-board { display: block; width: 100%; height: auto; border: 2px solid #456041; background: #b7ce88; touch-action: none; box-sizing: border-box; }
+.campus-run-board:focus-visible { outline: 3px solid #b8892a; outline-offset: 3px; }
+.campus-run-route { fill: none; stroke: #fff8cf88; stroke-width: 2; stroke-dasharray: 5 13; }
+.campus-run-arrows text { fill: #fffbe7; font: bold 25px sans-serif; text-anchor: middle; }
+.campus-run-checkpoint circle { fill: #fcf8e8; stroke: #465940; stroke-width: 3; }
+.campus-run-checkpoint text { fill: #365039; text-anchor: middle; font: bold 17px sans-serif; }
+.campus-run-checkpoint.next circle { fill: #ffda6b; stroke: #8c5d15; }
+.campus-run-checkpoint .campus-run-halo { opacity: .38; }
+.campus-run-checkpoint.done circle { fill: #315744; stroke: #f9f4da; }
+.campus-run-checkpoint.done text { fill: #fff; }
+.campus-run-field-note text { text-anchor: middle; fill: #fffde8; font: bold 36px 'Microsoft YaHei', sans-serif; paint-order: stroke; stroke: #365f3855; stroke-width: 3; }
+.campus-run-field-note .campus-run-field-small { font-size: 17px; font-weight: 500; }
+.campus-run-notice { margin: 12px 0; font-size: 13px; font-weight: 600; line-height: 1.7; }
+.campus-run-notice.success { color: #285d34; padding: 10px; border: 1px solid #adc392; background: #e0ecd1; }
+.campus-run-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.campus-run button { cursor: pointer; padding: 9px 12px; font: inherit; font-size: 12px; color: #315744; background: #fffbee; border: 1px solid #8da17d; }
+.campus-run button:disabled { opacity: .5; cursor: default; }
+.campus-run .campus-run-start { background: #315744; color: #fffbe7; }
+.campus-run > .campus-run-start { margin-top: 10px; }
+.campus-run-controls { display: flex; gap: 4px; }
+.campus-run-controls button { min-width: 36px; min-height: 38px; padding: 6px; font-size: 18px; touch-action: none; user-select: none; }
+.campus-run-controls button:active { background: #d7e4c5; }
+.campus-run-ride { touch-action: none; user-select: none; }
+/* Keep the speaker inside the marked lower-left area, regardless of board size. */
+.campus-run-guard-scene { position: absolute; inset: 0; pointer-events: none; }
+.campus-run-guard { position: absolute; left: 6%; bottom: 1.5%; width: 27%; height: 52%; object-fit: contain; object-position: center bottom; }
+.campus-run-warning-bubble { position: absolute; left: 17%; bottom: 54%; width: 46%; box-sizing: border-box; padding: 1.6cqw; border: max(1px, .22cqw) solid #a9572e; border-radius: 1.4cqw; background: #fff9e8; color: #334b3b; box-shadow: .5cqw .6cqw #213a3430; outline: none; transform-origin: 6% 100%; animation: campus-run-bubble-in 180ms ease-out both; }
+.campus-run-warning-bubble::after { content: ''; position: absolute; left: 4%; bottom: -1.1cqw; width: 2cqw; height: 2cqw; background: #fff9e8; border-right: max(1px, .22cqw) solid #a9572e; border-bottom: max(1px, .22cqw) solid #a9572e; transform: rotate(45deg); }
+.campus-run-warning-bubble h3 { margin: 0; color: #ac3d20; font-size: 2.5cqw; line-height: 1.5; }
+.campus-run-warning-bubble p { margin: .6cqw 0 0; font-size: 1.7cqw; line-height: 1.5; }
+@keyframes campus-run-bubble-in { from { opacity: 0; transform: translateY(.8cqw) scale(.9); } to { opacity: 1; transform: translateY(0) scale(1); } }
+@media (prefers-reduced-motion: reduce) { .campus-run-warning-bubble { animation: none; } }
+@media (max-width: 760px) {
+  .campus-run { padding: 8px; }
+  .campus-run-heading h2 { font-size: 20px; }
+  .campus-run-count { font-size: 20px; }
+  .campus-run-actions { gap: 8px; }
+  .campus-run-controls { flex-wrap: wrap; }
+  .campus-run-controls button { min-width: 30px; }
+}

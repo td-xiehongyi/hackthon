@@ -26,12 +26,14 @@ export type PlaceId =
   | 'xiaoxiang_library'
   | 'xiaoxiang_teaching_group'
   /** 仅潇湘校区体育场（副场）；不含体育场（鸟巢）及其他运动场。 */
-  | 'xiaoxiang_sports_ground';
-export type FeatureKey = 'library' | 'teaching' | 'stadium';
-export type PlaceIdentity = { name: string; campusId: 'xiaoxiang' } & (
-  | { placeId: 'xiaoxiang_library'; featureKey: 'library' }
-  | { placeId: 'xiaoxiang_teaching_group'; featureKey: 'teaching' }
-  | { placeId: 'xiaoxiang_sports_ground'; featureKey: 'stadium' }
+  | 'xiaoxiang_sports_ground'
+  | 'lunan_canteen_2';
+export type FeatureKey = 'library' | 'teaching' | 'stadium' | 'canteen';
+export type PlaceIdentity = { name: string } & (
+  | { placeId: 'xiaoxiang_library'; featureKey: 'library'; campusId: 'xiaoxiang' }
+  | { placeId: 'xiaoxiang_teaching_group'; featureKey: 'teaching'; campusId: 'xiaoxiang' }
+  | { placeId: 'xiaoxiang_sports_ground'; featureKey: 'stadium'; campusId: 'xiaoxiang' }
+  | { placeId: 'lunan_canteen_2'; featureKey: 'canteen'; campusId: 'lunan' }
 );
 
 export interface Point { x: number; y: number }

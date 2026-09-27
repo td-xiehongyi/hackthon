@@ -2,14 +2,17 @@ import type { CharacterStatus } from '../game/CampusMapScene';
 import { MAP_IMAGE_PATH, MAP_WIDTH_PX, MAP_HEIGHT_PX } from '../shared/contracts';
 import type { CharacterChoice } from '../game/character/choices';
 import CharacterPreview from '../game/character/CharacterPreview';
+import type { CampusProfile } from './campus-profile';
 
 interface Props {
   character: CharacterStatus | null;
   choice: CharacterChoice;
   onReturnHome: () => void;
+  returnHomeDisabled?: boolean;
+  profile?: CampusProfile | null;
 }
 
-export default function ExplorerSidebar({ character, choice, onReturnHome }: Props) {
+export default function ExplorerSidebar({ character, choice, onReturnHome, returnHomeDisabled = false, profile = null }: Props) {
   const size = 440;
   const left = Math.max(0, Math.min(MAP_WIDTH_PX - size, (character?.x ?? MAP_WIDTH_PX / 2) - size / 2));
   const top = Math.max(0, Math.min(MAP_HEIGHT_PX - size, (character?.y ?? MAP_HEIGHT_PX / 2) - size / 2));
@@ -31,11 +34,11 @@ export default function ExplorerSidebar({ character, choice, onReturnHome }: Pro
           <div className="explorer-portrait" role="img" aria-label="当前角色头像">
             <CharacterPreview character={choice} />
           </div>
-          <div className="explorer-student-name"><span>姓名</span><strong>待填写</strong></div>
+          <div className="explorer-student-name"><span>姓名</span><strong className={profile ? 'is-filled' : undefined}>{profile?.name ?? '待填写'}</strong></div>
         </div>
-        <dl><div><dt>学院</dt><dd>待填写</dd></div><div><dt>学号</dt><dd>待填写</dd></div></dl>
+        <dl><div><dt>学院</dt><dd>{profile?.college ?? '待填写'}</dd></div><div><dt>学号</dt><dd>{profile?.studentId || '待填写'}</dd></div></dl>
       </section>
     </div>
-    <footer className="explorer-sidebar-bottom"><button type="button" className="explorer-home" onClick={onReturnHome}><span aria-hidden="true">←</span><span>返回首页</span><span aria-hidden="true">↗</span></button></footer>
+    <footer className="explorer-sidebar-bottom"><button type="button" className="explorer-home" onClick={onReturnHome} disabled={returnHomeDisabled} title={returnHomeDisabled ? '请先返回校园，再返回首页' : undefined}><span aria-hidden="true">←</span><span>返回首页</span><span aria-hidden="true">↗</span></button></footer>
   </aside>;
 }

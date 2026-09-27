@@ -13,11 +13,13 @@ import type { ServerConfig } from './config.ts';
 import { ApiError } from './errors.ts';
 import { DataStore, sha256Hex } from './storage.ts';
 import { assertPlaceId, detectMediaType, extensionFor, validatePublicContent } from './validation.ts';
+import { registerCanteenReviews } from './canteen-reviews.ts';
 
 const PLACE_IDS: PlaceId[] = [
   'xiaoxiang_library',
   'xiaoxiang_teaching_group',
   'xiaoxiang_sports_ground',
+  'lunan_canteen_2',
 ];
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -113,6 +115,8 @@ export function buildApp(config: ServerConfig): FastifyInstance {
     }
     done();
   });
+
+  registerCanteenReviews(app, config.dataRoot);
 
   app.get('/api/v1/capabilities', async () => {
     const caps: Capabilities = {

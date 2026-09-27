@@ -1,0 +1,99 @@
+{
+  "width": 1536,
+  "height": 1024,
+  "channels": 4,
+  "sha256": "2b4570d91c1e7e303de9704c77de78a7dcb97765b854119957788885f1f794cd",
+  "transparentPixels": 860209,
+  "opaquePixels": 0,
+  "semiTransparentPixels": 712655,
+  "frames": [
+    {
+      "mode": "walk",
+      "facing": "down",
+      "boundsAtAlpha200": {
+        "minX": 86,
+        "minY": 42,
+        "maxX": 301,
+        "maxY": 497
+      },
+      "touchesCropEdge": false
+    },
+    {
+      "mode": "walk",
+      "facing": "left",
+      "boundsAtAlpha200": {
+        "minX": 83,
+        "minY": 42,
+        "maxX": 302,
+        "maxY": 497
+      },
+      "touchesCropEdge": false
+    },
+    {
+      "mode": "walk",
+      "facing": "right",
+      "boundsAtAlpha200": {
+        "minX": 81,
+        "minY": 42,
+        "maxX": 299,
+        "maxY": 497
+      },
+      "touchesCropEdge": false
+    },
+    {
+      "mode": "walk",
+      "facing": "up",
+      "boundsAtAlpha200": {
+        "minX": 82,
+        "minY": 41,
+        "maxX": 296,
+        "maxY": 497
+      },
+      "touchesCropEdge": false
+    },
+    {
+      "mode": "ride",
+      "facing": "down",
+      "boundsAtAlpha200": {
+        "minX": 63,
+        "minY": 5,
+        "maxX": 318,
+        "maxY": 481
+      },
+      "touchesCropEdge": false
+    },
+    {
+      "mode": "ride",
+      "facing": "left",
+      "boundsAtAlpha200": {
+        "minX": 15,
+        "minY": 10,
+        "maxX": 396,
+        "maxY": 481
+      },
+      "touchesCropEdge": false
+    },
+    {
+      "mode": "ride",
+      "facing": "right",
+      "boundsAtAlpha200": {
+        "minX": 31,
+        "minY": 10,
+        "maxX": 411,
+        "maxY": 482
+      },
+      "touchesCropEdge": false
+    },
+    {
+      "mode": "ride",
+      "facing": "up",
+      "boundsAtAlpha200": {
+        "minX": 21,
+        "minY": 5,
+        "maxX": 277,
+        "maxY": 482
+      },
+      "touchesCropEdge": false
+    }
+  ]
+}

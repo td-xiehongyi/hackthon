@@ -6,10 +6,10 @@ test('首页选择现有照片角色、记住选择，并带入校园后返回',
   await page.goto('/');
   await expect(page.getByRole('heading', { name: '选择角色' })).toBeVisible();
   await expect(page.locator('canvas')).toHaveCount(0);
-  for (const name of ['粉白开衫女生', '棕发绿包女生', '灰衣黑包男生', '临时测试角色']) {
+  for (const name of ['粉白开衫女生', '棕发绿包女生', '灰衣黑包男生', '圆框眼镜男生', '照片蓝眼长毛猫', '临时测试角色']) {
     await expect(page.getByRole('button', { name: `选择${name}`, exact: true })).toBeVisible();
   }
-  await expect(page.getByLabel('照片蓝眼长毛猫，外观审阅中，暂不能进入校园')).toBeVisible();
+  await expect(page.locator('.start-character-pending')).toHaveCount(0);
   await page.getByRole('button', { name: '选择棕发绿包女生', exact: true }).click();
   await expect(page.getByRole('button', { name: '选择棕发绿包女生', exact: true })).toHaveAttribute('aria-pressed', 'true');
   await page.reload();

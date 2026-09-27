@@ -13,10 +13,17 @@ import type { CampusMapScene } from '../game/CampusMapScene';
 import type { OpenContext } from './place-session';
 import PlaceHost, { type PlaceHostHandle } from './PlaceHost';
 import StartScreen from './StartScreen';
+import { readCampusProfile, saveCampusProfile, type CampusProfile } from './campus-profile';
 import './explorer.css';
+import './place-overlay.css';
 import { readCharacterChoice, saveCharacterChoice, type CharacterChoice } from '../game/character/choices';
 
 export default function App() {
+  const [profile, setProfile] = useState(readCampusProfile);
+  const updateProfile = (next: CampusProfile | null) => {
+    saveCampusProfile(next);
+    setProfile(next);
+  };
   const [entered, setEntered] = useState(() => window.location.hash === '#teaching');
   const [character, setCharacter] = useState(readCharacterChoice);
   const [mapCharacter, setMapCharacter] = useState(character);
@@ -69,13 +76,14 @@ export default function App() {
 
   return (
     <>
-    {!entered && <StartScreen character={character} onSelect={selectCharacter} onEnter={() => {
+    {!entered && <StartScreen character={character} onSelect={selectCharacter} profile={profile} onProfileChange={updateProfile} onEnter={() => {
       setMapCharacter(character);
       setMapStarted(true);
       setEntered(true);
     }} />}
     <main className="campus-shell" hidden={!entered || page !== 'campus'}>
       <PlaceHost
+        characterChoice={mapCharacter}
         onSuspendMap={onSuspendMap}
         onResumeMap={onResumeMap}
         registerHandle={registerHandle}
@@ -84,9 +92,9 @@ export default function App() {
         annotation={annotation}
       >
         {/* 地图探索页：功能页打开时保留地图状态并暂停探索，因此保持挂载。 */}
-        <div hidden={placeOpen}>
+        <div>
           {returnError && <p className="explorer-return-error" role="alert">{returnError}</p>}
-          {mapStarted && <MapViewport key={mapCharacter.id} characterChoice={mapCharacter} active={!mapBlocked} onReturnHome={() => setEntered(false)} registerScene={registerScene} onRequestOpen={requestOpen} onAnnotation={setAnnotation} />}
+          {mapStarted && <MapViewport key={mapCharacter.id} characterChoice={mapCharacter} profile={profile} active={!mapBlocked} placeOpen={placeOpen} onReturnHome={() => setEntered(false)} registerScene={registerScene} onRequestOpen={requestOpen} onAnnotation={setAnnotation} />}
         </div>
       </PlaceHost>
     </main>

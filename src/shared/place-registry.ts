@@ -1,7 +1,7 @@
 /**
  * 地点注册表。
  *
- * A 独占维护。三个地点 ID、featureKey 与显示名称在此固定；显示名称和地图位置可以修改，
+ * 地点 ID、featureKey 与显示名称在此登记；显示名称和地图位置可以修改，
  * 地点身份不随之改变。相册与课程关联一律使用 placeId，不使用名称或坐标作为键。
  *
  * 未纳入本注册表的地标（含体育场（鸟巢）及其他运动场）只能展示、搜索和定位，
@@ -10,7 +10,7 @@
 
 import type { Building, PlaceId, PlaceIdentity } from './contracts';
 
-/** 三个固定地点的注册条目。 */
+/** 正式地图交互地点的注册条目。 */
 export const PLACE_REGISTRY = [
   {
     placeId: 'xiaoxiang_library',
@@ -29,6 +29,12 @@ export const PLACE_REGISTRY = [
     featureKey: 'stadium',
     name: '潇湘校区体育场（副场）',
     campusId: 'xiaoxiang',
+  },
+  {
+    placeId: 'lunan_canteen_2',
+    featureKey: 'canteen',
+    name: '麓南校区二食堂',
+    campusId: 'lunan',
   },
 ] as const satisfies readonly PlaceIdentity[];
 

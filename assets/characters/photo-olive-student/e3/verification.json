@@ -1,0 +1,392 @@
+{
+  "browser": "153.0.4234.48",
+  "url": "http://127.0.0.1:5207/assets/characters/photo-olive-student/e3/preview.html",
+  "checks": [
+    {
+      "name": "eight-direction-animation-cards",
+      "passed": true
+    },
+    {
+      "name": "manifest-contract",
+      "passed": true
+    },
+    {
+      "name": "shift-preserves-ground-point",
+      "passed": true,
+      "details": {
+        "before": {
+          "position": {
+            "x": 565,
+            "y": 972
+          },
+          "facing": "down",
+          "mode": "walk",
+          "moving": false,
+          "canStand": true,
+          "spritePosition": {
+            "x": 565,
+            "y": 972
+          },
+          "frame": "313,0,314,317",
+          "scale": 0.1,
+          "occluders": 0
+        },
+        "ride": {
+          "position": {
+            "x": 565,
+            "y": 972
+          },
+          "facing": "down",
+          "mode": "ride",
+          "moving": false,
+          "canStand": true,
+          "spritePosition": {
+            "x": 565,
+            "y": 972
+          },
+          "frame": "313,0,314,315",
+          "scale": 0.1,
+          "occluders": 0
+        }
+      }
+    },
+    {
+      "name": "release-shift-restores-walk",
+      "passed": true
+    },
+    {
+      "name": "wasd-moves-on-map",
+      "passed": true,
+      "details": {
+        "before": {
+          "x": 565,
+          "y": 972
+        },
+        "after": {
+          "x": 586.9239999999972,
+          "y": 972
+        }
+      }
+    },
+    {
+      "name": "stop-keeps-facing",
+      "passed": true
+    },
+    {
+      "name": "ride-animation-selected",
+      "passed": true
+    },
+    {
+      "name": "blur-clears-movement-and-shift",
+      "passed": true
+    },
+    {
+      "name": "sampled-movement-stays-in-walkable-area",
+      "passed": true
+    },
+    {
+      "name": "all-40-frame-references-render-correctly",
+      "passed": true,
+      "details": [
+        {
+          "clip": "walk/down/idle",
+          "index": 0,
+          "expected": "313,0,314,317",
+          "actual": "313,0,314,317",
+          "groundStable": true
+        },
+        {
+          "clip": "walk/down/move",
+          "index": 0,
+          "expected": "0,0,313,317",
+          "actual": "0,0,313,317",
+          "groundStable": true
+        },
+        {
+          "clip": "walk/down/move",
+          "index": 1,
+          "expected": "313,0,314,317",
+          "actual": "313,0,314,317",
+          "groundStable": true
+        },
+        {
+          "clip": "walk/down/move",
+          "index": 2,
+          "expected": "627,0,313,317",
+          "actual": "627,0,313,317",
+          "groundStable": true
+        },
+        {
+          "clip": "walk/down/move",
+          "index": 3,
+          "expected": "940,0,314,317",
+          "actual": "940,0,314,317",
+          "groundStable": true
+        },
+        {
+          "clip": "walk/left/idle",
+          "index": 0,
+          "expected": "313,317,314,304",
+          "actual": "313,317,314,304",
+          "groundStable": true
+        },
+        {
+          "clip": "walk/left/move",
+          "index": 0,
+          "expected": "0,317,313,304",
+          "actual": "0,317,313,304",
+          "groundStable": true
+        },
+        {
+          "clip": "walk/left/move",
+          "index": 1,
+          "expected": "313,317,314,304",
+          "actual": "313,317,314,304",
+          "groundStable": true
+        },
+        {
+          "clip": "walk/left/move",
+          "index": 2,
+          "expected": "627,317,313,304",
+          "actual": "627,317,313,304",
+          "groundStable": true
+        },
+        {
+          "clip": "walk/left/move",
+          "index": 3,
+          "expected": "940,317,314,304",
+          "actual": "940,317,314,304",
+          "groundStable": true
+        },
+        {
+          "clip": "walk/right/idle",
+          "index": 0,
+          "expected": "313,621,314,301",
+          "actual": "313,621,314,301",
+          "groundStable": true
+        },
+        {
+          "clip": "walk/right/move",
+          "index": 0,
+          "expected": "0,621,313,301",
+          "actual": "0,621,313,301",
+          "groundStable": true
+        },
+        {
+          "clip": "walk/right/move",
+          "index": 1,
+          "expected": "313,621,314,301",
+          "actual": "313,621,314,301",
+          "groundStable": true
+        },
+        {
+          "clip": "walk/right/move",
+          "index": 2,
+          "expected": "627,621,313,301",
+          "actual": "627,621,313,301",
+          "groundStable": true
+        },
+        {
+          "clip": "walk/right/move",
+          "index": 3,
+          "expected": "940,621,314,301",
+          "actual": "940,621,314,301",
+          "groundStable": true
+        },
+        {
+          "clip": "walk/up/idle",
+          "index": 0,
+          "expected": "313,922,314,332",
+          "actual": "313,922,314,332",
+          "groundStable": true
+        },
+        {
+          "clip": "walk/up/move",
+          "index": 0,
+          "expected": "0,922,313,332",
+          "actual": "0,922,313,332",
+          "groundStable": true
+        },
+        {
+          "clip": "walk/up/move",
+          "index": 1,
+          "expected": "313,922,314,332",
+          "actual": "313,922,314,332",
+          "groundStable": true
+        },
+        {
+          "clip": "walk/up/move",
+          "index": 2,
+          "expected": "627,922,313,332",
+          "actual": "627,922,313,332",
+          "groundStable": true
+        },
+        {
+          "clip": "walk/up/move",
+          "index": 3,
+          "expected": "940,922,314,332",
+          "actual": "940,922,314,332",
+          "groundStable": true
+        },
+        {
+          "clip": "ride/down/idle",
+          "index": 0,
+          "expected": "313,0,314,315",
+          "actual": "313,0,314,315",
+          "groundStable": true
+        },
+        {
+          "clip": "ride/down/move",
+          "index": 0,
+          "expected": "0,0,313,315",
+          "actual": "0,0,313,315",
+          "groundStable": true
+        },
+        {
+          "clip": "ride/down/move",
+          "index": 1,
+          "expected": "313,0,314,315",
+          "actual": "313,0,314,315",
+          "groundStable": true
+        },
+        {
+          "clip": "ride/down/move",
+          "index": 2,
+          "expected": "627,0,313,315",
+          "actual": "627,0,313,315",
+          "groundStable": true
+        },
+        {
+          "clip": "ride/down/move",
+          "index": 3,
+          "expected": "940,0,314,315",
+          "actual": "940,0,314,315",
+          "groundStable": true
+        },
+        {
+          "clip": "ride/left/idle",
+          "index": 0,
+          "expected": "313,315,314,311",
+          "actual": "313,315,314,311",
+          "groundStable": true
+        },
+        {
+          "clip": "ride/left/move",
+          "index": 0,
+          "expected": "0,315,313,311",
+          "actual": "0,315,313,311",
+          "groundStable": true
+        },
+        {
+          "clip": "ride/left/move",
+          "index": 1,
+          "expected": "313,315,314,311",
+          "actual": "313,315,314,311",
+          "groundStable": true
+        },
+        {
+          "clip": "ride/left/move",
+          "index": 2,
+          "expected": "627,315,313,311",
+          "actual": "627,315,313,311",
+          "groundStable": true
+        },
+        {
+          "clip": "ride/left/move",
+          "index": 3,
+          "expected": "940,315,314,311",
+          "actual": "940,315,314,311",
+          "groundStable": true
+        },
+        {
+          "clip": "ride/right/idle",
+          "index": 0,
+          "expected": "313,626,314,309",
+          "actual": "313,626,314,309",
+          "groundStable": true
+        },
+        {
+          "clip": "ride/right/move",
+          "index": 0,
+          "expected": "0,626,313,309",
+          "actual": "0,626,313,309",
+          "groundStable": true
+        },
+        {
+          "clip": "ride/right/move",
+          "index": 1,
+          "expected": "313,626,314,309",
+          "actual": "313,626,314,309",
+          "groundStable": true
+        },
+        {
+          "clip": "ride/right/move",
+          "index": 2,
+          "expected": "627,626,313,309",
+          "actual": "627,626,313,309",
+          "groundStable": true
+        },
+        {
+          "clip": "ride/right/move",
+          "index": 3,
+          "expected": "940,626,314,309",
+          "actual": "940,626,314,309",
+          "groundStable": true
+        },
+        {
+          "clip": "ride/up/idle",
+          "index": 0,
+          "expected": "313,935,314,319",
+          "actual": "313,935,314,319",
+          "groundStable": true
+        },
+        {
+          "clip": "ride/up/move",
+          "index": 0,
+          "expected": "0,935,313,319",
+          "actual": "0,935,313,319",
+          "groundStable": true
+        },
+        {
+          "clip": "ride/up/move",
+          "index": 1,
+          "expected": "313,935,314,319",
+          "actual": "313,935,314,319",
+          "groundStable": true
+        },
+        {
+          "clip": "ride/up/move",
+          "index": 2,
+          "expected": "627,935,313,319",
+          "actual": "627,935,313,319",
+          "groundStable": true
+        },
+        {
+          "clip": "ride/up/move",
+          "index": 3,
+          "expected": "940,935,314,319",
+          "actual": "940,935,314,319",
+          "groundStable": true
+        }
+      ]
+    },
+    {
+      "name": "all-frame-ground-points-stable",
+      "passed": true
+    },
+    {
+      "name": "no-browser-script-errors",
+      "passed": true,
+      "details": []
+    }
+  ],
+  "annotation": {
+    "occluders": 0,
+    "status": "pending"
+  },
+  "limitations": [
+    "Map occlusion layers absent; real building/tree occlusion not verified.",
+    "Weak-alpha edges, alternating gait, idle poses and tire markings remain art-review items.",
+    "Preview uses scale 0.10; application default scale is unchanged."
+  ]
+}

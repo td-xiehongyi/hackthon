@@ -1,0 +1,23 @@
+{
+  "characterId": "photo-point-cat",
+  "version": "0.3.0-rc.1",
+  "sheets": [
+    {
+      "id": "walk",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "44423798d30883b174c5e1cc4ae3ca54f4f92cc2d2e8b07af65716670c0b6fc2",
+      "sameAsE2": true
+    },
+    {
+      "id": "ride",
+      "width": 1268,
+      "height": 1240,
+      "sha256": "7e55bb748901575a2bed69db594aee6a4d251be71bf36f2ddde365abf2b74141",
+      "sameAsE2": true
+    }
+  ],
+  "clips": 16,
+  "frameReferences": 40,
+  "problems": []
+}

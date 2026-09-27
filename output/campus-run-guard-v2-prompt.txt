@@ -1,0 +1,6 @@
+Tool: built-in image_gen
+Edit target: public/scenes/campus-run-guard-v1.png
+Output: public/scenes/campus-run-guard-transparent-v2.png
+transparent_background: true
+
+Use case: background-extraction. Edit target: the provided image of a yellow round police character wearing a navy police hat and light blue uniform, with arms crossed. Remove ONLY the white background and thin black border to produce a clean transparent PNG cutout. Preserve the original character's exact identity, face, hat, uniform, badges, crossed-arm pose, colors, framing, proportions and existing photographic/rendered texture. Keep the same waist-up crop, do not invent legs or change clothing. Preserve all white highlights and light uniform details that belong to the character. Outside the character must be genuine alpha transparency, not a checkerboard or solid-color background. Clean silhouette edges, no added drop shadow, no outline, no text, no additional objects. Tightly frame the existing character with minimal transparent margins.

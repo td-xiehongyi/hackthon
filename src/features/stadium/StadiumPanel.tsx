@@ -23,12 +23,15 @@ import {
 } from './domain';
 import './stadium.css';
 import PlaceGallery from '../../shared/gallery/PlaceGallery';
+import CampusRun from './CampusRun';
+import type { CharacterChoice } from '@/game/character/choices';
 
 export interface StadiumPanelProps extends PlacePanelProps {
   api: PublicContentApi;
+  characterChoice?: CharacterChoice;
 }
 
-type Tab = 'clubs' | 'activities' | 'gallery';
+type Tab = 'clubs' | 'activities' | 'gallery' | 'running';
 
 const CAMPUS_OPTIONS: { value: CampusId | ''; label: string }[] = [
   { value: '', label: '全部校区' },
@@ -109,13 +112,15 @@ export default function StadiumPanel(props: StadiumPanelProps) {
       </header>
 
       <nav className="sp-tabs" role="tablist">
+        <TabButton active={tab === 'running'} onClick={() => { if (!uploading) setTab('running'); }}>校园跑</TabButton>
         <TabButton active={tab === 'clubs'} onClick={() => { if (!uploading) setTab('clubs'); }}>社团目录</TabButton>
         <TabButton active={tab === 'activities'} onClick={() => { if (!uploading) setTab('activities'); }}>活动查询</TabButton>
         <TabButton active={tab === 'gallery'} onClick={() => setTab('gallery')}>地点相册</TabButton>
       </nav>
 
-      {loadState === 'loading' && <p className="sp-state">正在加载社团与活动…</p>}
-      {loadState === 'error' && (
+      {tab === 'running' && <CampusRun characterChoice={props.characterChoice} />}
+      {tab !== 'running' && loadState === 'loading' && <p className="sp-state">正在加载社团与活动…</p>}
+      {tab !== 'running' && loadState === 'error' && (
         <p className="sp-state sp-error" role="alert">{errorMessage}</p>
       )}
 

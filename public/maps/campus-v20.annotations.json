@@ -3756,6 +3756,59 @@
         }
       ],
       "returnFallbackPointId": null
+    },
+    {
+      "placeId": "lunan_canteen_2",
+      "verificationStatus": "verified",
+      "entrancePoint": {
+        "x": 560,
+        "y": 748
+      },
+      "triggerPolygon": [
+        {
+          "x": 485,
+          "y": 720
+        },
+        {
+          "x": 635,
+          "y": 720
+        },
+        {
+          "x": 635,
+          "y": 776
+        },
+        {
+          "x": 485,
+          "y": 776
+        }
+      ],
+      "highlightPolygon": [
+        {
+          "x": 498,
+          "y": 678
+        },
+        {
+          "x": 549,
+          "y": 670
+        },
+        {
+          "x": 554,
+          "y": 677
+        },
+        {
+          "x": 614,
+          "y": 679
+        },
+        {
+          "x": 618,
+          "y": 725
+        },
+        {
+          "x": 498,
+          "y": 725
+        }
+      ],
+      "returnFallbackPointId": null
     }
   ],
   "safePoints": [],

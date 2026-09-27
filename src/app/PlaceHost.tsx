@@ -10,8 +10,8 @@
  * 功能模块不得直接访问或修改 Phaser 场景、镜头、角色、按键或碰撞体。
  * 打开上下文只能由地图侧通过明确参数传入，不使用全局变量或自建事件通道。
  *
- * 本组件是单一实例：功能页打开时用功能页替换 children（地图探索页），
- * 关闭后恢复 children，因此地图 DOM 不会被重建。
+ * 本组件是单一实例：正式探索页保留地图与信息栏，在其上打开地点浮层。
+ * 地图保持挂载并暂停输入，关闭浮层后恢复原位。
  */
 
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
@@ -28,14 +28,17 @@ import type { FeatureKey } from '../shared/contracts';
 import LibraryPanel from '../features/library/LibraryPanel';
 import TeachingPlacePage from './TeachingPlacePage';
 import StadiumPage from './StadiumPage';
+import CanteenPanel from '../features/canteen/CanteenPanel';
 import NavigationOverview from './NavigationOverview';
 import { resolveNavigation, type NavigationResolution } from '@/game/map-data';
+import type { CharacterChoice } from '@/game/character/choices';
 
-/** 三处地点共用会话、暂停与原位返回流程。 */
+/** 地点共用会话、暂停与原位返回流程。 */
 const PANELS: Record<FeatureKey, ComponentType<PlacePanelProps>> = {
   library: LibraryPanel,
   teaching: TeachingPlacePage,
   stadium: StadiumPage,
+  canteen: CanteenPanel,
 };
 
 export interface PlaceHostHandle {
@@ -44,9 +47,10 @@ export interface PlaceHostHandle {
 }
 
 interface PlaceHostProps {
+  characterChoice?: CharacterChoice;
   /** 开发测试场景可注入协议演示面板。正式地图使用默认业务页面。 */
   panelOverrides?: Partial<Record<FeatureKey, ComponentType<PlacePanelProps>>>;
-  /** 地图探索页内容；功能页打开时被替换，关闭后恢复。 */
+  /** 地图探索页内容；正式入口在功能页打开期间保持可见。 */
   children: ReactNode;
   /** 打开前的地图侧准备：暂停移动并清除按键状态。 */
   onSuspendMap: () => void;
@@ -69,8 +73,10 @@ export default function PlaceHost({
   validateOpen,
   annotation = null,
   panelOverrides,
+  characterChoice,
 }: PlaceHostProps) {
   const hostRef = useRef<SessionHost | null>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
   const [session, setSession] = useState<ReturnType<SessionHost['current']>>(null);
   const [closeError, setCloseError] = useState<string | null>(null);
   const [marker, setMarker] = useState<Extract<NavigationResolution, { status: 'marked' }> | null>(null);
@@ -87,6 +93,8 @@ export default function PlaceHost({
   useEffect(() => {
     onOpenChange?.(session !== null);
   }, [session, onOpenChange]);
+
+  useEffect(() => { if (session) panelRef.current?.focus(); }, [session?.sessionId]);
 
   const requestOpen = useCallback(
     (context: OpenContext) => {
@@ -150,10 +158,13 @@ export default function PlaceHost({
       {children}
       {marker && session && <NavigationOverview marker={marker} annotation={annotation} onClose={() => setMarker(null)} />}
       {panelProps && (
-        <div className="workspace workspace-single">
+        <div ref={panelRef} className="workspace workspace-single place-overlay" tabIndex={-1} role="region" aria-label="地点功能面板">
           {closeError && <p className="place-error" role="alert">{closeError}</p>}
           {(() => {
             const Panel = panelOverrides?.[panelProps.place.featureKey] ?? PANELS[panelProps.place.featureKey];
+            if (panelProps.place.featureKey === 'stadium' && !panelOverrides?.stadium) {
+              return <StadiumPage key={panelProps.sessionId} {...panelProps} characterChoice={characterChoice} />;
+            }
             return <Panel key={panelProps.sessionId} {...panelProps} />;
           })()}
         </div>

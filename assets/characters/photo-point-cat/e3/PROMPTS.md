@@ -1,0 +1,13 @@
+# E2 图像生成记录
+
+工具：内置 imagegen。参考输入为已确认的猫 E1 v2 样张、两张用户照片及项目现有人物骑行样张。所有图片请求透明背景。
+
+行走首轮和一次去除红黄边缘的修订仍有彩色杂边，未选用。当前 `walk-cycle.png` 由以下提示词生成：
+
+> Use case: stylized-concept. Generate a CLEAN 4 by 4 pixel-art walk-cycle contact sheet on a genuinely transparent background for the approved player cat in reference 1. EXACTLY 16 complete separate cat sprites. Make each cat deliberately SMALL ENOUGH to occupy at most 70 percent of its grid cell width and height, leaving wide empty transparent gutters on all four sides; especially fit the side-view plume tail within each cell, with absolutely no touching or overlap at grid boundaries. Row 1 front/down, row 2 left, row 3 right, row 4 back/up. Four sequential paw positions per row, natural alternate quadruped stepping; torso and head stay stable. Same exact cat markings: blue eyes, dark eye mask and ears, narrow white blaze and pink nose, large fluffy white chest and underbelly, white legs/paws, beige gray back, nearly black big tail. Match project sprite style in reference 2. Use solid natural charcoal outlines ONLY; strictly NO red, orange, yellow, green, blue or magenta edge glows, chromatic aberration or colored fringe. No floor, shadow, text, grid lines, props, scooter or people. Crisp readable deliberate pixel clusters.
+
+当前 `ride-cycle.png` 的提示词：
+
+> Use case: stylized-concept. Asset type: E2 animation concept sheet for the 2D pixel campus game. Create the player-controlled cat from reference image 1 riding a small blue and cream electric scooter like the project's existing rider style in reference image 2. The CAT is the rider, with its front paws naturally resting on the handlebars, hindquarters on the saddle and a huge dark tail visible; no human. Preserve cat identity exactly: blue eyes, charcoal face mask and ears, tall white nose blaze, pink nose, fluffy broad white chest and underside, white paws, beige gray back, enormous dark plume tail. Single cat-and-scooter composite in each frame, not a cat next to a scooter. Transparent 4 row x 4 column sheet of 16 separate complete sprites. Rows from top to bottom: front/down, left, right, rear/up. Columns 1-4: subtle repeating travel animation with small wheel spoke rotation and slight cat/scooter bob, while proportions, angle, cat marking, scooter design and wheel positions stay consistent within each row. Orthographic chibi pixel art, crisp deliberate pixel clusters and dark outlines. Give each view its own generous transparent margin, no figure may cross cell boundaries. No text, labels, grid, background, shadows, people, clothes, extra cats, extra wheels or broken anatomy. Blue and cream scooter should be clearly readable at small game scale.
+
+生成结果仍含彩色杂边，骑行各帧运动差异不够清楚。提示词表达了目标，不构成结果已达到该目标的证据。

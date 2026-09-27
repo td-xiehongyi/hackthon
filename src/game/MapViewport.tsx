@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import ExplorerSidebar from '../app/ExplorerSidebar';
+import type { CampusProfile } from '../app/campus-profile';
 import * as Phaser from 'phaser';
 import { CampusMapScene, type CharacterStatus, type CollisionSource, type ViewMode } from './CampusMapScene';
 import type { OpenContext } from '@/app/place-session';
@@ -10,13 +11,15 @@ import { CHARACTER_CHOICES, type CharacterChoice } from './character/choices';
 interface MapViewportProps {
   characterChoice?: CharacterChoice;
   active?: boolean;
+  placeOpen?: boolean;
+  profile?: CampusProfile | null;
   onReturnHome: () => void;
   registerScene?: (scene: CampusMapScene | null) => void;
   onRequestOpen?: (context: OpenContext) => void;
   onAnnotation?: (annotation: MapAnnotation | null) => void;
 }
 
-export default function MapViewport({ characterChoice = CHARACTER_CHOICES[0], active = true, onReturnHome, registerScene, onRequestOpen, onAnnotation }: MapViewportProps) {
+export default function MapViewport({ characterChoice = CHARACTER_CHOICES[0], active = true, placeOpen = false, profile = null, onReturnHome, registerScene, onRequestOpen, onAnnotation }: MapViewportProps) {
   const host = useRef<HTMLDivElement>(null);
   const scene = useRef<CampusMapScene | null>(null);
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
@@ -87,9 +90,9 @@ export default function MapViewport({ characterChoice = CHARACTER_CHOICES[0], ac
   }
 
   return (
-    <div className="campus-explorer">
-      <ExplorerSidebar character={character} choice={characterChoice} onReturnHome={onReturnHome} />
-      <section className="explorer-map" aria-label="校园探索地图">
+    <div className={`campus-explorer${active ? '' : ' is-paused'}`}>
+      <ExplorerSidebar character={character} choice={characterChoice} profile={profile} onReturnHome={onReturnHome} returnHomeDisabled={placeOpen} />
+      <section className="explorer-map" aria-label="校园探索地图" inert={!active}>
         <div ref={host} className="map-canvas" />
         <span role="status" aria-label="地图加载状态" className="visually-hidden">{ready ? '地图已加载' : status === 'loading' ? '正在加载地图…' : '地图未加载'}</span>
         <div className="explorer-compass" aria-label="正北方向">N<b>↑</b></div>

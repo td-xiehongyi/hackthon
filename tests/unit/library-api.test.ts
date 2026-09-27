@@ -72,7 +72,7 @@ const UUID_A = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
 const UUID_B = 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb';
 
 describe('能力接口', () => {
-  test('返回三个固定地点与图片政策', async () => {
+  test('返回四个注册地点与图片政策', async () => {
     const app = makeApp();
     const res = await app.inject({ method: 'GET', url: '/api/v1/capabilities' });
     expect(res.statusCode).toBe(200);
@@ -83,6 +83,7 @@ describe('能力接口', () => {
       'xiaoxiang_library',
       'xiaoxiang_teaching_group',
       'xiaoxiang_sports_ground',
+      'lunan_canteen_2',
     ]);
     expect(body.features).toEqual({
       photoUpload: 'single',

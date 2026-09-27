@@ -1,0 +1,22 @@
+{
+  "characterId": "photo-point-cat",
+  "version": "0.3.0-rc.1",
+  "source": "assets/characters/photo-point-cat/e3",
+  "status": "integrated-candidate",
+  "uniformScale": 0.1,
+  "fullAcceptance": false,
+  "files": [
+    {
+      "file": "manifest.json",
+      "sha256": "fb2509c0b2c64086bcc8e24251180e388f2a37cdf2692fa5d7e6b2af5758d961"
+    },
+    {
+      "file": "walk-cycle.png",
+      "sha256": "44423798d30883b174c5e1cc4ae3ca54f4f92cc2d2e8b07af65716670c0b6fc2"
+    },
+    {
+      "file": "ride-cycle.png",
+      "sha256": "7e55bb748901575a2bed69db594aee6a4d251be71bf36f2ddde365abf2b74141"
+    }
+  ]
+}

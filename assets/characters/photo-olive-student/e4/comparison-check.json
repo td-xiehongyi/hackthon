@@ -1,0 +1,11 @@
+{
+  "cards": 4,
+  "singleStepPhases": [
+    1,
+    2,
+    3,
+    0
+  ],
+  "errors": [],
+  "scope": "Comparison UI loading and four-step cycling; visual art assessed separately"
+}

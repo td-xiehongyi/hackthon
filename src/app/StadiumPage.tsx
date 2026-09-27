@@ -3,9 +3,10 @@ import type { CloseGuard, PlacePanelProps } from '@/shared/contracts';
 import { campusApi } from '@/shared/api/client';
 import StadiumPanel from '@/features/stadium/StadiumPanel';
 import ContentEditor from '@/features/content-editor/ContentEditor';
+import type { CharacterChoice } from '@/game/character/choices';
 
 /** C 的查询与编辑界面共用宿主输入锁和 D 的真实数据客户端。 */
-export default function StadiumPage(props: PlacePanelProps) {
+export default function StadiumPage(props: PlacePanelProps & { characterChoice?: CharacterChoice }) {
   const [editing, setEditing] = useState(false);
   const [hint, setHint] = useState('');
   const guard = useRef<CloseGuard | null>(null);

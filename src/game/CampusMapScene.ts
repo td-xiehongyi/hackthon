@@ -77,14 +77,15 @@ export const BLOCKED_WORLD: WalkableWorld = {
 /** 未标定出生点前的临时起点：地图中心。 */
 export const UNCALIBRATED_START: Point = { x: Math.round(MAP_WIDTH_PX / 2), y: Math.round(MAP_HEIGHT_PX / 2) };
 
-/** 角色模式下的镜头倍率（开发调试值，不是已确认的地图显示比例）。 */
-const CHARACTER_ZOOM = 1.2;
+/** 已确认的初始角色镜头倍率；交互返回时沿用用户当前选择。 */
+const CHARACTER_ZOOM = 2.33;
 const MAX_ZOOM = 6;
 
 export class CampusMapScene extends Phaser.Scene {
   private mapWidth = 0;
   private mapHeight = 0;
   private minimumZoom = 1;
+  private characterZoom = CHARACTER_ZOOM;
   private ready = false;
   private buildingHighlight: Phaser.GameObjects.Graphics | null = null;
   private viewMode: ViewMode = 'browse';
@@ -331,6 +332,8 @@ export class CampusMapScene extends Phaser.Scene {
     this.syncKeySuspension();
     if (mode === 'character') {
       this.character!.image.setVisible(true);
+      // 显式点击定位仍恢复默认镜头；地点返回只适配视口，不重置用户倍率。
+      this.characterZoom = CHARACTER_ZOOM;
       this.fitToWindow();
       camera.startFollow(this.character!.image, true);
       this.publishStatus(true);
@@ -352,7 +355,7 @@ export class CampusMapScene extends Phaser.Scene {
     const camera = this.cameras.main;
     this.minimumZoom = Math.max(camera.width / this.mapWidth, camera.height / this.mapHeight);
     if (this.viewMode === 'character') {
-      camera.setZoom(Math.max(CHARACTER_ZOOM, this.minimumZoom));
+      camera.setZoom(Math.max(this.characterZoom, this.minimumZoom));
       this.updateCameraBounds();
       camera.centerOn(this.state.position.x, this.state.position.y);
     } else {
@@ -367,6 +370,7 @@ export class CampusMapScene extends Phaser.Scene {
     if (!this.ready) return;
     const camera = this.cameras.main;
     camera.setZoom(Phaser.Math.Clamp(camera.zoom * factor, this.minimumZoom, MAX_ZOOM));
+    if (this.viewMode === 'character') this.characterZoom = camera.zoom;
     this.updateCameraBounds();
     this.callbacks.onZoom(camera.zoom);
   }

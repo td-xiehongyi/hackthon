@@ -1,0 +1,61 @@
+{
+  "results": [
+    {
+      "width": 1440,
+      "height": 900,
+      "sidebarWidth": 270,
+      "panelLeft": 389.828125,
+      "panelTop": 56,
+      "panelHeight": 788,
+      "panelWidth": 960,
+      "mapVisibleRight": 90.171875,
+      "overflow": false
+    },
+    {
+      "width": 1366,
+      "height": 768,
+      "sidebarWidth": 270,
+      "panelLeft": 385.3125,
+      "panelTop": 56,
+      "panelHeight": 656,
+      "panelWidth": 900.671875,
+      "mapVisibleRight": 80.015625,
+      "overflow": false
+    },
+    {
+      "width": 1920,
+      "height": 1080,
+      "sidebarWidth": 290,
+      "panelLeft": 426,
+      "panelTop": 140,
+      "panelHeight": 800,
+      "panelWidth": 1040,
+      "mapVisibleRight": 454,
+      "overflow": false
+    },
+    {
+      "width": 768,
+      "height": 1024,
+      "sidebarWidth": 222,
+      "panelLeft": 268,
+      "panelTop": 112,
+      "panelHeight": 800,
+      "panelWidth": 432,
+      "mapVisibleRight": 68,
+      "overflow": false
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "sidebarWidth": 116,
+      "panelLeft": 130,
+      "panelTop": 32,
+      "panelHeight": 780,
+      "panelWidth": 228,
+      "mapVisibleRight": 32,
+      "overflow": false
+    }
+  ],
+  "errors": [],
+  "sceneSwitches": 3
+}

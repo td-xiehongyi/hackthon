@@ -16,6 +16,7 @@
 .explorer-student-name { min-width: 0; display: flex; flex-direction: column; gap: 7px; }
 .explorer-student-name span { font-size: 10px; color: #79866e; }
 .explorer-student-name strong { font-size: 17px; font-weight: 600; color: #89937d; }
+.explorer-student-name strong.is-filled { color: #254d3b; overflow-wrap: anywhere; }
 .explorer-student dl { margin: 16px 0 0; padding-top: 4px; border-top: 1px dashed var(--explorer-line); }
 .explorer-student dl > div { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin-top: 12px; }
 .explorer-student dt, .explorer-student dd { font-size: 11px; color: #79866e; }

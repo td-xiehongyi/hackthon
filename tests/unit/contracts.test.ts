@@ -28,26 +28,33 @@ describe('共享契约固定值', () => {
 });
 
 describe('地点注册表', () => {
-  test('恰好注册三个固定地点且顺序与工具链约定一致', () => {
-    expect(PLACE_REGISTRY).toHaveLength(3);
+  test('注册四个地点且顺序与工具链约定一致', () => {
+    expect(PLACE_REGISTRY).toHaveLength(4);
     expect(PLACE_IDS).toEqual([
       'xiaoxiang_library',
       'xiaoxiang_teaching_group',
       'xiaoxiang_sports_ground',
+      'lunan_canteen_2',
     ]);
   });
 
-  test('placeId 与 featureKey 的三组对应关系不被错配', () => {
+  test('placeId 与 featureKey 对应关系不被错配', () => {
     const pairs = PLACE_REGISTRY.map((place) => [place.placeId, place.featureKey]);
     expect(pairs).toEqual([
       ['xiaoxiang_library', 'library'],
       ['xiaoxiang_teaching_group', 'teaching'],
       ['xiaoxiang_sports_ground', 'stadium'],
+      ['lunan_canteen_2', 'canteen'],
     ]);
   });
 
   test('显示名称与校区归属正确', () => {
     for (const place of PLACE_REGISTRY) {
+      if (place.placeId === 'lunan_canteen_2') {
+        expect(place.campusId).toBe('lunan');
+        expect(place.name).toBe('麓南校区二食堂');
+        continue;
+      }
       expect(place.campusId).toBe('xiaoxiang');
       expect(place.name).toContain('潇湘校区');
     }
@@ -78,7 +85,8 @@ describe('教学楼座目录', () => {
 });
 
 describe('打开请求负载校验', () => {
-  test('只接受三个注册地点 ID', () => {
+  test('接受注册地点 ID', () => {
+    expect(parseRequestOpenPlaceDetail({ placeId: 'lunan_canteen_2' })).toEqual({ placeId: 'lunan_canteen_2' });
     expect(parseRequestOpenPlaceDetail({ placeId: 'xiaoxiang_library' })).toEqual({
       placeId: 'xiaoxiang_library',
     });

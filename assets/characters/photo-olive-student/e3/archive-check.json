@@ -1,0 +1,43 @@
+{
+  "archive": "photo-olive-student-0.3.0-rc.1.zip",
+  "bytes": 2854643,
+  "members": [
+    {
+      "file": "walk-cycle.png",
+      "size": 1282708,
+      "sha256": "dc2499b1c9799079710a48f39d819d0adc42f309d185cb82ec45d9122aa099e7",
+      "sameAsSource": true
+    },
+    {
+      "file": "ride-cycle.png",
+      "size": 1592454,
+      "sha256": "fd8a82e75ece58995458a8d5431960bd449f1dae2fc6876c24cfca41f0befb27",
+      "sameAsSource": true
+    },
+    {
+      "file": "manifest.json",
+      "size": 13720,
+      "sha256": "ba3010c6be4fb98ff5d891afa3cbd110ffa17004599be34fac2958df7c8d8f76",
+      "sameAsSource": true
+    },
+    {
+      "file": "SOURCE.md",
+      "size": 3142,
+      "sha256": "b96bfe32b17a97ff6eda2aabf99abd6087dde7927e9bd1c0ca318356390772df",
+      "sameAsSource": true
+    },
+    {
+      "file": "PROMPTS.md",
+      "size": 3521,
+      "sha256": "6213f143bef9021efc3b8a14e47cdf8f46229b77c383f8be80b33ed3f6bddcd0",
+      "sameAsSource": true
+    },
+    {
+      "file": "VERSION.json",
+      "size": 880,
+      "sha256": "a2476e4f453c0d6cd15da65ebb3d16d62c6417e8adb7025ca4b48aeeb6402b6b",
+      "sameAsSource": true
+    }
+  ],
+  "problems": []
+}
