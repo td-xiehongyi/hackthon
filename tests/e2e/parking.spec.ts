@@ -22,3 +22,18 @@ test('教学楼群停车场展示二维码端口并支持筛选与详情', async
   await page.setViewportSize({ width: 375, height: 812 });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
 });
+
+test('停车场支持在浏览器本地选择二维码图片并给出识别反馈', async ({ page }) => {
+  await page.goto('/#teaching');
+  await page.getByRole('button', { name: '停车场' }).click();
+  await page.getByRole('button', { name: /本地扫码识别/ }).click();
+  await expect(page.getByRole('heading', { name: '识别二维码' })).toBeVisible();
+  await page.locator('input[type="file"][accept="image/*"]').setInputFiles({
+    name: 'not-a-qr.png',
+    mimeType: 'image/png',
+    // A valid 1×1 PNG; the decoder should fail locally and explain what to do.
+    buffer: Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=', 'base64'),
+  });
+  await expect(page.getByRole('status')).toContainText(/二维码|图片/);
+  await expect(page.getByText('图片不会上传到服务器')).toBeVisible();
+});

@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { formatParkingDuration, PARKING_PORTS } from '../../src/features/parking/parkingData';
+import { matchParkingPort } from '../../src/features/parking/ParkingPanel';
 
 describe('二维码停车位快照', () => {
   it('保留照片顺序、完整设备号和状态数量', () => {
@@ -17,5 +18,11 @@ describe('二维码停车位快照', () => {
     expect(formatParkingDuration(0)).toBe('00:00');
     expect(formatParkingDuration(28 * 60 + 46)).toBe('28:46');
     expect(formatParkingDuration(1 * 3600 + 42 * 60 + 18)).toBe('01:42:18');
+  });
+
+  it('可以用完整或短设备号匹配二维码文字', () => {
+    expect(matchParkingPort('http://semiot.wasion.cn?DeviceNumber=120000032056')?.order).toBe(1);
+    expect(matchParkingPort('1200000403')?.id).toBe('120000040323');
+    expect(matchParkingPort('https://example.test/unknown')).toBeNull();
   });
 });
