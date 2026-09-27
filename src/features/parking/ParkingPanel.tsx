@@ -55,6 +55,19 @@ const formatUpdatedAt = (value?: string) => {
 const clonePorts = (ports: readonly ParkingPort[]): ParkingPort[] => ports.map((port) => ({ ...port }));
 const RESERVATION_KEY = 'csu-campus-parking-reservation';
 
+/** Match both the complete DeviceNumber and the short number printed on some
+ * charger labels.  QR decoding is local; this helper never performs a
+ * network request. */
+export const matchParkingPort = (payload: string, ports: readonly ParkingPort[] = PARKING_PORTS): ParkingPort | null => {
+  const text = payload.trim();
+  if (!text) return null;
+  let deviceNumber = '';
+  try { deviceNumber = new URL(text).searchParams.get('DeviceNumber')?.trim() ?? ''; } catch { /* QR may be plain text */ }
+  return ports.find((port) => [port.id, port.id.slice(0, -2), deviceNumber].some((candidate) => candidate && (text === candidate || text.includes(candidate)))) ?? null;
+};
+
+type ScanState = 'idle' | 'reading' | 'success' | 'error';
+
 /**
  * Teaching-building parking/charging dashboard.
  *
@@ -81,6 +94,14 @@ export default function ParkingPanel({
       return stored && ports.some((port) => port.id === stored) ? stored : null;
     } catch { return null; }
   });
+  const [scanOpen, setScanOpen] = useState(false);
+  const [scanState, setScanState] = useState<ScanState>('idle');
+  const [scanMessage, setScanMessage] = useState('选择一张二维码图片，识别会在本机浏览器完成。');
+  const [scanPayload, setScanPayload] = useState('');
+  const [scanMatchId, setScanMatchId] = useState<string | null>(null);
+  const [scanPreviewUrl, setScanPreviewUrl] = useState<string | null>(null);
+  const scanInputRef = useRef<HTMLInputElement>(null);
+  const scanRunRef = useRef(0);
   const dialogRef = useRef<HTMLDivElement>(null);
   const previouslyFocused = useRef<HTMLElement | null>(null);
 
@@ -175,6 +196,78 @@ export default function ParkingPanel({
     };
   }, [selectedId]);
 
+  useEffect(() => () => {
+    if (scanPreviewUrl) URL.revokeObjectURL(scanPreviewUrl);
+  }, [scanPreviewUrl]);
+
+  const openScanner = () => {
+    setScanOpen(true);
+    setScanState('idle');
+    setScanMessage('选择一张二维码图片，识别会在本机浏览器完成。');
+    setScanPayload('');
+    setScanMatchId(null);
+  };
+
+  const closeScanner = () => {
+    scanRunRef.current += 1;
+    setScanOpen(false);
+    if (scanPreviewUrl) {
+      URL.revokeObjectURL(scanPreviewUrl);
+      setScanPreviewUrl(null);
+    }
+    setScanState('idle');
+    setScanPayload('');
+    setScanMatchId(null);
+    if (scanInputRef.current) scanInputRef.current.value = '';
+  };
+
+  const handleScanFile = async (file?: File) => {
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      setScanState('error');
+      setScanMessage('请选择 JPG、PNG、WEBP 等图片文件。');
+      return;
+    }
+    if (file.size > 20 * 1024 * 1024) {
+      setScanState('error');
+      setScanMessage('图片超过 20 MB，请先压缩后重试。');
+      return;
+    }
+
+    const run = scanRunRef.current + 1;
+    scanRunRef.current = run;
+    const objectUrl = URL.createObjectURL(file);
+    if (scanPreviewUrl) URL.revokeObjectURL(scanPreviewUrl);
+    setScanPreviewUrl(objectUrl);
+    setScanState('reading');
+    setScanMessage('正在本地识别二维码……图片不会上传。');
+    setScanPayload('');
+    setScanMatchId(null);
+
+    try {
+      const { BrowserQRCodeReader } = await import('@zxing/browser');
+      const reader = new BrowserQRCodeReader();
+      const result = await reader.decodeFromImageUrl(objectUrl);
+      if (scanRunRef.current !== run) return;
+      const text = typeof result?.getText === 'function' ? result.getText() : '';
+      if (!text) throw new Error('EMPTY_RESULT');
+      const match = matchParkingPort(text, ports);
+      setScanPayload(text);
+      setScanMatchId(match?.id ?? null);
+      setScanState('success');
+      setScanMessage(match
+        ? `识别完成，已匹配 ${match.order} 号端口。`
+        : '识别完成，但没有匹配当前 10 个端口。');
+    } catch (reason) {
+      if (scanRunRef.current !== run) return;
+      const detail = reason instanceof Error ? reason.message : '';
+      setScanState('error');
+      setScanMessage(/not.?found|empty_result|no code|checksum/i.test(detail)
+        ? '没有识别到二维码，请换一张更清晰、正面拍摄的图片。'
+        : '二维码识别库加载失败或图片不可读，请重试。');
+    }
+  };
+
   const selectedPort = useMemo(
     () => portState.find((port) => port.id === selectedId) ?? null,
     [portState, selectedId],
@@ -261,24 +354,73 @@ export default function ParkingPanel({
           />
           {query && <button type="button" aria-label="清空搜索" onClick={() => setQuery('')}>×</button>}
         </label>
-        <div className="parking-filters" role="group" aria-label="状态筛选">
-          {([
-            ['all', '全部'],
-            ['available', '未占用'],
-            ['occupied', '占用中'],
-          ] as const).map(([value, label]) => (
-            <button
-              key={value}
-              type="button"
-              className={filter === value ? 'is-active' : ''}
-              aria-pressed={filter === value}
-              onClick={() => setFilter(value)}
-            >
-              {label}
-            </button>
-          ))}
+        <div className="parking-toolbar-actions">
+          <div className="parking-filters" role="group" aria-label="状态筛选">
+            {([
+              ['all', '全部'],
+              ['available', '未占用'],
+              ['occupied', '占用中'],
+            ] as const).map(([value, label]) => (
+              <button
+                key={value}
+                type="button"
+                className={filter === value ? 'is-active' : ''}
+                aria-pressed={filter === value}
+                onClick={() => setFilter(value)}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+          <button type="button" className="parking-scan-trigger" onClick={openScanner}>
+            <span aria-hidden="true">⌁</span> 本地扫码识别
+          </button>
         </div>
       </section>
+
+      {scanOpen && (
+        <section className="parking-scanner" aria-labelledby="parking-scanner-title">
+          <header className="parking-scanner-header">
+            <div>
+              <span className="parking-scanner-kicker">LOCAL CHECK · QR</span>
+              <h2 id="parking-scanner-title">识别二维码</h2>
+            </div>
+            <button type="button" className="parking-scanner-close" onClick={closeScanner}>关闭</button>
+          </header>
+          <p className="parking-scanner-intro">选择或拍摄一张二维码图片，ZXing 会在当前浏览器本地解码；图片不会上传到服务器。</p>
+          <div className="parking-scanner-actions">
+            <label className="parking-scan-file-button">
+              <span aria-hidden="true">＋</span> 选择图片 / 拍照
+              <input
+                ref={scanInputRef}
+                type="file"
+                accept="image/*"
+                capture="environment"
+                onChange={(event) => void handleScanFile(event.target.files?.[0])}
+              />
+            </label>
+            <span className={`parking-scan-state parking-scan-state-${scanState}`} role="status" aria-live="polite">{scanMessage}</span>
+          </div>
+          {scanPreviewUrl && (
+            <div className="parking-scan-preview">
+              <img src={scanPreviewUrl} alt="待识别的二维码图片" />
+              {scanState === 'reading' && <span className="parking-scan-loading">识别中…</span>}
+            </div>
+          )}
+          {scanState === 'success' && scanPayload && (
+            <div className="parking-scan-result">
+              <span className="parking-scan-result-label">识别内容</span>
+              <code>{scanPayload}</code>
+              {scanMatchId ? (
+                <button type="button" onClick={() => { const match = portState.find((port) => port.id === scanMatchId); if (match) { setScanOpen(false); openDetails(match); } }}>
+                  打开匹配端口详情
+                </button>
+              ) : <span className="parking-scan-unmatched">未匹配当前 10 个端口，可在搜索框中手动查找。</span>}
+            </div>
+          )}
+          <p className="parking-scanner-note">识别只读取二维码文字；它不会读取支付宝密码、Cookie、验证码或设备实时状态。</p>
+        </section>
+      )}
 
       <p className="parking-result-count" aria-live="polite">
         显示 {filteredPorts.length} / {portState.length} 个端口 · 点击按钮查看详情

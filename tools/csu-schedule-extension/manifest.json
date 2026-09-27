@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "CSU 课表抓取助手",
-  "version": "0.1.0",
-  "description": "在中南大学教务系统的已登录课表页抓取课程，并安全转交给本机课表页面。",
+  "version": "0.2.0",
+  "description": "在中南大学教务系统的已登录课表页一键下载 WakeUp 兼容课表 CSV，并安全转交给本机课表页面。",
   "action": {
     "default_title": "CSU 课表抓取助手",
     "default_popup": "popup.html"
@@ -12,6 +12,7 @@
     "type": "module"
   },
   "permissions": [
+    "downloads",
     "storage",
     "tabs"
   ],

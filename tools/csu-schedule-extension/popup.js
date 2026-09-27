@@ -24,15 +24,19 @@
     latest.textContent = payload ? `${payload.courses?.length || 0} 门课程 · ${payload.capturedAt || '刚刚'}` : '尚未抓取课表';
   };
 
-  capture.addEventListener('click', async () => {
+  const runCapture = async () => {
+    if (capture.disabled) return;
     capture.disabled = true;
     show('正在读取当前标签页…');
     const result = await runtimeCall({ type: 'CSU_CAPTURE_ACTIVE' });
     capture.disabled = false;
     if (!result.ok) show(result.error || '抓取失败。', true);
-    else show(`已抓取 ${result.courseCount || result.payload?.courses?.length || 0} 门课程。回到课表页面确认导入。`);
+    else if (result.downloaded) show(`已下载 ${result.downloadFilename || '课表 CSV'}，共 ${result.courseCount || 0} 门课程。`);
+    else show(`已抓取 ${result.courseCount || result.payload?.courses?.length || 0} 门课程，但 CSV 下载失败${result.downloadError ? `：${result.downloadError}` : ''}。`, true);
     await refreshLatest();
-  });
+  };
+
+  capture.addEventListener('click', () => void runCapture());
 
   clear.addEventListener('click', async () => {
     const result = await runtimeCall({ type: 'CSU_CLEAR_LATEST' });
@@ -41,5 +45,11 @@
     await refreshLatest();
   });
 
-  void refreshLatest();
+  // Opening the toolbar popup is the single user gesture: immediately run
+  // the capture/download flow. The button remains available as an explicit
+  // retry if the CSU page was still loading.
+  void (async () => {
+    await refreshLatest();
+    await runCapture();
+  })();
 })();
