@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { formatParkingDuration, PARKING_PORTS } from '../../src/features/parking/parkingData';
-import { matchParkingPort } from '../../src/features/parking/ParkingPanel';
+import {
+  matchParkingPort,
+  PARKING_REFRESH_INTERVALS,
+  parseRefreshInterval,
+  refreshIntervalLabel,
+} from '../../src/features/parking/ParkingPanel';
 
 describe('二维码停车位快照', () => {
   it('保留照片顺序、完整设备号和状态数量', () => {
@@ -24,5 +29,14 @@ describe('二维码停车位快照', () => {
     expect(matchParkingPort('http://semiot.wasion.cn?DeviceNumber=120000032056')?.order).toBe(1);
     expect(matchParkingPort('1200000403')?.id).toBe('120000040323');
     expect(matchParkingPort('https://example.test/unknown')).toBeNull();
+  });
+
+  it('提供可控的自动刷新间隔选项', () => {
+    expect(PARKING_REFRESH_INTERVALS).toEqual([0, 15, 30, 60]);
+    expect(parseRefreshInterval('0')).toBe(0);
+    expect(parseRefreshInterval('30')).toBe(30);
+    expect(parseRefreshInterval('unexpected')).toBe(15);
+    expect(refreshIntervalLabel(0)).toBe('暂停自动刷新');
+    expect(refreshIntervalLabel(15)).toBe('每 15 秒');
   });
 });

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   formatParkingDuration,
   PARKING_PORTS,
@@ -24,17 +24,38 @@ export interface ParkingStatusResponse {
   message?: string;
 }
 
+export type ParkingRefreshInterval = 0 | 15 | 30 | 60;
+
+export const PARKING_REFRESH_INTERVALS: readonly ParkingRefreshInterval[] = [0, 15, 30, 60];
+
+export const refreshIntervalLabel = (value: ParkingRefreshInterval): string => {
+  if (value === 0) return '暂停自动刷新';
+  return `每 ${value} 秒`;
+};
+
+export const parseRefreshInterval = (value: string): ParkingRefreshInterval => {
+  const parsed = Number(value);
+  return PARKING_REFRESH_INTERVALS.includes(parsed as ParkingRefreshInterval)
+    ? parsed as ParkingRefreshInterval
+    : 15;
+};
+
+const isDocumentVisible = (): boolean => (
+  typeof document === 'undefined' || document.visibilityState !== 'hidden'
+);
+
 export interface ParkingPanelProps {
   /** Override the photo snapshot in tests or when a live adapter is available. */
   ports?: readonly ParkingPort[];
   /** Optional return action supplied by the teaching-building host page. */
   onBack?: () => void;
   /**
-   * Opt-in status endpoint. It is disabled by default so the photo snapshot is
-   * never presented as real-time data without an explicit integration.
+   * Same-origin status endpoint. The response must explicitly set `live:true`
+   * before the UI labels data as real-time; photo-demo fallbacks stay marked
+   * as non-live.
    */
   statusEndpoint?: string;
-  /** Poll the endpoint every 15 seconds when `statusEndpoint` is supplied. */
+  /** Enable status polling (15 seconds by default) when `statusEndpoint` exists. */
   pollLive?: boolean;
 }
 
@@ -73,7 +94,7 @@ type ScanState = 'idle' | 'reading' | 'success' | 'error';
  *
  * The initial state is the QR-photo snapshot. Occupied cards count down in the
  * browser as a demonstration; the banner deliberately names this as non-live
- * until a caller opts into `statusEndpoint` + `pollLive`.
+ * until the status endpoint returns an explicit live payload.
  */
 export default function ParkingPanel({
   ports = PARKING_PORTS,
@@ -88,6 +109,11 @@ export default function ParkingPanel({
   const [live, setLive] = useState(false);
   const [updatedAt, setUpdatedAt] = useState<string | undefined>();
   const [statusMessage, setStatusMessage] = useState('照片快照 · 演示倒计时 · 非实时');
+  const [refreshInterval, setRefreshInterval] = useState<ParkingRefreshInterval>(() => (pollLive ? 15 : 0));
+  const [refreshing, setRefreshing] = useState(false);
+  const [lastRefreshAt, setLastRefreshAt] = useState<string | undefined>();
+  const [refreshError, setRefreshError] = useState('');
+  const [pageVisible, setPageVisible] = useState(isDocumentVisible);
   const [reservedId, setReservedId] = useState<string | null>(() => {
     try {
       const stored = window.localStorage.getItem(RESERVATION_KEY);
@@ -104,10 +130,23 @@ export default function ParkingPanel({
   const scanRunRef = useRef(0);
   const dialogRef = useRef<HTMLDivElement>(null);
   const previouslyFocused = useRef<HTMLElement | null>(null);
+  const portsRef = useRef(ports);
+  const refreshAbortRef = useRef<AbortController | null>(null);
+  const mountedRef = useRef(true);
 
   useEffect(() => {
+    portsRef.current = ports;
     setPortState(clonePorts(ports));
   }, [ports]);
+
+  useEffect(() => () => {
+    mountedRef.current = false;
+    refreshAbortRef.current?.abort();
+  }, []);
+
+  useEffect(() => {
+    if (!pollLive) setRefreshInterval(0);
+  }, [pollLive]);
 
   // Advance the demonstration countdown once per second. A live payload may
   // refresh the values in the separate polling effect below.
@@ -124,54 +163,117 @@ export default function ParkingPanel({
     return () => window.clearInterval(timer);
   }, []);
 
-  useEffect(() => {
-    if (!pollLive || !statusEndpoint) return;
-    let cancelled = false;
+  const refreshStatus = useCallback(async (): Promise<void> => {
+    if (!pollLive || !statusEndpoint || refreshAbortRef.current) return;
 
-    const refresh = async () => {
-      try {
-        const response = await fetch(`${statusEndpoint}${statusEndpoint.includes('?') ? '&' : '?'}t=${Date.now()}`, {
-          headers: { Accept: 'application/json' },
-          cache: 'no-store',
-        });
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        const payload = await response.json() as ParkingStatusResponse;
-        if (cancelled) return;
-        let applied = 0;
-        const updates = Array.isArray(payload.data) ? payload.data : [];
-        setPortState((current) => current.map((port) => {
-          const update = updates.find((item) => String(item.deviceNumber) === port.id);
-          const nextStatus = normalizeStatus(update?.status);
-          if (!update || !nextStatus) return port;
-          applied += 1;
-          const remaining = Number(update.remainingSeconds ?? 0);
-          return {
-            ...port,
-            status: nextStatus,
-            remainingSeconds: Number.isFinite(remaining) ? Math.max(0, Math.round(remaining)) : 0,
-          };
-        }));
-        if (payload.live === true && applied > 0) {
-          setLive(true);
-          setUpdatedAt(payload.updatedAt || new Date().toISOString());
-          setStatusMessage(`实时同步 · ${formatUpdatedAt(payload.updatedAt || new Date().toISOString())}`);
-        } else {
-          setLive(false);
-          setStatusMessage(payload.message || '接口暂无实时数据，当前显示照片快照');
-        }
-      } catch {
-        if (cancelled) return;
+    const controller = new AbortController();
+    refreshAbortRef.current = controller;
+    setRefreshing(true);
+    setRefreshError('');
+
+    try {
+      const response = await fetch(`${statusEndpoint}${statusEndpoint.includes('?') ? '&' : '?'}t=${Date.now()}`, {
+        headers: { Accept: 'application/json' },
+        cache: 'no-store',
+        signal: controller.signal,
+      });
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const payload = await response.json() as ParkingStatusResponse;
+      if (controller.signal.aborted || !mountedRef.current) return;
+
+      const updates = Array.isArray(payload.data) ? payload.data : [];
+      const updatesByDevice = new Map<string, ParkingStatusUpdate>();
+      updates.forEach((item) => {
+        if (!item || typeof item !== 'object') return;
+        const deviceNumber = String(item.deviceNumber ?? '').trim();
+        if (deviceNumber && normalizeStatus(item.status)) updatesByDevice.set(deviceNumber, item);
+      });
+      const knownDevices = new Set(portsRef.current.map((port) => port.id));
+      const applied = [...updatesByDevice.keys()].filter((deviceNumber) => knownDevices.has(deviceNumber)).length;
+
+      setPortState((current) => current.map((port) => {
+        const update = updatesByDevice.get(port.id);
+        const nextStatus = normalizeStatus(update?.status);
+        if (!update || !nextStatus) return port;
+        const remaining = Number(update.remainingSeconds ?? 0);
+        return {
+          ...port,
+          status: nextStatus,
+          remainingSeconds: Number.isFinite(remaining) ? Math.max(0, Math.round(remaining)) : 0,
+        };
+      }));
+
+      const sourceUpdatedAt = payload.updatedAt || new Date().toISOString();
+      setUpdatedAt(sourceUpdatedAt);
+      if (payload.live === true && applied > 0) {
+        setLive(true);
+        setStatusMessage(`实时同步 · ${formatUpdatedAt(sourceUpdatedAt)}`);
+      } else {
         setLive(false);
-        setStatusMessage('实时接口不可用，当前显示照片快照 · 非实时');
+        setStatusMessage(payload.message || '接口暂无实时数据，当前显示照片快照');
       }
-    };
+    } catch (reason) {
+      if (controller.signal.aborted || !mountedRef.current) return;
+      const detail = reason instanceof Error && reason.message.startsWith('HTTP ')
+        ? `（${reason.message}）`
+        : '';
+      const message = `实时接口不可用，当前显示照片快照 · 非实时${detail}`;
+      setLive(false);
+      setStatusMessage(message);
+      setRefreshError(message);
+    } finally {
+      if (refreshAbortRef.current === controller) {
+        refreshAbortRef.current = null;
+        if (mountedRef.current) {
+          setRefreshing(false);
+          if (!controller.signal.aborted) setLastRefreshAt(new Date().toISOString());
+        }
+      }
+    }
+  }, [pollLive, statusEndpoint]);
 
-    void refresh();
-    const timer = window.setInterval(() => void refresh(), 15_000);
+  // Keep scheduled requests out of the background tab. Returning to the page
+  // flips `pageVisible`, which triggers an immediate refresh before scheduling
+  // the next interval.
+  useEffect(() => {
+    const onVisibilityChange = () => setPageVisible(isDocumentVisible());
+    const onOnline = () => {
+      if (isDocumentVisible() && refreshInterval > 0) void refreshStatus();
+    };
+    document.addEventListener('visibilitychange', onVisibilityChange);
+    window.addEventListener('online', onOnline);
     return () => {
-      cancelled = true;
+      document.removeEventListener('visibilitychange', onVisibilityChange);
+      window.removeEventListener('online', onOnline);
+    };
+  }, [refreshInterval, refreshStatus]);
+
+  // A visible page syncs immediately on mount and when it returns from the
+  // background while automatic refresh is enabled. Changing the interval to
+  // a live value also performs one immediate sync; selecting “暂停” therefore
+  // leaves only the explicit manual-refresh button active.
+  useEffect(() => {
+    if (pollLive && statusEndpoint && pageVisible && refreshInterval > 0) void refreshStatus();
+  }, [pageVisible, pollLive, refreshInterval, refreshStatus, statusEndpoint]);
+
+  useEffect(() => {
+    if (!pollLive || !statusEndpoint || !pageVisible || refreshInterval === 0) return;
+    let disposed = false;
+    const timer = window.setInterval(() => {
+      if (!disposed && isDocumentVisible()) void refreshStatus();
+    }, refreshInterval * 1000);
+    return () => {
+      disposed = true;
       window.clearInterval(timer);
     };
+  }, [pageVisible, pollLive, refreshInterval, refreshStatus, statusEndpoint]);
+
+  useEffect(() => {
+    if (!pageVisible) refreshAbortRef.current?.abort();
+  }, [pageVisible]);
+
+  useEffect(() => () => {
+    refreshAbortRef.current?.abort();
   }, [pollLive, statusEndpoint]);
 
   useEffect(() => {
@@ -314,13 +416,49 @@ export default function ParkingPanel({
         {onBack && <button type="button" className="parking-back" onClick={onBack}>返回教学楼</button>}
       </header>
 
-      <section className={`parking-signal ${live ? 'is-live' : ''}`} aria-live="polite">
+      <section className={`parking-signal ${live ? 'is-live' : ''}`} aria-live="polite" aria-busy={refreshing}>
         <span className="parking-signal-dot" aria-hidden="true" />
         <div>
           <strong>{live ? '实时状态' : '照片状态'}</strong>
           <span>{statusMessage}</span>
         </div>
         {updatedAt && <time dateTime={updatedAt}>更新于 {formatUpdatedAt(updatedAt)}</time>}
+      </section>
+
+      <section className="parking-refresh-controls" aria-label="状态刷新控制">
+        <div className="parking-refresh-setting">
+          <label htmlFor="parking-refresh-interval">自动刷新</label>
+          <select
+            id="parking-refresh-interval"
+            aria-label="自动刷新间隔"
+            value={refreshInterval}
+            disabled={!pollLive || !statusEndpoint}
+            onChange={(event) => setRefreshInterval(parseRefreshInterval(event.target.value))}
+          >
+            {PARKING_REFRESH_INTERVALS.map((interval) => (
+              <option key={interval} value={interval}>{refreshIntervalLabel(interval)}</option>
+            ))}
+          </select>
+        </div>
+        <button
+          type="button"
+          className="parking-refresh-button"
+          onClick={() => void refreshStatus()}
+          disabled={!pollLive || !statusEndpoint || refreshing}
+        >
+          {refreshing ? '正在同步…' : '立即刷新'}
+        </button>
+        <div className="parking-refresh-meta" role="status" aria-live="polite">
+          <span>
+            {!pageVisible
+              ? '页面在后台，已暂停自动刷新'
+              : refreshInterval === 0
+                ? '自动刷新已暂停，可手动同步'
+                : `${refreshIntervalLabel(refreshInterval)} · 页面可见时运行`}
+          </span>
+          {lastRefreshAt && <time dateTime={lastRefreshAt}>上次刷新 {formatUpdatedAt(lastRefreshAt)}</time>}
+          {refreshError && <span className="parking-refresh-error" role="alert">{refreshError}</span>}
+        </div>
       </section>
 
       <section className="parking-overview" aria-label="停车位概览">
