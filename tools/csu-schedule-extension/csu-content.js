@@ -14,6 +14,7 @@
   const VERSION = 1;
   const MAX_COURSES = 500;
   const MAX_SCRIPT_TEXT = 700_000;
+  const SEND_TIMEOUT_MS = 10_000;
   const WEEKDAYS = ['一', '二', '三', '四', '五', '六', '日'];
   const SENSITIVE_LABEL = /^(?:登录)?(?:密码|验证码|用户名|登录名|账号登录)(?:\s*[:：=].*)?$|^(?:password|captcha|username)(?:\s*[:：=].*)?$/i;
 
@@ -545,17 +546,26 @@
       return;
     }
     setStatus(`已抓取 ${result.payload.courses.length} 门课程，正在生成下载…`, false);
+    let settled = false;
+    let timeoutId;
+    const finish = (message, error = false) => {
+      if (settled) return;
+      settled = true;
+      window.clearTimeout(timeoutId);
+      setStatus(message, error);
+    };
+    timeoutId = window.setTimeout(() => finish('扩展后台 10 秒内没有响应。请到扩展管理页重新加载后重试。', true), SEND_TIMEOUT_MS);
     try {
       chrome.runtime.sendMessage({ type: 'CSU_CAPTURE_RESULT', payload: result.payload }, (response) => {
         const runtimeError = chrome.runtime.lastError;
-        if (runtimeError) { setStatus(`发送失败：${runtimeError.message}`, true); return; }
-        if (!response || response.ok === false) { setStatus(response && response.error ? response.error : '本机课表页面未连接。', true); return; }
-        setStatus(response.downloaded
+        if (runtimeError) { finish(`发送失败：${runtimeError.message}`, true); return; }
+        if (!response || response.ok === false) { finish(response && response.error ? response.error : '本机课表页面未连接。', true); return; }
+        finish(response.downloaded
           ? `已下载 ${response.downloadFilename || '课表 CSV'}；${response.delivered ? '也已发送到课表页面。' : '文件可直接导入课表页面。'}`
           : `课程已抓取，但 CSV 下载失败${response.downloadError ? `：${response.downloadError}` : ''}。`, !response.downloaded);
       });
     } catch (error) {
-      setStatus(`扩展通信失败：${error instanceof Error ? error.message : String(error)}`, true);
+      finish(`扩展通信失败：${error instanceof Error ? error.message : String(error)}`, true);
     }
   };
 
