@@ -131,6 +131,9 @@ npm run dev -- --port 5176
 [CSU 课表抓取助手](tools/csu-schedule-extension/README.md)。扩展只在你点击按钮后读取已显示的课表，并把标准化结果送回本页的同一份导入预览；不会自动登录或读取密码、Cookie。扩展目录可直接在 Chrome/Edge 的“加载已解压的扩展程序”中选择。
 点击扩展按钮会同时一键下载 WakeUp 兼容的 UTF-8 CSV；项目预览仍会保留，方便确认后写入浏览器课表。
 
+如果暂时不能加载浏览器扩展，可在已登录的旧版教务课表页打开 DevTools 的 **Console**，粘贴
+[Console 提取脚本](tools/csu-schedule-extension/console-extractor.js) 全部内容。页面右下角会出现“提取并下载课表 CSV”按钮；它只读取已经显示的 DOM，在本地生成 CSV，不读取密码、Cookie 或认证信息。详细步骤见[扩展说明](tools/csu-schedule-extension/README.md)。
+
 这是“辅助导入”，不是后台爬虫：
 
 - 浏览器不会把 CSU 页面加载到项目里，也不会跨域请求教务接口、读取登录 Cookie、代填账号密码或绕过验证码；项目没有公开课表接口可安全地替代官方登录流程。

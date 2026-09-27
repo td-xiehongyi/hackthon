@@ -34,6 +34,22 @@
 
 没有识别到课程时，请先进入真正的旧版课表页面，而不是 CA/ehall 登录页、门户首页或课程查询列表。旧版 `table#kbtable` / `.kbcontent` 网格直接复制时可能没有可识别表头，请在该旧课表页点击插件抓取；插件也支持常见表格列、嵌入 JSON，以及 `课程名称/周次/节次/上课地点` 这类文本字段。
 
+### 没有安装扩展时：用 DevTools Console 点击提取
+
+如果浏览器暂时不能加载扩展，也可以在已登录的旧版教务课表页使用随附的
+[`console-extractor.js`](console-extractor.js) 兜底脚本：
+
+1. 打开 `csujwc.its.csu.edu.cn` 的“我的课表”，确认课表已经显示；不要在 CA 登录页或门户首页运行。
+2. 按 `F12`（或右键“检查”）打开 Chrome/Edge DevTools，切到 **Console**。
+3. 用文本编辑器打开 `console-extractor.js`，复制**全部内容**粘贴到 Console，并按 Enter。若浏览器显示“允许粘贴”安全提示，请先手动输入 `allow pasting` 后再粘贴；不要执行来源不明的代码。
+4. 页面右下角出现“CSU 课表 Console 提取器”后，点击“提取并下载课表 CSV”。下载的文件可以直接导入 WakeUp 或本项目。
+
+脚本也暴露了一个仅存在于当前页面内存中的调试对象。需要再次提取时可在 Console 执行
+`window.__CSU_SCHEDULE_CONSOLE_EXTRACTOR__.capture()`；查看最近一次结果可执行
+`window.__CSU_SCHEDULE_CONSOLE_EXTRACTOR__.lastPayload`。重复粘贴脚本会先移除旧按钮，不会叠加多个面板。
+
+Console 方式与扩展使用同一套旧版网格、常见表格和嵌入 JSON 识别规则；它只读取当前文档及已经存在的同源 frame 的 DOM，点击后在本地生成 CSV，不发起网络请求，不读取密码、Cookie、localStorage 或认证令牌，也不会把数据上传到服务器。关闭或刷新页面即可清除脚本及其内存数据。
+
 如果状态超过 10 秒没有变化，请到 `chrome://extensions` / `edge://extensions` 点击扩展的“重新加载”，确认 Service Worker 没有报错，再刷新课表页后重试。弹窗和课表页按钮都会在后台无响应时结束等待并给出下一步提示，不会无限转圈。
 
 ## 隐私与安全边界
