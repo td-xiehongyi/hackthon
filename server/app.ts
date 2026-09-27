@@ -20,6 +20,7 @@ const PLACE_IDS: PlaceId[] = [
   'xiaoxiang_teaching_group',
   'xiaoxiang_sports_ground',
   'lunan_canteen_2',
+  'lunan_shenghua_dormitory',
 ];
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;

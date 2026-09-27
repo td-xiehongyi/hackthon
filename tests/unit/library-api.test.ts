@@ -84,6 +84,7 @@ describe('能力接口', () => {
       'xiaoxiang_teaching_group',
       'xiaoxiang_sports_ground',
       'lunan_canteen_2',
+      'lunan_shenghua_dormitory',
     ]);
     expect(body.features).toEqual({
       photoUpload: 'single',

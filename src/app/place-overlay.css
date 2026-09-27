@@ -60,6 +60,26 @@
 .campus-shell .place-overlay .daze-head { flex-wrap: wrap; }
 .campus-shell .place-overlay .daze-head h2 { color: var(--chalk); font-size: 24px; }
 .campus-shell .place-overlay .daze-board { height: clamp(250px, 35dvh, 350px); min-height: 0; }
+/* 宿舍沿用地点浮层，按面板宽度切换楼栋列表与聊天布局。 */
+.place-overlay .dorm-page { min-height: 100%; container: dorm-panel / inline-size; }
+.place-overlay .dorm-header { flex-wrap: wrap; padding: 16px; gap: 10px; }
+.place-overlay .dorm-heading h1 { white-space: normal; }
+.place-overlay .dorm-header-actions { flex-wrap: wrap; }
+.place-overlay .dorm-workspace > * { min-width: 0; }
+@container dorm-panel (max-width: 650px) {
+  .place-overlay .dorm-intro { flex-direction: column; align-items: stretch; gap: 16px; padding: 20px 12px; }
+  .place-overlay .dorm-intro h2 { font-size: 25px; }
+  .place-overlay .dorm-hero-card { width: 100%; }
+  .place-overlay .dorm-workspace { grid-template-columns: minmax(0, 1fr); padding: 0 12px 20px; }
+  .place-overlay .dorm-building-panel { padding: 12px; }
+  .place-overlay .dorm-building-list { display: none; }
+  .place-overlay .dorm-mobile-select { display: grid; gap: 6px; }
+  .place-overlay .dorm-mobile-select select { width: 100%; }
+  .place-overlay .dorm-chat-head, .place-overlay .dorm-footer { flex-direction: column; align-items: flex-start; }
+  .place-overlay .dorm-chat-actions, .place-overlay .dorm-composer-foot { flex-wrap: wrap; }
+  .place-overlay .dorm-heading, .place-overlay .dorm-header-actions { width: 100%; }
+  .place-overlay .dorm-live { display: none; }
+}
 @media (min-width: 1800px) {
   .campus-shell { --place-rail: 290px; --place-left: calc(var(--place-rail) + 136px); --place-width: min(1040px, calc(100vw - var(--place-left) - 80px)); }
 }

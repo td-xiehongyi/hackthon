@@ -56,12 +56,6 @@ export default function App() {
   const mapBlocked = !entered || page !== 'campus' || placeOpen || returnError !== null;
   const blockedRef = useRef(mapBlocked);
   blockedRef.current = mapBlocked;
-  const openDormitory = useCallback(() => {
-    if (blockedRef.current) return;
-    mapScene.current?.setSuspended(true);
-    window.history.pushState({ csuView: 'dormitory' }, '', '#dormitory');
-    setPage('dormitory');
-  }, []);
   const registerScene = useCallback((scene: CampusMapScene | null) => {
     mapScene.current = scene;
     scene?.setSuspended(blockedRef.current);
@@ -101,7 +95,7 @@ export default function App() {
         {/* 地图探索页：功能页打开时保留地图状态并暂停探索，因此保持挂载。 */}
         <div>
           {returnError && <p className="explorer-return-error" role="alert">{returnError}</p>}
-          {mapStarted && <MapViewport key={mapCharacter.id} characterChoice={mapCharacter} profile={profile} active={!mapBlocked} placeOpen={placeOpen} onOpenDormitory={openDormitory} onReturnHome={() => setEntered(false)} registerScene={registerScene} onRequestOpen={requestOpen} onAnnotation={setAnnotation} />}
+          {mapStarted && <MapViewport key={mapCharacter.id} characterChoice={mapCharacter} profile={profile} active={!mapBlocked} placeOpen={placeOpen} onReturnHome={() => setEntered(false)} registerScene={registerScene} onRequestOpen={requestOpen} onAnnotation={setAnnotation} />}
         </div>
       </PlaceHost>
     </main>

@@ -2,7 +2,7 @@ import type { CampusId, PlaceId, PublicContent } from '../src/shared/contracts.t
 import { ApiError } from './errors.ts';
 
 const CAMPUS_IDS = ['yuelushan', 'lunan', 'xiaoxiang'] as const;
-const PLACE_IDS = ['xiaoxiang_library', 'xiaoxiang_teaching_group', 'xiaoxiang_sports_ground', 'lunan_canteen_2'] as const;
+const PLACE_IDS = ['xiaoxiang_library', 'xiaoxiang_teaching_group', 'xiaoxiang_sports_ground', 'lunan_canteen_2', 'lunan_shenghua_dormitory'] as const;
 
 export function isPlaceId(value: string): value is PlaceId {
   return (PLACE_IDS as readonly string[]).includes(value);

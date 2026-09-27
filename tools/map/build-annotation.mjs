@@ -63,7 +63,7 @@ const annotation = {
   collisionAreas: [],
   landmarks: [],
   buildings: [],
-  interactions: ['xiaoxiang_library', 'xiaoxiang_teaching_group', 'xiaoxiang_sports_ground', 'lunan_canteen_2'].map((placeId) => ({
+  interactions: ['xiaoxiang_library', 'xiaoxiang_teaching_group', 'xiaoxiang_sports_ground', 'lunan_canteen_2', 'lunan_shenghua_dormitory'].map((placeId) => ({
     placeId,
     verificationStatus: 'pending',
     entrancePoint: null,

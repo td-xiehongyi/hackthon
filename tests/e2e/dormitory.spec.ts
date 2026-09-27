@@ -1,22 +1,43 @@
 import { expect, test } from '@playwright/test';
 import { enterCampusAt } from './helpers/campus';
 
-test('校园群聊入口暂停角色，浏览器后退恢复原位，地点内禁止绕过返回流程', async ({ page }) => {
-  await enterCampusAt(page, 600, 1320);
+test('宿舍靠近高亮，点击不进入，按 E 打开并原位返回，离开取消交互', async ({ page }, testInfo) => {
+  await enterCampusAt(page, 342, 615);
+  const prompt = page.getByTestId('interact-prompt');
+  await expect(prompt).toContainText('升华公寓');
+  await expect(page.getByRole('button', { name: '升华公寓群聊', exact: true })).toHaveCount(0);
+  const canvas = page.locator('.map-canvas canvas');
+  await canvas.screenshot({ path: testInfo.outputPath('dormitory-highlight.png') });
+  const box = (await canvas.boundingBox())!;
+  await canvas.click({ position: { x: box.width / 2 + 130, y: box.height / 2 } });
+  await expect(page.getByRole('heading', { name: '升华公寓 · 楼栋群聊' })).toHaveCount(0);
   const position = await page.getByTestId('character-status').textContent();
-  const entry = page.getByRole('button', { name: '升华公寓群聊', exact: true });
-  await expect(entry).toBeVisible();
-  await entry.click();
-  await expect(page.getByRole('heading', { name: '升华公寓 · 楼栋群聊' })).toBeVisible();
-  await page.keyboard.press('KeyD');
-  await page.goBack();
-  await expect(page.getByTestId('character-status')).toHaveText(position!);
-  await expect(entry).toBeVisible();
   await page.keyboard.press('KeyE');
-  await expect(page.getByRole('button', { name: '返回校园', exact: true })).toBeVisible();
-  await expect(entry).toBeDisabled();
+  await expect(page.getByRole('heading', { name: '升华公寓 · 楼栋群聊' })).toBeVisible();
+  await expect(page.getByRole('button', { name: '返回首页', exact: true })).toBeDisabled();
+  await page.keyboard.press('KeyD');
+  await expect(page.getByTestId('character-status')).toHaveText(position!);
+  for (const size of [{ width: 1440, height: 900 }, { width: 768, height: 1024 }, { width: 390, height: 844 }]) {
+    await page.setViewportSize(size);
+    expect(await page.locator('.place-overlay').evaluate(el => el.scrollWidth > el.clientWidth)).toBe(false);
+    await expect(page.getByRole('button', { name: '返回校园', exact: true })).toBeVisible();
+    await page.screenshot({ path: testInfo.outputPath('dormitory-panel-' + size.width + '.png') });
+  }
+  await page.setViewportSize({ width: 1440, height: 900 });
   await page.getByRole('button', { name: '返回校园', exact: true }).click();
-  await expect(entry).toBeEnabled();
+  await expect(page.getByTestId('character-status')).toHaveText(position!);
+  await expect(prompt).toContainText('升华公寓');
+  await page.keyboard.down('KeyA');
+  try { await expect(prompt).toHaveCount(0); } finally { await page.keyboard.up('KeyA'); }
+  await page.keyboard.press('KeyE');
+  await expect(page.locator('.place-overlay')).toHaveCount(0);
+  await page.keyboard.down('KeyE');
+  await page.keyboard.down('KeyD');
+  try { await expect(prompt).toContainText('升华公寓'); } finally { await page.keyboard.up('KeyD'); }
+  await expect(page.locator('.place-overlay')).toHaveCount(0);
+  await page.keyboard.up('KeyE');
+  await page.keyboard.press('KeyE');
+  await expect(page.getByRole('heading', { name: '升华公寓 · 楼栋群聊' })).toBeVisible();
 });
 
 test('可以选择升华公寓楼栋并加入对应群聊发送消息', async ({ page }) => {

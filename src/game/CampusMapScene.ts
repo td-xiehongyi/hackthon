@@ -64,7 +64,6 @@ type MapCallbacks = {
   onAnnotation?: (annotation: MapAnnotation | null) => void;
   onTarget?: (target: PlaceId | null) => void;
   onRequestOpen?: (context: OpenContext) => void;
-  onOpenDormitory?: () => void;
 };
 
 /**
@@ -88,8 +87,6 @@ export class CampusMapScene extends Phaser.Scene {
   private minimumZoom = 1;
   private characterZoom = CHARACTER_ZOOM;
   private ready = false;
-  // 沿用远端发现入口坐标；具体楼栋与 E 键入口仍待标定。
-  private dormitoryPoint = new Phaser.Math.Vector2(360, 615);
   private buildingHighlight: Phaser.GameObjects.Graphics | null = null;
   private viewMode: ViewMode = 'browse';
   private suspended = false;
@@ -138,7 +135,6 @@ export class CampusMapScene extends Phaser.Scene {
     this.add.image(0, 0, 'campus').setOrigin(0).setDepth(-1_000_000);
     this.cameras.main.setRoundPixels(true);
     this.buildingHighlight = this.add.graphics().setDepth(90_000);
-    this.createDormitoryHotspot();
     this.ready = true;
     this.setupWorld();
     for (const item of this.annotation?.occluders ?? []) {
@@ -352,41 +348,6 @@ export class CampusMapScene extends Phaser.Scene {
   setSuspended(value: boolean) {
     this.suspended = value;
     this.syncKeySuspension();
-  }
-
-  private createDormitoryHotspot() {
-    const halo = this.add.circle(0, 0, 39, 0xe2b958, 0.28)
-      .setStrokeStyle(3, 0xffefb0, 0.9);
-    const marker = this.add.circle(0, 0, 25, 0x8b6324, 1)
-      .setStrokeStyle(3, 0xfff8dc, 1);
-    const glyph = this.add.text(0, -1, '宿', {
-      color: '#fffbea',
-      fontFamily: '"Microsoft YaHei", "PingFang SC", sans-serif',
-      fontSize: '18px',
-      fontStyle: 'bold',
-    }).setOrigin(0.5);
-    const label = this.add.text(0, -54, '升华公寓 · 群聊', {
-      backgroundColor: '#fffbea',
-      color: '#6d501e',
-      fontFamily: '"Microsoft YaHei", "PingFang SC", sans-serif',
-      fontSize: '13px',
-      fontStyle: 'bold',
-      padding: { x: 8, y: 5 },
-    }).setOrigin(0.5).setStroke('#6d501e', 1);
-    const hotspot = this.add.container(this.dormitoryPoint.x, this.dormitoryPoint.y, [halo, marker, glyph, label]);
-    hotspot.setDepth(90_001);
-    hotspot.setSize(166, 118).setInteractive({ useHandCursor: true });
-    hotspot.on('pointerover', () => {
-      halo.setScale(1.14);
-      label.setBackgroundColor('#f5cf65');
-    });
-    hotspot.on('pointerout', () => {
-      halo.setScale(1);
-      label.setBackgroundColor('#fffbea');
-    });
-    hotspot.on('pointerup', (pointer: Phaser.Input.Pointer) => {
-      if (!this.suspended && pointer.getDistance() < 8) this.callbacks.onOpenDormitory?.();
-    });
   }
 
   fitToWindow() {

@@ -8,13 +8,11 @@ interface Props {
   character: CharacterStatus | null;
   choice: CharacterChoice;
   onReturnHome: () => void;
-  onOpenDormitory?: () => void;
-  dormitoryDisabled?: boolean;
   returnHomeDisabled?: boolean;
   profile?: CampusProfile | null;
 }
 
-export default function ExplorerSidebar({ character, choice, onReturnHome, onOpenDormitory, dormitoryDisabled = false, returnHomeDisabled = false, profile = null }: Props) {
+export default function ExplorerSidebar({ character, choice, onReturnHome, returnHomeDisabled = false, profile = null }: Props) {
   const size = 440;
   const left = Math.max(0, Math.min(MAP_WIDTH_PX - size, (character?.x ?? MAP_WIDTH_PX / 2) - size / 2));
   const top = Math.max(0, Math.min(MAP_HEIGHT_PX - size, (character?.y ?? MAP_HEIGHT_PX / 2) - size / 2));
@@ -41,6 +39,6 @@ export default function ExplorerSidebar({ character, choice, onReturnHome, onOpe
         <dl><div><dt>学院</dt><dd>{profile?.college ?? '待填写'}</dd></div><div><dt>学号</dt><dd>{profile?.studentId || '待填写'}</dd></div></dl>
       </section>
     </div>
-    <footer className="explorer-sidebar-bottom">{onOpenDormitory && <button type="button" className="explorer-home explorer-dormitory" onClick={onOpenDormitory} disabled={dormitoryDisabled}>升华公寓群聊</button>}<button type="button" className="explorer-home" onClick={onReturnHome} disabled={returnHomeDisabled} title={returnHomeDisabled ? '请先返回校园，再返回首页' : undefined}><span aria-hidden="true">←</span><span>返回首页</span><span aria-hidden="true">↗</span></button></footer>
+    <footer className="explorer-sidebar-bottom"><button type="button" className="explorer-home" onClick={onReturnHome} disabled={returnHomeDisabled} title={returnHomeDisabled ? '请先返回校园，再返回首页' : undefined}><span aria-hidden="true">←</span><span>返回首页</span><span aria-hidden="true">↗</span></button></footer>
   </aside>;
 }

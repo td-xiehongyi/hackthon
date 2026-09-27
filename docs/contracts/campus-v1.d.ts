@@ -6,13 +6,15 @@ export type PlaceId =
   | "xiaoxiang_teaching_group"
   /** Xiaoxiang secondary stadium only; excludes the main stadium and other fields. */
   | "xiaoxiang_sports_ground"
-  | "lunan_canteen_2";
-export type FeatureKey = "library" | "teaching" | "stadium" | "canteen";
+  | "lunan_canteen_2"
+  | "lunan_shenghua_dormitory";
+export type FeatureKey = "library" | "teaching" | "stadium" | "canteen" | "dormitory";
 export type PlaceIdentity = { name: string } & (
   | { placeId: "xiaoxiang_library"; featureKey: "library"; campusId: "xiaoxiang" }
   | { placeId: "xiaoxiang_teaching_group"; featureKey: "teaching"; campusId: "xiaoxiang" }
   | { placeId: "xiaoxiang_sports_ground"; featureKey: "stadium"; campusId: "xiaoxiang" }
   | { placeId: "lunan_canteen_2"; featureKey: "canteen"; campusId: "lunan" }
+  | { placeId: "lunan_shenghua_dormitory"; featureKey: "dormitory"; campusId: "lunan" }
 );
 
 export interface Point { x: number; y: number }
