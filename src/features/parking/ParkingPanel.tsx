@@ -184,6 +184,7 @@ export default function ParkingPanel({
       const updates = Array.isArray(payload.data) ? payload.data : [];
       const updatesByDevice = new Map<string, ParkingStatusUpdate>();
       updates.forEach((item) => {
+        if (!item || typeof item !== 'object') return;
         const deviceNumber = String(item.deviceNumber ?? '').trim();
         if (deviceNumber && normalizeStatus(item.status)) updatesByDevice.set(deviceNumber, item);
       });
