@@ -29,8 +29,9 @@ import {
 import { CSU_CA_SCHEDULE_URL, openCsuSchedulePage, parseCsuScheduleText } from './caImport';
 import { readCsuExtensionMessage } from './csuExtensionBridge';
 import { exportScheduleIcal } from './ical';
+import ParkingPanel from '../parking/ParkingPanel';
 
-type TeachingTab = 'schedule' | 'discover' | 'manage';
+type TeachingTab = 'schedule' | 'discover' | 'manage' | 'parking';
 type SaveState = { kind: 'saved' | 'saving' | 'error'; message: string };
 type CommunityState = 'loading' | 'ready' | 'offline' | 'disabled';
 
@@ -931,8 +932,9 @@ export default function TeachingPage({ onBack }: { onBack: () => void }) {
           <button type="button" aria-current={tab === 'schedule' ? 'page' : undefined} className={tab === 'schedule' ? 'active' : ''} onClick={() => setTab('schedule')}><span aria-hidden="true">▦</span>个人课表</button>
           <button type="button" aria-current={tab === 'discover' ? 'page' : undefined} className={tab === 'discover' ? 'active' : ''} onClick={() => setTab('discover')}><span aria-hidden="true">✦</span>蹭课发现</button>
           <button type="button" aria-current={tab === 'manage' ? 'page' : undefined} className={tab === 'manage' ? 'active' : ''} onClick={() => setTab('manage')}><span aria-hidden="true">≡</span>课表管理</button>
+          <button type="button" aria-current={tab === 'parking' ? 'page' : undefined} className={tab === 'parking' ? 'active' : ''} onClick={() => setTab('parking')}><span aria-hidden="true">▣</span>停车场</button>
         </nav>
-        <WeekPicker week={week} onChange={setWeek} />
+        {tab !== 'parking' && <WeekPicker week={week} onChange={setWeek} />}
       </div>
 
       {tab === 'schedule' && (
@@ -1116,6 +1118,8 @@ export default function TeachingPage({ onBack }: { onBack: () => void }) {
           </div>
         </section>
       )}
+
+      {tab === 'parking' && <ParkingPanel onBack={() => setTab('schedule')} pollLive />}
 
       <input ref={fileInput} className="visually-hidden" type="file" accept=".csv,.tsv,.txt,.html,.htm,.json,text/csv,text/tab-separated-values,text/plain,text/html,application/json" onChange={(event) => void handleFile(event.target.files?.[0])} />
       {editing !== undefined && <CourseFormModal editing={editing} onClose={() => setEditing(undefined)} onSubmit={handleCourseSubmit} />}
