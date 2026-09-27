@@ -238,7 +238,7 @@ export default function ParkingPanel({
   useEffect(() => {
     const onVisibilityChange = () => setPageVisible(isDocumentVisible());
     const onOnline = () => {
-      if (isDocumentVisible()) void refreshStatus();
+      if (isDocumentVisible() && refreshInterval > 0) void refreshStatus();
     };
     document.addEventListener('visibilitychange', onVisibilityChange);
     window.addEventListener('online', onOnline);
@@ -246,14 +246,15 @@ export default function ParkingPanel({
       document.removeEventListener('visibilitychange', onVisibilityChange);
       window.removeEventListener('online', onOnline);
     };
-  }, [refreshStatus]);
+  }, [refreshInterval, refreshStatus]);
 
   // A visible page syncs immediately on mount and when it returns from the
-  // background. Changing the interval itself only reschedules the next tick;
-  // selecting “暂停” therefore never causes a surprise network request.
+  // background while automatic refresh is enabled. Changing the interval to
+  // a live value also performs one immediate sync; selecting “暂停” therefore
+  // leaves only the explicit manual-refresh button active.
   useEffect(() => {
-    if (pollLive && statusEndpoint && pageVisible) void refreshStatus();
-  }, [pageVisible, pollLive, refreshStatus, statusEndpoint]);
+    if (pollLive && statusEndpoint && pageVisible && refreshInterval > 0) void refreshStatus();
+  }, [pageVisible, pollLive, refreshInterval, refreshStatus, statusEndpoint]);
 
   useEffect(() => {
     if (!pollLive || !statusEndpoint || !pageVisible || refreshInterval === 0) return;
