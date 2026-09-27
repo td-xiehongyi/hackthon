@@ -43,11 +43,14 @@ function json(response: ServerResponse, status: number, body: unknown) {
 }
 
 function isStatus(value: unknown): value is PortStatus {
-  return ['available', 'free', 'idle', 'occupied', 'busy', 'charging', 'in_use'].includes(String(value).trim().toLowerCase());
+  return [
+    'available', 'free', 'idle', '0', '空闲', '未占用', '可用',
+    'occupied', 'busy', 'charging', 'in_use', 'in-use', '1', '占用', '占用中',
+  ].includes(String(value).trim().toLowerCase());
 }
 
 function normalizeStatus(value: unknown): PortStatus {
-  return ['occupied', 'busy', 'charging', 'in_use'].includes(String(value).trim().toLowerCase())
+  return ['occupied', 'busy', 'charging', 'in_use', 'in-use', '1', '占用', '占用中'].includes(String(value).trim().toLowerCase())
     ? 'occupied'
     : 'available';
 }
