@@ -95,6 +95,14 @@ const SENSITIVE_LABEL = /^(?:登录)?(?:密码|验证码|用户名|登录名|账
 const rowLooksSensitive = (row: readonly string[]): boolean =>
   row.some((cell) => SENSITIVE_LABEL.test(cell));
 
+/** Markdown table delimiter rows are layout, not course data. */
+const rowLooksMarkdownSeparator = (row: readonly string[]): boolean =>
+  row.length > 0 && row.every((cell) => /^:?-{3,}:?$/.test(text(cell)));
+
+/** Clock ranges (for example `08:00-09:40`) are not section numbers. */
+const looksLikeClockTime = (value: string): boolean =>
+  /\b\d{1,2}\s*:\s*\d{2}\b/.test(value.normalize('NFKC'));
+
 const decodeHtml = (value: string): string => {
   // Decode the entities that occur in copied CA tables without depending on a
   // DOM implementation (Vitest and server-side callers may run in Node).
@@ -111,11 +119,15 @@ const decodeHtml = (value: string): string => {
       const key = String(code).toLocaleLowerCase();
       if (key.startsWith('#x')) {
         const parsed = Number.parseInt(key.slice(2), 16);
-        return Number.isFinite(parsed) ? String.fromCodePoint(parsed) : whole;
+        return Number.isInteger(parsed) && parsed >= 0 && parsed <= 0x10ffff
+          ? String.fromCodePoint(parsed)
+          : whole;
       }
       if (key.startsWith('#')) {
         const parsed = Number.parseInt(key.slice(1), 10);
-        return Number.isFinite(parsed) ? String.fromCodePoint(parsed) : whole;
+        return Number.isInteger(parsed) && parsed >= 0 && parsed <= 0x10ffff
+          ? String.fromCodePoint(parsed)
+          : whole;
       }
       return named[key] ?? whole;
     })
@@ -234,7 +246,7 @@ const extractTextRows = (input: string): CellMatrix => {
   const delimiter: '\t' | '|' | null = hasTabs ? '\t' : hasPipes ? '|' : null;
   if (delimiter) {
     const rawRows = normalized.map((line) => splitDelimitedLine(line, delimiter));
-    const rows = rawRows.filter((row) => !rowLooksSensitive(row));
+    const rows = rawRows.filter((row) => !rowLooksSensitive(row) && !rowLooksMarkdownSeparator(row));
     return {
       rows: nonEmptyRows(rows),
       source: delimiter === '\t' ? 'tsv' : 'text',
@@ -382,6 +394,19 @@ const firstWeekdayIn = (value: string): number | null => {
 
 const firstPeriodsIn = (value: string): string => {
   const normalized = value.normalize('NFKC');
+  if (looksLikeClockTime(normalized)) return '';
+
+  // CSU's grid export writes a run of two-digit section numbers (`0708节`,
+  // occasionally `01020304`) without separators. Decode every pair and use
+  // the first/last section instead of silently truncating after two digits.
+  const compact = normalized.match(/(?<!\d)((?:\d{2}){2,})(?!\d)/);
+  if (compact) {
+    const parts = compact[1].match(/\d{2}/g) ?? [];
+    if (parts.length >= 2) {
+      return `${Number(parts[0])}-${Number(parts[parts.length - 1])}`;
+    }
+  }
+
   const explicit = normalized.match(/(?:第\s*)?(\d{1,2})\s*(?:[-~～—–至到]\s*(\d{1,2}))?\s*(?:节|节次|课)?/);
   if (explicit) return explicit[2] ? `${explicit[1]}-${explicit[2]}` : explicit[1];
   const numbers = normalized.match(/\d+/g);
@@ -392,13 +417,61 @@ const firstPeriodsIn = (value: string): string => {
 /** Decode CSU's compact section notation such as `0708节` or `0304`. */
 const periodPartsIn = (value: string): string[] => {
   const normalized = value.normalize('NFKC');
+  if (looksLikeClockTime(normalized)) return [];
   const explicit = normalized.match(/(?:第\s*)?(\d{1,2})\s*[-~～—–至到、，,]\s*(\d{1,2})/);
   if (explicit) return [explicit[1], explicit[2]];
-  const compact = normalized.match(/(?<!\d)(\d{4})(?!\d)/);
-  if (compact) return [String(Number(compact[1].slice(0, 2))), String(Number(compact[1].slice(2)))];
+  const compact = normalized.match(/(?<!\d)((?:\d{2}){2,})(?!\d)/);
+  if (compact) {
+    const parts = compact[1].match(/\d{2}/g) ?? [];
+    if (parts.length >= 2) {
+      return [String(Number(parts[0])), String(Number(parts[parts.length - 1]))];
+    }
+  }
   const numbers = normalized.match(/\d{1,2}/g) ?? [];
   return numbers;
 };
+
+const jsonText = (value: unknown): string => {
+  if (typeof value === 'string' || typeof value === 'number') return String(value).trim();
+  if (Array.isArray(value)) return value.map(jsonText).filter(Boolean).join(',');
+  return '';
+};
+
+const jsonTitleText = (value: unknown): string => {
+  if (Array.isArray(value)) return value.map(jsonText).filter(Boolean).join('\n');
+  return jsonText(value);
+};
+
+/**
+ * CSU responses have appeared both as a top-level array and wrapped in one or
+ * more `{data: [...]}`/`{result: {rows: [...]}}` containers. Walk only the
+ * known container keys and a small, fixed depth; arbitrary nested values are
+ * never treated as course records.
+ */
+const findJsonCourseItems = (value: unknown): unknown[] | null => {
+  const containerKeys = ['courses', 'data', 'rows', 'list', 'items', 'records', 'result'] as const;
+  const queue: Array<{ value: unknown; depth: number }> = [{ value, depth: 0 }];
+  const visited = new Set<object>();
+  let emptyArray: unknown[] | null = null;
+  while (queue.length > 0) {
+    const entry = queue.shift()!;
+    if (Array.isArray(entry.value)) {
+      if (entry.value.length > 0) return entry.value;
+      emptyArray ??= entry.value;
+      continue;
+    }
+    if (!entry.value || typeof entry.value !== 'object' || entry.depth >= 4) continue;
+    const record = entry.value as Record<string, unknown>;
+    if (visited.has(record)) continue;
+    visited.add(record);
+    for (const key of containerKeys) {
+      if (key in record) queue.push({ value: record[key], depth: entry.depth + 1 });
+    }
+  }
+  return emptyArray;
+};
+
+const JSON_FREE_TIME = /(?:自由时间|自由活动|自由课时|自习时间)/;
 
 const valueFor = (row: readonly string[], mapping: HeaderMapping, field: keyof HeaderMapping): string =>
   cellAt(row, mapping[field]);
@@ -412,10 +485,13 @@ const matrixToCanonicalCsv = (
   selected: SelectedMatrix,
 ): { csv: string; dataRows: number; skippedRows: number } => {
   const mapping = mapHeaders(selected.headers);
-  const output: string[][] = [['课程名称', '星期', '开始节数', '结束节数', '老师', '地点', '周数', '单双周', '标签', '备注']];
+  const output: string[][] = [[
+    '课程名称', '星期', '开始节数', '结束节数', '老师', '地点', '周数', '单双周',
+    '楼座ID', '楼座', '标签', '备注',
+  ]];
   let skippedRows = 0;
   for (const row of selected.rows) {
-    if (rowLooksSensitive(row) || row.every((cell) => !text(cell))) {
+    if (rowLooksSensitive(row) || rowLooksMarkdownSeparator(row) || row.every((cell) => !text(cell))) {
       skippedRows += 1;
       continue;
     }
@@ -424,7 +500,10 @@ const matrixToCanonicalCsv = (
     const weekdayRaw = valueFor(row, mapping, 'weekday') || time;
     const startRaw = valueFor(row, mapping, 'startPeriod');
     const endRaw = valueFor(row, mapping, 'endPeriod');
-    const periodRaw = valueFor(row, mapping, 'periods') || time || [startRaw, endRaw].filter(Boolean).join('-');
+    // Prefer explicit start/end columns when present. A separate “上课时间”
+    // column may contain a clock range and must not override valid section
+    // columns.
+    const periodRaw = valueFor(row, mapping, 'periods') || [startRaw, endRaw].filter(Boolean).join('-') || time;
     const weekday = firstWeekdayIn(weekdayRaw);
     const periods = firstPeriodsIn(periodRaw);
     const periodParts = periods.match(/\d+/g) ?? [];
@@ -433,6 +512,8 @@ const matrixToCanonicalCsv = (
     const location = valueFor(row, mapping, 'location') || valueFor(row, mapping, 'buildingName');
     const weeks = valueFor(row, mapping, 'weeks');
     const parity = valueFor(row, mapping, 'parity');
+    const buildingId = valueFor(row, mapping, 'buildingId');
+    const buildingName = valueFor(row, mapping, 'buildingName');
     const teacher = valueFor(row, mapping, 'teacher');
     const tags = valueFor(row, mapping, 'tags');
     const notes = valueFor(row, mapping, 'notes');
@@ -443,7 +524,20 @@ const matrixToCanonicalCsv = (
       skippedRows += 1;
       continue;
     }
-    output.push([name, weekday === null ? weekdayRaw : String(weekday), start, end, teacher, location, weeks, parity, tags, notes]);
+    output.push([
+      name,
+      weekday === null ? weekdayRaw : String(weekday),
+      start,
+      end,
+      teacher,
+      location,
+      weeks,
+      parity,
+      buildingId,
+      buildingName,
+      tags,
+      notes,
+    ]);
   }
   const csvEscape = (value: string) => /[",\r\n]/.test(value) ? `"${value.replace(/"/g, '""')}"` : value;
   return {
@@ -456,7 +550,8 @@ const matrixToCanonicalCsv = (
 const labelledValue = (line: string, labels: readonly string[]): string => {
   const normalizedLine = line.normalize('NFKC');
   for (const label of labels) {
-    const pattern = new RegExp(`^\\s*${label}\\s*[:：]\\s*(.+)$`, 'i');
+    const escapedLabel = label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const pattern = new RegExp(`^\\s*${escapedLabel}\\s*[:：]\\s*(.+)$`, 'i');
     const match = normalizedLine.match(pattern);
     if (match) return match[1].trim();
   }
@@ -483,7 +578,7 @@ const parseLabelledBlocks = (rows: readonly string[][]): string[][] | null => {
     }
     return null;
   };
-  for (const [index, row] of rows.entries()) {
+  for (const row of rows) {
     const line = row[0];
     const key = keyForLine(line);
     if (!key) continue;
@@ -493,16 +588,18 @@ const parseLabelledBlocks = (rows: readonly string[][]): string[][] | null => {
       current = {};
     }
     current[key] = value;
-    if (index === rows.length - 1 && Object.keys(current).length > 0) records.push(current);
   }
+  // A copied block often ends with an unrecognised decoration/备注 line. Do
+  // not lose the course accumulated before that line; flush once after the
+  // scan rather than only when the final physical line is a known label.
+  if (Object.keys(current).length > 0) records.push(current);
   if (records.length === 0 || !records.some((record) => record.name)) return null;
   const matrix: string[][] = [
     ['课程名称', '星期', '开始节数', '结束节数', '老师', '地点', '周数', '单双周'],
   ];
   records.forEach((record) => {
     const periodText = (record.periods ?? '').normalize('NFKC');
-    const periodRange = periodText.match(/(\d{1,2})\s*[^\d\s]+\s*(\d{1,2})/);
-    const periods = periodRange ? [periodRange[1], periodRange[2]] : (periodText.match(/\d{1,2}/g) ?? []);
+    const periods = periodPartsIn(periodText);
     matrix.push([
       record.name ?? '',
       record.weekday ?? record.periods ?? '',
@@ -520,6 +617,8 @@ const parseLabelledBlocks = (rows: readonly string[][]): string[][] | null => {
 const makeNoTablePreview = (
   source: CaScheduleSourceKind,
   skippedRows: number,
+  detectedTableCount = 0,
+  detectedRows = 0,
   sourceLabel?: string,
 ): CaScheduleImportPreview => {
   const issue: ImportIssue = {
@@ -538,8 +637,8 @@ const makeNoTablePreview = (
     totalRows: 0,
     acceptedRows: 0,
     source,
-    detectedTableCount: 0,
-    detectedRows: 0,
+    detectedTableCount,
+    detectedRows,
     skippedRows,
     sourceLabel,
   };
@@ -551,7 +650,15 @@ const parseMatrix = (matrix: CellMatrix, options: CaScheduleImportOptions): CaSc
     const labelled = parseLabelledBlocks(matrix.rows);
     if (labelled) selected = selectScheduleMatrix(labelled);
   }
-  if (!selected) return makeNoTablePreview(matrix.source, matrix.skippedRows, options.sourceLabel);
+  if (!selected) {
+    return makeNoTablePreview(
+      matrix.source,
+      matrix.skippedRows,
+      matrix.tableCount,
+      matrix.rows.length + matrix.skippedRows,
+      options.sourceLabel,
+    );
+  }
 
   // If the source is already a normal CSV, preserve its columns and let the
   // shared parser handle quoted cells and all supported aliases.  Otherwise
@@ -584,66 +691,187 @@ const parseMatrix = (matrix: CellMatrix, options: CaScheduleImportOptions): CaSc
  * This parser is intentionally shape-limited and only consumes course fields;
  * it never accepts credentials or arbitrary object values.
  */
-const parseCsuJson = (input: string, options: CaScheduleImportOptions): CaScheduleImportPreview | null => {
+export const parseCsuScheduleJson = (input: string, options: CaScheduleImportOptions = {}): CaScheduleImportPreview | null => {
   let parsed: unknown;
   try {
     parsed = JSON.parse(input);
   } catch {
     return null;
   }
-  const items = Array.isArray(parsed)
-    ? parsed
-    : parsed && typeof parsed === 'object'
-      ? (['courses', 'data', 'rows'] as const).reduce<unknown[] | null>((found, key) => {
-          if (found) return found;
-          const candidate = (parsed as Record<string, unknown>)[key];
-          return Array.isArray(candidate) ? candidate : null;
-        }, null)
-      : null;
+  const items = findJsonCourseItems(parsed);
   if (!items) return null;
 
-  const rows: string[][] = [['课程名称', '星期', '开始节数', '结束节数', '老师', '地点', '周数', '单双周']];
+  const rows: string[][] = [[
+    '课程名称', '星期', '开始节数', '结束节数', '老师', '地点', '周数', '单双周',
+    '楼座ID', '楼座', '标签', '备注',
+  ]];
   let skippedRows = 0;
-  for (const item of items) {
+  const jsonIssues: ImportIssue[] = [];
+  for (const [itemIndex, item] of items.entries()) {
+    const rowNumber = itemIndex + 1;
     if (!item || typeof item !== 'object') {
       skippedRows += 1;
+      jsonIssues.push({
+        severity: 'warning',
+        row: rowNumber,
+        code: 'json-non-course-record',
+        message: '已跳过不是对象的 JSON 记录。',
+      });
       continue;
     }
     const raw = item as Record<string, unknown>;
-    const title = typeof raw.title === 'string' ? raw.title : '';
-    const lines = title.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
+    const title = jsonTitleText(raw.title);
+    const lines = decodeHtml(title)
+      .replace(/<br\s*\/?\s*>/gi, '\n')
+      .split(/\r?\n|;(?=\s*(?:课程名称|课程名|周次|星期|上课星期|节次|上课节次|上课教师|教师|上课地点|地点)\s*[:：])/)
+      .map((line) => line.trim())
+      .filter(Boolean);
     const value = (...labels: string[]) => {
-      for (const label of labels) {
-        const line = lines.find((candidate) => candidate.startsWith(`${label}：`) || candidate.startsWith(`${label}:`));
-        if (line) return line.replace(new RegExp(`^${label}\s*[:：]\s*`), '').trim();
+      for (const line of lines) {
+        const parsedValue = labelledValue(line, labels);
+        if (parsedValue) return parsedValue;
       }
       return '';
     };
-    const name = value('课程名称', '课程名') || (typeof raw.name === 'string' ? raw.name.trim() : '') || (typeof raw.kcmc === 'string' ? raw.kcmc.trim() : '');
-    const teacher = (typeof raw.teacher === 'string' && raw.teacher.trim()) || value('上课教师', '教师', '老师');
-    const location = (typeof raw.location === 'string' && raw.location.trim()) || value('上课地点', '地点', '教室');
-    const weeks = (typeof raw.weeks === 'string' && raw.weeks.trim()) || value('周次', '教学周');
-    const parity = (typeof raw.weekParity === 'string' && raw.weekParity.trim()) || value('单双周');
+    const rawXq = typeof raw.xq === 'number' || typeof raw.xq === 'string' ? Number(raw.xq) : NaN;
+    // `xq=0` is emitted by the old endpoint for placeholders/free-time rows;
+    // it must never become a course with a fabricated weekday.
+    if (rawXq === 0) {
+      skippedRows += 1;
+      jsonIssues.push({
+        severity: 'warning',
+        row: rowNumber,
+        code: 'json-skipped-placeholder',
+        message: '已跳过 CSU JSON 中 xq=0 的占位记录。',
+      });
+      continue;
+    }
+    // `kcmc` is present on some CSU payloads for both real courses and
+    // trailing practice/notice records. Only treat it as a course name when
+    // the record also carries a structured schedule or an explicit course ID;
+    // otherwise the notice would become a phantom course with default weeks.
+    const explicitName = value('课程名称', '课程名') || jsonText(raw.name);
+    const rawCourseId = raw.id ?? raw.kcid ?? raw.courseId;
+    const hasStructuredSchedule = Boolean(
+      value('星期', '上课星期', '节次', '上课节次', '周次', '教学周') ||
+      raw.weekday || raw.day || raw.periods || raw.sections || raw.weeks || raw.week,
+    );
+    const jsonName = jsonText(raw.kcmc) || jsonText(raw.courseName) || jsonText(raw.subject);
+    const name = explicitName || (
+      jsonName && (hasStructuredSchedule || rawCourseId !== undefined)
+        ? jsonName
+        : ''
+    );
+    // AISchedule/WakeUp adapters commonly call these fields `position`,
+    // `day`, `sections`, and `week`; accept those aliases while preserving the
+    // strict canonical validator below. This is deliberately field-limited:
+    // arbitrary JSON values are never copied into the preview.
+    const teacher = jsonText(raw.teacher) || jsonText(raw.instructor) || value('上课教师', '教师', '老师');
+    const location = jsonText(raw.location) || jsonText(raw.position) || jsonText(raw.classroom) || value('上课地点', '地点', '教室');
+    const weeks = jsonText(raw.weeks) || jsonText(raw.week) || value('周次', '教学周');
+    const parity = jsonText(raw.weekParity) || jsonText(raw.parity) || value('单双周');
+    const recordText = [title, name, jsonName].filter(Boolean).join('\n');
+    if (JSON_FREE_TIME.test(recordText)) {
+      skippedRows += 1;
+      jsonIssues.push({
+        severity: 'warning',
+        row: rowNumber,
+        code: 'json-skipped-free-time',
+        message: '已跳过 CSU JSON 中的“自由时间”记录。',
+      });
+      continue;
+    }
     const labelledWeekday = value('星期', '上课星期');
-    const dayRaw = labelledWeekday || raw.weekday || (typeof raw.xq === 'number' || typeof raw.xq === 'string'
-      ? ((Number(raw.xq) + 5) % 7) + 1
-      : '');
+    // CSU's `xq` follows the Java/JavaScript weekday convention used by its
+    // legacy exporter: 1=周日, 2=周一, …, 7=周六. Convert it to this app's
+    // Monday-first weekday numbering. `xq=0` is a placeholder/non-course
+    // record and out-of-range values are left blank so the shared validator
+    // can report a row-level weekday error rather than inventing a day.
+    const mappedXq = Number.isInteger(rawXq) && rawXq >= 1 && rawXq <= 7
+      ? String(((rawXq + 5) % 7) + 1)
+      : '';
+    const dayRaw = labelledWeekday || jsonText(raw.weekday) || jsonText(raw.day) || mappedXq;
     // `jc` in the CSU payload is often only the first period; the title's
     // labelled range (for example `03-04`) contains the complete span.
     const labelledPeriods = value('节次', '上课节次');
-    const periodRaw = (typeof raw.periods === 'string' && raw.periods.trim()) || labelledPeriods || raw.jc || '';
-    const weekday = typeof dayRaw === 'number' ? String(dayRaw) : String(dayRaw ?? '');
-    const periodText = String(periodRaw ?? '');
-    const periodParts = periodPartsIn(periodText);
+    const titlePeriodParts = periodPartsIn(labelledPeriods);
+    const rawPeriodValue = jsonText(raw.periods)
+      || jsonText(raw.sections)
+      || jsonText(raw.section)
+      || [jsonText(raw.startSection), jsonText(raw.endSection)].filter(Boolean).join('-')
+      || jsonText(raw.jc);
+    const rawPeriodParts = periodPartsIn(rawPeriodValue);
+    // A complete range in `title` is authoritative (some exports retain a
+    // stale `jc` start value). If title has only an end section, combine it
+    // with the single `jc` start; otherwise use `jc` as a one-period fallback.
+    const periodParts = titlePeriodParts.length >= 2
+      ? [titlePeriodParts[0], titlePeriodParts[titlePeriodParts.length - 1]]
+      : titlePeriodParts.length === 1 && rawPeriodParts.length >= 1
+        ? [rawPeriodParts[0], titlePeriodParts[0]]
+        : rawPeriodParts.length >= 2
+          ? [rawPeriodParts[0], rawPeriodParts[rawPeriodParts.length - 1]]
+          : rawPeriodParts;
+    const weekday = String(dayRaw ?? '');
     if (!name) {
       skippedRows += 1;
+      jsonIssues.push({
+        severity: 'warning',
+        row: rowNumber,
+        code: 'json-missing-course-name',
+        message: '已跳过没有课程名称的 JSON 记录。',
+      });
       continue;
     }
-    rows.push([name, weekday, periodParts[0] ?? '', periodParts[1] ?? periodParts[0] ?? '', teacher, location, weeks, parity]);
+    const tags = jsonText(raw.tags) || jsonText(raw.interests) || jsonText(raw.category);
+    const notes = jsonText(raw.notes) || jsonText(raw.remark);
+    rows.push([
+      name,
+      weekday,
+      periodParts[0] ?? '',
+      periodParts[1] ?? periodParts[0] ?? '',
+      teacher,
+      location,
+      weeks,
+      parity,
+      jsonText(raw.buildingId),
+      jsonText(raw.buildingName) || jsonText(raw.building),
+      tags,
+      notes,
+    ]);
   }
-  if (rows.length === 1) return null;
+  if (rows.length === 1) {
+    const error: ImportIssue = {
+      severity: 'error',
+      row: 1,
+      code: 'json-no-courses',
+      message: 'JSON 中没有可识别的有效课程记录；请确认复制的是已登录课表数据。',
+    };
+    return {
+      status: 'invalid',
+      courses: [],
+      errors: [error],
+      warnings: jsonIssues,
+      issues: [...jsonIssues, error],
+      headers: rows[0],
+      totalRows: items.length,
+      acceptedRows: 0,
+      source: 'json',
+      detectedTableCount: 0,
+      detectedRows: items.length,
+      skippedRows,
+      sourceLabel: options.sourceLabel,
+    };
+  }
   const parsedPreview = parseMatrix({ rows, source: 'json', tableCount: 0, skippedRows }, options);
-  return { ...parsedPreview, source: 'json', sourceLabel: options.sourceLabel };
+  const issues = [...jsonIssues, ...parsedPreview.issues];
+  return {
+    ...parsedPreview,
+    errors: issues.filter((issue) => issue.severity === 'error'),
+    warnings: issues.filter((issue) => issue.severity === 'warning'),
+    issues,
+    source: 'json',
+    sourceLabel: options.sourceLabel,
+  };
 };
 
 /** Parse a rendered `Document`/`Element` from the official CA page. */
@@ -670,7 +898,7 @@ export function parseCsuScheduleText(
 ): CaScheduleImportPreview {
   const trimmed = input.trimStart();
   if (/^[\[{]/.test(trimmed)) {
-    const jsonPreview = parseCsuJson(trimmed, options);
+    const jsonPreview = parseCsuScheduleJson(trimmed, options);
     if (jsonPreview) return jsonPreview;
   }
   if (/<table\b/i.test(trimmed)) return parseCsuScheduleHtml(input, options);
@@ -707,6 +935,7 @@ export const parseCaSchedule = parseCsuSchedule;
 export const parseCaScheduleDom = parseCsuScheduleDom;
 export const parseCaScheduleHtml = parseCsuScheduleHtml;
 export const parseCaScheduleText = parseCsuScheduleText;
+export const parseCaScheduleJson = parseCsuScheduleJson;
 
 /**
  * Build a browser-safe import URL.  The caller may use this URL with

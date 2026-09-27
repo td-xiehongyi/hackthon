@@ -23,6 +23,7 @@
 .explorer-student dd { margin: 0; color: #89937d; overflow-wrap: anywhere; text-align: right; }
 .explorer-sidebar-bottom { margin-top: auto; padding-top: 18px; flex-shrink: 0; }
 .explorer-home { width: 100%; display: flex; gap: 8px; align-items: center; padding: 13px 15px; color: #254d3b; font-size: 12px; border: 1px solid #254d3b; background: var(--explorer-paper); box-shadow: 3px 3px #c6d1b8; }
+.explorer-dormitory { margin-bottom: 10px; justify-content: center; }
 .explorer-home span:last-child { margin-left: auto; }
 .explorer-home:hover, .explorer-map button:hover:not(:disabled) { background: #e3ead5; }
 .explorer-map { position: relative; min-width: 0; min-height: 0; overflow: hidden; }

@@ -33,6 +33,8 @@ h2 { font-size: 35px; line-height: 1.55; font-weight: 600; margin: 17px 0 13px; 
 .preview-note strong { font-weight: 600; }
 .preview-note p { margin: 6px 0 0; color: #74806b; font-size: 11px; }
 .preview-note button { margin-top: 10px; padding: 0; border: 0; border-bottom: 1px solid currentColor; background: transparent; color: #254d3b; font-size: 11px; font-weight: 700; }
+.preview-note .dormitory-entry-button { display: block; margin-top: 11px; color: #8b6324; border-color: #b79553; }
+.preview-note .dormitory-entry-button:hover { color: #254d3b; border-color: #254d3b; }
 .sidebar-timetable { margin-top: 11px; border: 0; border-bottom: 1px solid #8da17d; background: transparent; color: #315b43; padding: 0 0 2px; font-size: 11px; text-align: left; }
 .sidebar-timetable:hover { color: #8b6324; border-color: #8b6324; }
 .original-link { margin-top: 23px; color: #45644f; font-size: 12px; text-decoration: none; }
@@ -51,6 +53,8 @@ h2 { font-size: 35px; line-height: 1.55; font-weight: 600; margin: 17px 0 13px; 
 .map-controls .fit-button { font-size: 11px; padding: 0 10px; margin-left: 7px; }
 .map-controls .place-entry-button { min-width: auto; padding: 0 12px; margin-right: 8px; border-color: #254d3b; background: #254d3b; color: #fffbee; font-size: 11px; font-weight: 700; }
 .map-controls .place-entry-button:hover:not(:disabled) { background: #35664f; }
+.map-controls .dorm-entry-map-button { min-width: auto; padding: 0 10px; border-color: #b58a3d; background: #fff4ce; color: #6f531d; font-size: 11px; font-weight: 700; }
+.map-controls .dorm-entry-map-button:hover:not(:disabled) { background: #f7e7ad; border-color: #936c25; }
 .map-stage { height: calc(100dvh - 230px); min-height: 360px; position: relative; background: #e3eadd; }
 .map-canvas { width: 100%; height: 100%; overflow: hidden; }
 .map-canvas canvas { display: block; cursor: grab; touch-action: none; }
@@ -305,12 +309,27 @@ h2 { font-size: 35px; line-height: 1.55; font-weight: 600; margin: 17px 0 13px; 
 .ca-import-body { padding: 22px 24px 0; display: grid; gap: 12px; }
 .ca-import-body > p { margin: 0; color: #5e705f; font-size: 11px; line-height: 1.8; }
 .ca-import-body > a { color: #496954; font-size: 10px; }
+.ca-extension-action { padding: 13px; display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 7px 12px; border: 1px solid #c6d8c8; background: #edf5ed; }
+.ca-extension-action > div { display: grid; gap: 4px; }
+.ca-extension-action strong { color: #315b43; font-size: 10px; }
+.ca-extension-action small { color: #667b6a; font-size: 9px; line-height: 1.55; }
+.ca-extension-action .secondary-button { min-height: 34px; padding-inline: 12px; font-size: 10px; }
 .ca-import-file-action { padding: 13px; display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 7px 12px; border: 1px solid #d5decf; background: #f3f6ec; }
 .ca-import-file-action strong { color: #426049; font-size: 10px; }
 .ca-import-file-action .secondary-button { min-height: 34px; padding-inline: 12px; font-size: 10px; }
 .ca-import-file-action small { grid-column: 1 / -1; color: #788877; font-size: 9px; line-height: 1.5; }
 .ca-import-body label { display: grid; gap: 6px; color: #5c705f; font-size: 10px; font-weight: 700; }
 .ca-import-body textarea { width: 100%; padding: 10px; border: 1px solid #cbd5c5; background: #fbfcf5; font-size: 12px; resize: vertical; }
+.ical-export-body { padding: 22px 24px 0; display: grid; gap: 15px; }
+.ical-export-body > p { margin: 0; color: #5e705f; font-size: 11px; line-height: 1.8; }
+.ical-export-body label { display: grid; gap: 6px; color: #5c705f; font-size: 10px; font-weight: 700; }
+.ical-export-body label > span { display: flex; align-items: baseline; gap: 3px; }
+.ical-export-body label b { color: #a0503d; }
+.ical-export-body input, .ical-export-body select { width: 100%; min-height: 42px; padding: 10px; border: 1px solid #cbd5c5; border-radius: 2px; background: #fbfcf5; font-size: 12px; }
+.ical-export-body small { color: #879286; font-size: 9px; line-height: 1.5; }
+.ical-export-summary { padding: 12px 14px; display: flex; align-items: baseline; gap: 8px; border: 1px solid #c6d8c8; background: #edf5ed; color: #315b43; }
+.ical-export-summary strong { font-size: 22px; }
+.ical-export-summary span { font-size: 10px; }
 .text-button { width: 100%; margin-top: 10px; padding: 0; border: 0; background: none; color: #56745d; font-size: 10px; text-decoration: underline; }
 .browser-storage-note { margin-top: 20px; padding-top: 17px; display: flex; gap: 10px; border-top: 1px solid #dfe4da; }
 .browser-storage-note > i { width: 9px; height: 12px; margin-top: 2px; border: 2px solid #77917b; border-radius: 1px; box-shadow: inset 0 3px 0 #e0e9dd; }
@@ -459,9 +478,12 @@ h2 { font-size: 35px; line-height: 1.55; font-weight: 600; margin: 17px 0 13px; 
   .import-panel { display: block; }
   .import-illustration { margin-inline: auto; }
   .ca-import-body { padding-inline: 16px; }
+  .ical-export-body { padding-inline: 16px; }
   .ca-import-file-action { grid-template-columns: 1fr; }
   .ca-import-file-action .secondary-button { width: 100%; }
   .ca-import-file-action small { grid-column: auto; }
+  .ca-extension-action { grid-template-columns: 1fr; }
+  .ca-extension-action .secondary-button { width: 100%; }
   .form-grid { grid-template-columns: 1fr; }
   .form-grid input, .form-grid select, .form-grid textarea { min-height: 44px; font-size: 16px; }
   .span-2 { grid-column: span 1; }
@@ -489,6 +511,8 @@ h2 { font-size: 35px; line-height: 1.55; font-weight: 600; margin: 17px 0 13px; 
   .map-controls .fit-button { padding: 0 7px; margin-left: 2px; }
   .map-controls .place-entry-button { width: 30px; min-width: 30px; padding: 0; font-size: 0; }
   .map-controls .place-entry-button::after { content: "课"; font-size: 11px; }
+  .map-controls .dorm-entry-map-button { width: 30px; min-width: 30px; padding: 0; font-size: 0; }
+  .map-controls .dorm-entry-map-button::after { content: "宿"; font-size: 11px; }
 }
 
 /* 地点功能页宿主与占位页面（阶段 1） */

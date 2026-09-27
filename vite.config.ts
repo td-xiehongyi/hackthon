@@ -1,10 +1,12 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { communitySchedulePlugin } from './server/communitySchedulePlugin.js';
+import { dormChatPlugin } from './server/dormChatPlugin.js';
+import { parkingStatusPlugin } from './server/parkingStatusPlugin.js';
 import { fileURLToPath } from 'node:url';
 
 export default defineConfig({
-  plugins: [react(), communitySchedulePlugin()],
+  plugins: [react(), communitySchedulePlugin(), dormChatPlugin(), parkingStatusPlugin()],
   resolve: { alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) } },
   server: {
     host: '127.0.0.1',

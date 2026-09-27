@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>CSU 课表抓取助手</title>
+    <link rel="stylesheet" href="popup.css">
+  </head>
+  <body>
+    <main class="popup" aria-labelledby="title">
+      <header class="header">
+        <span class="eyebrow">CSU SCHEDULE</span>
+        <h1 id="title">课表抓取助手</h1>
+        <p>在已登录的教务课表页点击抓取，课程会转交给本机课表页面。</p>
+      </header>
+      <button id="capture" class="primary" type="button">抓取当前 CSU 课表</button>
+      <p id="status" class="status" role="status" aria-live="polite">正在检查当前标签页…</p>
+      <section class="latest" aria-labelledby="latest-title">
+        <h2 id="latest-title">最近一次抓取</h2>
+        <p id="latest">尚未抓取课表</p>
+      </section>
+      <button id="clear" class="secondary" type="button">清除扩展缓存</button>
+      <p class="privacy">仅保存标准化课程字段到浏览器扩展存储；不会读取密码、Cookie 或认证信息。</p>
+    </main>
+    <script src="popup.js"></script>
+  </body>
+</html>

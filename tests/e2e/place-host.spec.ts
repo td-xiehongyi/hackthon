@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { enterCampusAt } from './helpers/campus';
 
 /**
  * 阶段 3：E 键互动与功能页宿主（开发测试场景）。
@@ -176,11 +177,10 @@ test('定位回调区分 unmapped / unknown-target，不放置虚假标记', asy
 });
 
 test('首页：出生位置远离互动区时，按 E 不打开地点', async ({ page }) => {
-  await page.goto('/');
-  await page.getByRole('button', { name: '进入校园', exact: true }).click();
-  await expect(page.getByRole('status', { name: '地图加载状态' })).toHaveText('地图已加载');
+  await enterCampusAt(page, 180, 1300);
   await expect(page.getByRole('button', { name: '潇湘校区图书馆' })).toHaveCount(0);
-  await expect(page.getByTestId('character-status')).toContainText('位置');
+  await expect(page.getByTestId('character-status')).toContainText('位置 180, 1300');
+  await expect(page.getByTestId('interact-prompt')).toHaveCount(0);
   await page.keyboard.press('KeyE');
   await expect(page.getByRole('button', { name: '返回校园' })).toHaveCount(0);
 });

@@ -1,0 +1,55 @@
+{
+  "manifest_version": 3,
+  "name": "CSU 课表抓取助手",
+  "version": "0.1.0",
+  "description": "在中南大学教务系统的已登录课表页抓取课程，并安全转交给本机课表页面。",
+  "action": {
+    "default_title": "CSU 课表抓取助手",
+    "default_popup": "popup.html"
+  },
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "permissions": [
+    "storage",
+    "tabs"
+  ],
+  "host_permissions": [
+    "http://csujwc.its.csu.edu.cn/*",
+    "https://csujwc.its.csu.edu.cn/*",
+    "http://127.0.0.1:5173/*",
+    "http://127.0.0.1:5174/*",
+    "http://localhost:5173/*",
+    "http://localhost:5174/*",
+    "http://127.0.0.1:5176/*",
+    "http://localhost:5176/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "http://csujwc.its.csu.edu.cn/*",
+        "https://csujwc.its.csu.edu.cn/*"
+      ],
+      "js": [
+        "csu-content.js"
+      ],
+      "run_at": "document_idle",
+      "all_frames": true
+    },
+    {
+      "matches": [
+        "http://127.0.0.1:5173/*",
+        "http://127.0.0.1:5174/*",
+        "http://localhost:5173/*",
+        "http://localhost:5174/*",
+        "http://127.0.0.1:5176/*",
+        "http://localhost:5176/*"
+      ],
+      "js": [
+        "app-content.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ]
+}

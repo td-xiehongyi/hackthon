@@ -27,8 +27,11 @@ import {
   type CommunitySnapshot,
 } from './community';
 import { CSU_CA_SCHEDULE_URL, openCsuSchedulePage, parseCsuScheduleText } from './caImport';
+import { readCsuExtensionMessage } from './csuExtensionBridge';
+import { exportScheduleIcal } from './ical';
+import ParkingPanel from '../parking/ParkingPanel';
 
-type TeachingTab = 'schedule' | 'discover' | 'manage';
+type TeachingTab = 'schedule' | 'discover' | 'manage' | 'parking';
 type SaveState = { kind: 'saved' | 'saving' | 'error'; message: string };
 type CommunityState = 'loading' | 'ready' | 'offline' | 'disabled';
 
@@ -49,6 +52,7 @@ type CourseFormState = {
 const TERM_ID = 'current-term';
 const SELECTED_WEEK_KEY = 'csu-campus-selected-week';
 const INTERESTS_KEY = 'csu-campus-schedule-interests';
+const TERM_START_DATE_KEY = 'csu-campus-term-start-monday';
 const range = (count: number) => Array.from({ length: count }, (_, index) => index + 1);
 const weekdays = range(7) as Weekday[];
 const periods = range(DEFAULT_MAX_PERIOD);
@@ -503,33 +507,119 @@ function ImportModal({
   );
 }
 
+function IcalExportModal({
+  courses,
+  onClose,
+  onExport,
+}: {
+  courses: readonly Course[];
+  onClose: () => void;
+  onExport: (semesterStart: string, alarmMinutes: number | null) => void;
+}) {
+  const [semesterStart, setSemesterStart] = useState(() => {
+    try { return window.localStorage.getItem(TERM_START_DATE_KEY) ?? ''; } catch { return ''; }
+  });
+  const [alarm, setAlarm] = useState('15');
+  const [error, setError] = useState('');
+  const dialogRef = useRef<HTMLElement>(null);
+  useDialogFocus(dialogRef, onClose);
+
+  const submit = (event: FormEvent) => {
+    event.preventDefault();
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(semesterStart)) {
+      setError('请填写 YYYY-MM-DD 格式的日期。');
+      return;
+    }
+    try {
+      // The exporter performs the calendar/date validation, including the
+      // Monday check, so the same rule is used by every entry point.
+      const alarmMinutes = alarm === 'none' ? null : Number(alarm);
+      exportScheduleIcal(courses, { semesterStart, alarmMinutes });
+      onExport(semesterStart, alarmMinutes);
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : '无法生成日历文件。');
+    }
+  };
+
+  return (
+    <div className="modal-backdrop" role="presentation">
+      <section ref={dialogRef} className="import-modal ical-export-modal" role="dialog" aria-modal="true" aria-labelledby="ical-export-title" tabIndex={-1}>
+        <header>
+          <div><span className="modal-kicker">日历备份</span><h2 id="ical-export-title">导出到日历应用</h2></div>
+          <button className="icon-button" type="button" aria-label="关闭" onClick={onClose}>×</button>
+        </header>
+        <form onSubmit={submit}>
+          <div className="ical-export-body">
+            <p>会在当前浏览器生成一个 .ics 文件，可导入 Apple 日历、Google 日历或系统日历。课程数据不会上传。</p>
+            <label>
+              <span>第 1 周周一日期 <b>*</b></span>
+              <input data-dialog-initial-focus type="date" required value={semesterStart} onChange={(event) => { setSemesterStart(event.target.value); setError(''); }} />
+              <small>必须是周一，例如 2026-09-07；学校校历未绑定，请按本学期实际日期填写。</small>
+            </label>
+            <label>
+              <span>课前提醒</span>
+              <select value={alarm} onChange={(event) => setAlarm(event.target.value)}>
+                <option value="none">不设置提醒</option>
+                <option value="5">提前 5 分钟</option>
+                <option value="15">提前 15 分钟</option>
+                <option value="30">提前 30 分钟</option>
+              </select>
+            </label>
+            <div className="ical-export-summary"><strong>{courses.length}</strong><span>门课程 · 按实际周次展开</span></div>
+            {error && <p className="form-error" role="alert">{error}</p>}
+          </div>
+          <footer><p>单双周和自定义周次会分别生成对应日期。</p><div><button className="secondary-button" type="button" onClick={onClose}>取消</button><button className="primary-button" type="submit">生成 .ics 文件</button></div></footer>
+        </form>
+      </section>
+    </div>
+  );
+}
+
 function CaImportModal({
   onClose,
   onChooseFile,
   onPreview,
+  extensionStatus,
+  extensionError,
+  onWaitExtension,
 }: {
   onClose: () => void;
   onChooseFile: () => void;
   onPreview: (preview: ImportPreview) => void;
+  extensionStatus: 'idle' | 'waiting' | 'received';
+  extensionError?: string;
+  onWaitExtension: () => void;
 }) {
   const [source, setSource] = useState('');
   const [error, setError] = useState('');
   const dialogRef = useRef<HTMLElement>(null);
   useDialogFocus(dialogRef, onClose);
+  useEffect(() => {
+    if (extensionError) setError(extensionError);
+  }, [extensionError]);
   return (
     <div className="modal-backdrop" role="presentation">
       <section ref={dialogRef} className="import-modal ca-import-modal" role="dialog" aria-modal="true" aria-labelledby="ca-import-title" tabIndex={-1}>
         <header><div><span className="modal-kicker">教务系统辅助导入</span><h2 id="ca-import-title">从 CSU 教务系统带入课表</h2></div><button className="icon-button" type="button" aria-label="关闭" onClick={onClose}>×</button></header>
         <div className="ca-import-body">
-          <p>先打开官方统一认证并由你本人完成登录，再进入网上办事大厅的教务服务，打开“我的课表”。目前学校没有提供可供本页面跨站直接读取的公开接口，因此请复制课表表格内容粘贴到这里，或下载 CSV、TSV、HTML 等课表文件后使用下方的文件导入。我们不会读取或保存账号、密码，也不会代替你登录。</p>
+          <p>先打开官方统一认证并由你本人完成登录，再进入旧版教务课表页（csujwc.its.csu.edu.cn）的“我的课表”。ca.csu.edu.cn/网上办事大厅只负责登录和跳转，浏览器插件不会在这些入口页面运行。目前学校没有提供可供本页面跨站直接读取的公开接口，因此请复制课表表格或已登录页面返回的 JSON 粘贴到这里，或选择 CSV、TSV、HTML、JSON 文件导入。我们不会读取或保存账号、密码，也不会代替你登录。</p>
           <button className="secondary-button" type="button" onClick={() => { if (!openCsuSchedulePage()) setError('浏览器阻止了新标签页，请手动打开教务系统。'); }}>打开 CSU 教务系统</button>
           <a href={CSU_CA_SCHEDULE_URL} target="_blank" rel="noreferrer">打开 https://ca.csu.edu.cn/（官方登录页）</a>
+          <div className="ca-extension-action" role="status" aria-live="polite">
+            <div>
+              <strong>已安装 CSU 浏览器插件？</strong>
+              <small>在教务课表页点击右下角“抓取当前课表”，数据会回到这里并进入同一份导入预览。</small>
+            </div>
+            <button className="secondary-button" type="button" onClick={onWaitExtension}>
+              {extensionStatus === 'waiting' ? '等待插件抓取…' : extensionStatus === 'received' ? '已收到课表' : '等待插件数据'}
+            </button>
+          </div>
           <div className="ca-import-file-action">
             <strong>已经下载课表文件？</strong>
             <button className="secondary-button" type="button" onClick={onChooseFile}>选择 CSV / TSV / HTML / JSON 文件</button>
-            <small>Excel 文件请先在教务系统中另存为 CSV；本页不会上传文件。</small>
+            <small>Excel 文件请先在教务系统中另存为 CSV；JSON 只在本机解析，本页不会上传文件。</small>
           </div>
-          <label><span>粘贴课表内容</span><textarea rows={9} value={source} onChange={(event) => { setSource(event.target.value); setError(''); }} placeholder="可粘贴网页表格、复制的 TSV/CSV 或课程信息文本" /></label>
+          <label><span>粘贴课表内容</span><textarea rows={9} value={source} onChange={(event) => { setSource(event.target.value); setError(''); }} placeholder="可粘贴已登录页面复制的 JSON、网页表格、TSV/CSV 或课程信息文本" /></label>
           {error && <p className="form-error" role="alert">{error}</p>}
         </div>
         <footer><p>解析后仍会进入原有预览、错误检查和追加/替换确认。</p><div><button className="secondary-button" type="button" onClick={onClose}>取消</button><button className="primary-button" type="button" onClick={() => { const preview = parseCsuScheduleText(source, { sourceLabel: 'CSU 教务系统' }); if (preview.status === 'invalid') { setError(preview.errors[0]?.message || '未识别到有效课表。'); return; } onPreview(preview); }}>解析并预览</button></div></footer>
@@ -569,6 +659,9 @@ export default function TeachingPage({ onBack }: { onBack: () => void }) {
   const [importPreview, setImportPreview] = useState<ImportPreview | null>(null);
   const [importFilename, setImportFilename] = useState('');
   const [caImportOpen, setCaImportOpen] = useState(false);
+  const [extensionStatus, setExtensionStatus] = useState<'idle' | 'waiting' | 'received'>('idle');
+  const [extensionError, setExtensionError] = useState('');
+  const [icalExportOpen, setIcalExportOpen] = useState(false);
   const [toast, setToast] = useState('');
   const fileInput = useRef<HTMLInputElement>(null);
   const mainElement = useRef<HTMLElement>(null);
@@ -624,6 +717,34 @@ export default function TeachingPage({ onBack }: { onBack: () => void }) {
     const timer = window.setTimeout(() => setToast(''), 2600);
     return () => window.clearTimeout(timer);
   }, [toast]);
+
+  // The browser extension content script posts only after the student clicks
+  // its button on the CSU page. Keep the listener mounted for the whole
+  // teaching page so returning from the CSU tab does not lose the capture.
+  useEffect(() => {
+    const handleExtensionMessage = (event: MessageEvent<unknown>) => {
+      const message = readCsuExtensionMessage(event, window.location.origin, window);
+      if (!message) return;
+      const preview = parseCsuScheduleText(JSON.stringify(message.payload), {
+        existingCourses: courses,
+        sourceLabel: `CSU 浏览器插件${message.payload.pageTitle ? ` · ${message.payload.pageTitle}` : ''}`,
+      });
+      setExtensionStatus('received');
+      if (preview.status === 'invalid') {
+        setExtensionError(preview.errors[0]?.message || '插件抓取到了数据，但没有识别出有效课程。');
+        setCaImportOpen(true);
+        setToast('插件数据未通过课表检查，请查看提示后重试。');
+        return;
+      }
+      setExtensionError('');
+      setImportFilename('CSU 浏览器插件课表');
+      setImportPreview(preview);
+      setCaImportOpen(false);
+      setToast(`已从浏览器插件读取 ${preview.acceptedRows} 条课程，等待确认导入。`);
+    };
+    window.addEventListener('message', handleExtensionMessage);
+    return () => window.removeEventListener('message', handleExtensionMessage);
+  }, [courses]);
 
   const persistCourses = (next: Course[], successMessage: string) => {
     setSaveState({ kind: 'saving', message: '正在保存…' });
@@ -703,7 +824,16 @@ export default function TeachingPage({ onBack }: { onBack: () => void }) {
       return;
     }
     try {
-      const text = await file.text();
+      // Older CSU exports are commonly GBK/GB18030 encoded. Decode UTF-8
+      // strictly first so a malformed byte sequence cannot turn into silent
+      // replacement characters, then fall back to the Chinese legacy codec.
+      const bytes = await file.arrayBuffer();
+      let text: string;
+      try {
+        text = new TextDecoder('utf-8', { fatal: true }).decode(bytes);
+      } catch {
+        text = new TextDecoder('gb18030').decode(bytes);
+      }
       const preview = parseCsuScheduleText(text, {
         existingCourses: courses,
         sourceLabel: file.name,
@@ -715,7 +845,7 @@ export default function TeachingPage({ onBack }: { onBack: () => void }) {
       setImportFilename(file.name);
       setImportPreview(preview);
     } catch {
-      setToast('无法读取文件，请使用 UTF-8 编码的 CSV、TSV、HTML 或 JSON。');
+      setToast('无法读取文件，请检查 CSV、TSV、HTML 或 JSON 编码。');
     } finally {
       if (fileInput.current) fileInput.current.value = '';
     }
@@ -762,6 +892,22 @@ export default function TeachingPage({ onBack }: { onBack: () => void }) {
     triggerDownload('\uFEFF课程名称,星期,开始节数,结束节数,老师,地点,周数,兴趣标签\r\n', 'WakeUp-兼容课表模板.csv');
   };
 
+  const handleIcalExport = (semesterStart: string, alarmMinutes: number | null) => {
+    try {
+      const ical = exportScheduleIcal(courses, {
+        semesterStart,
+        alarmMinutes,
+        calendarName: '中南大学像素校园课表',
+      });
+      try { window.localStorage.setItem(TERM_START_DATE_KEY, semesterStart); } catch { /* storage is optional */ }
+      triggerDownload(ical, '我的课表.ics', 'text/calendar;charset=utf-8');
+      setIcalExportOpen(false);
+      setToast('日历文件已生成，可导入系统日历。');
+    } catch (reason) {
+      setToast(reason instanceof Error ? reason.message : '无法生成日历文件。');
+    }
+  };
+
   return (
     <main ref={mainElement} className="teaching-page" tabIndex={-1}>
       <header className="teaching-header">
@@ -786,8 +932,9 @@ export default function TeachingPage({ onBack }: { onBack: () => void }) {
           <button type="button" aria-current={tab === 'schedule' ? 'page' : undefined} className={tab === 'schedule' ? 'active' : ''} onClick={() => setTab('schedule')}><span aria-hidden="true">▦</span>个人课表</button>
           <button type="button" aria-current={tab === 'discover' ? 'page' : undefined} className={tab === 'discover' ? 'active' : ''} onClick={() => setTab('discover')}><span aria-hidden="true">✦</span>蹭课发现</button>
           <button type="button" aria-current={tab === 'manage' ? 'page' : undefined} className={tab === 'manage' ? 'active' : ''} onClick={() => setTab('manage')}><span aria-hidden="true">≡</span>课表管理</button>
+          <button type="button" aria-current={tab === 'parking' ? 'page' : undefined} className={tab === 'parking' ? 'active' : ''} onClick={() => setTab('parking')}><span aria-hidden="true">▣</span>停车场</button>
         </nav>
-        <WeekPicker week={week} onChange={setWeek} />
+        {tab !== 'parking' && <WeekPicker week={week} onChange={setWeek} />}
       </div>
 
       {tab === 'schedule' && (
@@ -934,6 +1081,7 @@ export default function TeachingPage({ onBack }: { onBack: () => void }) {
               <button className="secondary-button" type="button" onClick={() => fileInput.current?.click()}>导入 CSV</button>
               <button className="secondary-button" type="button" onClick={() => setCaImportOpen(true)}>从教务系统导入</button>
               <button className="secondary-button" type="button" disabled={courses.length === 0} onClick={() => triggerDownload(exportScheduleCsv(courses), '我的课表.csv')}>导出备份</button>
+              <button className="secondary-button" type="button" disabled={courses.length === 0} onClick={() => setIcalExportOpen(true)}>导出日历</button>
             </div>
           </div>
 
@@ -963,6 +1111,7 @@ export default function TeachingPage({ onBack }: { onBack: () => void }) {
               <ol><li><span>1</span>选择 CSV，或打开教务系统</li><li><span>2</span>查看错误与未匹配地点</li><li><span>3</span>确认追加或替换</li></ol>
               <button className="primary-button full-button" type="button" onClick={() => fileInput.current?.click()}>选择 CSV 文件</button>
               <button className="secondary-button full-button" type="button" onClick={() => setCaImportOpen(true)}>从 CSU 教务系统导入</button>
+              <button className="secondary-button full-button" type="button" disabled={courses.length === 0} onClick={() => setIcalExportOpen(true)}>导出 .ics 日历</button>
               <button className="text-button" type="button" onClick={downloadTemplate}>下载空白模板</button>
               <div className="browser-storage-note"><i /> <div><strong>浏览器自动保存</strong><p>个人课表保存在当前浏览器。换设备或清理网站数据前，请先导出备份。</p></div></div>
             </aside>
@@ -970,10 +1119,20 @@ export default function TeachingPage({ onBack }: { onBack: () => void }) {
         </section>
       )}
 
+      {tab === 'parking' && <ParkingPanel onBack={() => setTab('schedule')} pollLive />}
+
       <input ref={fileInput} className="visually-hidden" type="file" accept=".csv,.tsv,.txt,.html,.htm,.json,text/csv,text/tab-separated-values,text/plain,text/html,application/json" onChange={(event) => void handleFile(event.target.files?.[0])} />
       {editing !== undefined && <CourseFormModal editing={editing} onClose={() => setEditing(undefined)} onSubmit={handleCourseSubmit} />}
       {importPreview && <ImportModal preview={importPreview} filename={importFilename} onClose={() => setImportPreview(null)} onConfirm={confirmImport} />}
-      {caImportOpen && <CaImportModal onClose={() => setCaImportOpen(false)} onChooseFile={() => fileInput.current?.click()} onPreview={acceptCaPreview} />}
+      {icalExportOpen && <IcalExportModal courses={courses} onClose={() => setIcalExportOpen(false)} onExport={handleIcalExport} />}
+      {caImportOpen && <CaImportModal
+        onClose={() => setCaImportOpen(false)}
+        onChooseFile={() => fileInput.current?.click()}
+        onPreview={acceptCaPreview}
+        extensionStatus={extensionStatus}
+        extensionError={extensionError}
+        onWaitExtension={() => { setExtensionError(''); setExtensionStatus('waiting'); setToast('请切换到 CSU 课表页并点击浏览器插件的抓取按钮。'); }}
+      />}
       {toast && <div className="toast" role="status"><span>✓</span>{toast}</div>}
     </main>
   );

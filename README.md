@@ -86,7 +86,7 @@ npm run dev -- --port 5176
 |---|---|
 | `npm test` | 地图哈希、几何、连通、移动、角色 manifest、会话、定位与 C/D 回归 |
 | `npm run build` | 类型检查与生产构建 |
-| `npm run test:e2e` | Chrome 浏览器端到端验证，自动启停 5175/8788，使用独立 `.cache/e2e-*` 数据 |
+| `npm run test:e2e` | Chrome 浏览器端到端验证，自动启停 5175/8788，使用独立 `.cache/e2e-*`、课池和群聊测试数据 |
 | `npm run map:annotate` | 从 v20 提取道路与草地，应用独立通行修正规则，保留已有地点/楼座/安全点等数据 |
 | `npm run preview` | 预览 `dist/`；需同时运行数据服务，开发前端应先停止 |
 
@@ -123,9 +123,12 @@ npm run dev -- --port 5176
 教学楼页的“从教务系统导入”会打开官方统一认证入口
 [`https://ca.csu.edu.cn/`](https://ca.csu.edu.cn/)。导入是由学生在官方页面完成登录后，将已经显示的课表交给本页解析，流程如下：
 
-1. 点击“打开 CSU 教务系统”，在新标签页中由本人完成统一认证（包括验证码、滑块或学校要求的其他验证），进入网上办事大厅/教务服务中的“我的课表”。
-2. 在课表页面复制表格，或下载课表文件。教学楼页可粘贴 HTML 表格、TSV/CSV、Markdown 表格、CSU 导出器常见的 JSON 课程数据和常见的课程文本，也可直接选择 `.csv`、`.tsv`、`.txt`、`.html`、`.htm` 或 `.json` 文件；Excel 文件请先另存为 CSV。
+1. 点击“打开 CSU 教务系统”，在新标签页中由本人完成统一认证（包括验证码、滑块或学校要求的其他验证）。登录后请继续进入旧版教务课表页（`csujwc.its.csu.edu.cn`）的“我的课表”；`ca.csu.edu.cn`/网上办事大厅只负责统一认证和跳转，浏览器扩展不会在这些入口页面运行。
+2. 在课表页面复制表格，或下载课表文件。教学楼页可粘贴 HTML 表格、TSV/CSV、Markdown 表格、CSU 导出器常见的 JSON 课程数据和常见的课程文本，也可直接选择 `.csv`、`.tsv`、`.txt`、`.html`、`.htm` 或 `.json` 文件；Excel 文件请先另存为 CSV。旧版教务的 `table#kbtable` 网格若复制后没有表头，优先使用下方扩展在旧课表页点击抓取。
 3. 回到项目，粘贴内容或选择文件，点击“解析并预览”。系统会沿用普通 CSV 导入的错误检查、周次和单双周解析、地点提示以及“追加/替换”确认，确认后才写入个人课表。
+
+如果旧版教务课表页没有下载按钮，可以安装项目自带的本地浏览器扩展
+[CSU 课表抓取助手](tools/csu-schedule-extension/README.md)。扩展只在你点击按钮后读取已显示的课表，并把标准化结果送回本页的同一份导入预览；不会自动登录或读取密码、Cookie。扩展目录可直接在 Chrome/Edge 的“加载已解压的扩展程序”中选择。
 
 这是“辅助导入”，不是后台爬虫：
 
@@ -136,3 +139,28 @@ npm run dev -- --port 5176
 
 
 课表支持课程录入、周次/单双周、CSV 导入导出与社区蹭课发现，详见[课表与社区课池](docs/05_课表与社区课池.md)。
+
+
+## 升华公寓楼栋群聊
+
+校园左侧栏提供“升华公寓群聊”按钮，地图“宿”标记也可进入；支持 `#dormitory` 深链接。群聊打开时暂停角色输入，返回校园后保留原位置；地点浮层打开时禁用群聊入口，先返回校园再切换。进入后可以选择 1–8 栋，加入对应楼栋群聊，修改群聊昵称并发送文字消息；选择、加入状态和本机消息会保存在浏览器中。开发服务同时提供本机共享接口（`GET/POST /api/dorm-chat/:buildingId/messages`），因此在同一台电脑的不同浏览器中也能看到已保存的群聊消息；服务不可用时页面会退回本地体验，不会阻塞浏览。
+
+楼栋侧栏与消息区的交互结构参考了 GitHub 上的 [ChatUI Kit React](https://github.com/chatscope/chat-ui-kit-react)（MIT）和 [React Chat Elements](https://github.com/Detaysoft/react-chat-elements)（MIT）；楼栋选项的数据驱动和筛选思路参考 [UCF/campus-map-react](https://github.com/UCF/campus-map-react)（MIT）。项目没有直接引入这些依赖，保留现有像素校园视觉，并避免绑定第三方云聊天服务。地图上的升华公寓标记是发现入口，具体楼栋坐标仍待现场核验。
+
+## 日历导出
+
+在“课表管理”中点击“导出日历”，填写本学期第 1 周周一的实际日期即可生成 `.ics` 文件。文件在浏览器本地生成，可导入 Apple 日历、Google 日历或系统日历；单双周和自定义周次会展开成对应日期，并可选择课前提醒。项目不会把个人课表上传到第三方日历服务。作息时间和数据格式的 GitHub 调研记录见 [docs/06_GitHub参考与许可证.md](docs/06_GitHub参考与许可证.md)。
+
+## 停车场 / 充电位状态
+
+教学楼页的“停车场”窗口会读取随附二维码照片识别出的 10 个威胜设备号，并按照片顺序生成端口按钮。卡片颜色区分“未占用”和“占用中”，点开后可查看完整二维码内容、设备编号和剩余时间。二维码本身不包含实时剩余时间，因此默认状态是照片快照与演示倒计时，页面会持续标注“非实时”。
+
+前端通过同源 `GET /api/parking/status` 轮询状态。Vite 插件在没有上游配置时返回 `live:false` 的快照；接入正式平台时只在服务端设置环境变量，不要把令牌、Cookie 或支付宝授权信息写入前端或 Git：
+
+```bash
+PARKING_STATUS_UPSTREAM_URL=https://your-approved-status-endpoint.example/api/status \
+PARKING_STATUS_TOKEN='server-only-token' \
+npm run dev
+```
+
+上游响应需包含完整 10 个 `deviceNumber`、`status`（`available`/`occupied`）和可选 `remainingSeconds`；不完整或不可用的响应会安全回退到 `live:false` 快照。也可以用 `PARKING_STATUS_JSON_FILE` 指向本机 JSON 文件做联调。

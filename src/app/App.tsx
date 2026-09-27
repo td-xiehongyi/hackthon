@@ -7,6 +7,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import TeachingPage from '../features/teaching/TeachingPage';
+import DormitoryPage from '../features/dormitory/DormitoryPage';
 import MapViewport from '../game/MapViewport';
 import type { MapAnnotation } from '../shared/contracts';
 import type { CampusMapScene } from '../game/CampusMapScene';
@@ -24,17 +25,17 @@ export default function App() {
     saveCampusProfile(next);
     setProfile(next);
   };
-  const [entered, setEntered] = useState(() => window.location.hash === '#teaching');
+  const [entered, setEntered] = useState(() => ['#teaching', '#dormitory'].includes(window.location.hash));
   const [character, setCharacter] = useState(readCharacterChoice);
   const [mapCharacter, setMapCharacter] = useState(character);
-  const [mapStarted, setMapStarted] = useState(() => window.location.hash === '#teaching');
+  const [mapStarted, setMapStarted] = useState(() => ['#teaching', '#dormitory'].includes(window.location.hash));
   const selectCharacter = (choice: CharacterChoice) => {
     setCharacter(choice);
     saveCharacterChoice(choice);
   };
-  const [page, setPage] = useState<'campus' | 'teaching'>(() => window.location.hash === '#teaching' ? 'teaching' : 'campus');
+  const [page, setPage] = useState<'campus' | 'teaching' | 'dormitory'>(() => window.location.hash === '#teaching' ? 'teaching' : window.location.hash === '#dormitory' ? 'dormitory' : 'campus');
   const returnToCampus = useCallback(() => {
-    if (window.history.state?.csuView === 'teaching') {
+    if (['teaching', 'dormitory'].includes(window.history.state?.csuView)) {
       window.history.back();
       return;
     }
@@ -43,7 +44,7 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    const handleHistory = () => setPage(window.location.hash === '#teaching' ? 'teaching' : 'campus');
+    const handleHistory = () => setPage(window.location.hash === '#teaching' ? 'teaching' : window.location.hash === '#dormitory' ? 'dormitory' : 'campus');
     window.addEventListener('popstate', handleHistory);
     return () => window.removeEventListener('popstate', handleHistory);
   }, []);
@@ -55,6 +56,12 @@ export default function App() {
   const mapBlocked = !entered || page !== 'campus' || placeOpen || returnError !== null;
   const blockedRef = useRef(mapBlocked);
   blockedRef.current = mapBlocked;
+  const openDormitory = useCallback(() => {
+    if (blockedRef.current) return;
+    mapScene.current?.setSuspended(true);
+    window.history.pushState({ csuView: 'dormitory' }, '', '#dormitory');
+    setPage('dormitory');
+  }, []);
   const registerScene = useCallback((scene: CampusMapScene | null) => {
     mapScene.current = scene;
     scene?.setSuspended(blockedRef.current);
@@ -94,11 +101,12 @@ export default function App() {
         {/* 地图探索页：功能页打开时保留地图状态并暂停探索，因此保持挂载。 */}
         <div>
           {returnError && <p className="explorer-return-error" role="alert">{returnError}</p>}
-          {mapStarted && <MapViewport key={mapCharacter.id} characterChoice={mapCharacter} profile={profile} active={!mapBlocked} placeOpen={placeOpen} onReturnHome={() => setEntered(false)} registerScene={registerScene} onRequestOpen={requestOpen} onAnnotation={setAnnotation} />}
+          {mapStarted && <MapViewport key={mapCharacter.id} characterChoice={mapCharacter} profile={profile} active={!mapBlocked} placeOpen={placeOpen} onOpenDormitory={openDormitory} onReturnHome={() => setEntered(false)} registerScene={registerScene} onRequestOpen={requestOpen} onAnnotation={setAnnotation} />}
         </div>
       </PlaceHost>
     </main>
     {page === 'teaching' && <TeachingPage onBack={returnToCampus} />}
+    {page === 'dormitory' && <DormitoryPage onBack={returnToCampus} />}
     </>
   );
 }

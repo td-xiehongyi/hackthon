@@ -119,6 +119,52 @@ describe('CSU CA 教务课表导入适配器', () => {
     expect(preview.courses[0]).toMatchObject({ name: '高等数学', weekday: 1, startPeriod: 7, endPeriod: 8 });
   });
 
+  test('兼容插件标准化负载和带空格的标题字段', () => {
+    const payload = JSON.stringify({
+      source: 'csu-browser-extension',
+      courses: [{
+        title: '课程名称： 机器学习导论\n周次： 1-16(周)\n星期： 星期二\n节次： 0708节\n上课教师： 周老师\n上课地点： A座203',
+        name: '机器学习导论',
+        weekday: 2,
+        startPeriod: 7,
+        endPeriod: 8,
+        weeks: '1-16(周)',
+        location: 'A座203',
+      }],
+    });
+    const preview = parseCaScheduleText(payload);
+    expect(preview.status).toBe('ready');
+    expect(preview.courses[0]).toMatchObject({
+      name: '机器学习导论', weekday: 2, startPeriod: 7, endPeriod: 8,
+      teacher: '周老师', location: 'A座203',
+    });
+  });
+
+  test('兼容 GitHub AISchedule/WakeUp 风格的 day、sections、position 字段', () => {
+    const payload = JSON.stringify({ courses: [{
+      name: '人工智能导论',
+      teacher: '周老师',
+      position: '新校区 A203',
+      day: 2,
+      weeks: [1, 3, 5, 7],
+      sections: [7, 8],
+      tags: ['人工智能', '计算机'],
+    }] });
+    const preview = parseCaScheduleText(payload);
+
+    expect(preview.status).toBe('ready');
+    expect(preview.acceptedRows).toBe(1);
+    expect(preview.courses[0]).toMatchObject({
+      name: '人工智能导论',
+      weekday: 2,
+      startPeriod: 7,
+      endPeriod: 8,
+      weeks: [1, 3, 5, 7],
+      location: '新校区 A203',
+      tags: ['人工智能', '计算机'],
+    });
+  });
+
   test('只打开官方 CA 地址，不附加账号、密码或查询参数', () => {
     let opened = '';
     expect(openCsuSchedulePage((url) => {

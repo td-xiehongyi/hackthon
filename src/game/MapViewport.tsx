@@ -14,12 +14,13 @@ interface MapViewportProps {
   placeOpen?: boolean;
   profile?: CampusProfile | null;
   onReturnHome: () => void;
+  onOpenDormitory?: () => void;
   registerScene?: (scene: CampusMapScene | null) => void;
   onRequestOpen?: (context: OpenContext) => void;
   onAnnotation?: (annotation: MapAnnotation | null) => void;
 }
 
-export default function MapViewport({ characterChoice = CHARACTER_CHOICES[0], active = true, placeOpen = false, profile = null, onReturnHome, registerScene, onRequestOpen, onAnnotation }: MapViewportProps) {
+export default function MapViewport({ characterChoice = CHARACTER_CHOICES[0], active = true, placeOpen = false, profile = null, onReturnHome, onOpenDormitory, registerScene, onRequestOpen, onAnnotation }: MapViewportProps) {
   const host = useRef<HTMLDivElement>(null);
   const scene = useRef<CampusMapScene | null>(null);
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
@@ -43,6 +44,7 @@ export default function MapViewport({ characterChoice = CHARACTER_CHOICES[0], ac
       onCollisionSource: (source, detail) => mounted && setCollision({ source, detail }),
       onTarget: (value) => mounted && setTarget(value),
       onRequestOpen,
+      onOpenDormitory,
       onAnnotation,
     }, 'character', characterChoice);
     scene.current = map;
@@ -73,7 +75,7 @@ export default function MapViewport({ characterChoice = CHARACTER_CHOICES[0], ac
       registerScene?.(null);
       game?.destroy(true);
     };
-  }, [registerScene, onRequestOpen, onAnnotation, characterChoice]);
+  }, [registerScene, onRequestOpen, onAnnotation, onOpenDormitory, characterChoice]);
 
   useEffect(() => {
     if (!active) return;
@@ -91,7 +93,7 @@ export default function MapViewport({ characterChoice = CHARACTER_CHOICES[0], ac
 
   return (
     <div className={`campus-explorer${active ? '' : ' is-paused'}`}>
-      <ExplorerSidebar character={character} choice={characterChoice} profile={profile} onReturnHome={onReturnHome} returnHomeDisabled={placeOpen} />
+      <ExplorerSidebar character={character} choice={characterChoice} profile={profile} onReturnHome={onReturnHome} returnHomeDisabled={placeOpen} onOpenDormitory={onOpenDormitory} dormitoryDisabled={!active} />
       <section className="explorer-map" aria-label="校园探索地图" inert={!active}>
         <div ref={host} className="map-canvas" />
         <span role="status" aria-label="地图加载状态" className="visually-hidden">{ready ? '地图已加载' : status === 'loading' ? '正在加载地图…' : '地图未加载'}</span>
