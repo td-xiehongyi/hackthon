@@ -25,6 +25,7 @@ describe('CSU DevTools Console 提取器', () => {
     expect(source).toContain("(() => {");
     expect(source).toContain('querySelectorAll');
     expect(source).toContain('downloadCsv');
+    expect(source).toContain('csujwc\\.its\\.csu\\.edu\\.cn');
     expect(source).not.toMatch(/fetch\s*\(|XMLHttpRequest|document\.cookie|localStorage|sessionStorage/);
   });
 
