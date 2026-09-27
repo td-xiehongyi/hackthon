@@ -1,0 +1,42 @@
+{
+  "characterId": "yellow-belly-creature",
+  "version": "0.3.0-rc.1",
+  "stage": "E3",
+  "status": "integrated-candidate",
+  "date": "2026-09-27",
+  "scale": 0.11,
+  "sourceDirectory": "assets/characters/yellow-belly-creature/e3/",
+  "files": [
+    {
+      "name": "walk-cycle.png",
+      "sha256": "2e322a883be420d0c588d744ed5a2740cb925911d5838473df2c10da8d3e9645"
+    },
+    {
+      "name": "ride-cycle.png",
+      "sha256": "94f236c0ed98c46de3c85e97aff4f60058af82e25e91da185098d9f0dd100afd"
+    },
+    {
+      "name": "manifest.json",
+      "sha256": "dd5c199045b9dbec8930b7a8cdd81e8f29101f3ff25f98c1a2ef94b6dba6b296"
+    },
+    {
+      "name": "SOURCE.md",
+      "sha256": "4d3711f94612b06cb9234e292b861913efa6e385feb74551198f2c2c0ae3848c"
+    },
+    {
+      "name": "PROMPTS.md",
+      "sha256": "e0b47269b68d553d1ee1221c93ad3bddb0b52a583b14a591074b7dc6c876b523"
+    }
+  ],
+  "checks": {
+    "assetUnitTests": "12/12",
+    "animationPreview": "12/12",
+    "homeBrowserTests": "2/2",
+    "build": "passed"
+  },
+  "limitations": [
+    "Near-opaque interiors and faint colored/low-alpha edges remain.",
+    "Gait and wheel motion need art polish.",
+    "Full-map collision and real building/tree occlusion not accepted."
+  ]
+}

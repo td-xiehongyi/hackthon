@@ -5,7 +5,7 @@ import { validateManifest } from '@/game/character/manifest';
 import type { CharacterManifest } from '@/shared/contracts';
 
 describe('新增首页角色的运行素材', () => {
-  for (const [id, stage] of [['photo-olive-student', 'e4'], ['photo-point-cat', 'e3']]) {
+  for (const [id, stage] of [['photo-olive-student', 'e4'], ['photo-point-cat', 'e3'], ['yellow-belly-creature', 'e3']]) {
     test(`${id} 使用完整已选定素材，首页头像与向下待机一致`, () => {
       const choice = CHARACTER_CHOICES.find(c => c.id === id);
       expect(choice, '角色必须可从首页选择').toBeDefined();
@@ -25,7 +25,7 @@ describe('新增首页角色的运行素材', () => {
       const idle = manifest.clips.find(c => c.mode === 'walk' && c.facing === 'down' && c.action === 'idle')!.frames[0];
       const sheet = manifest.sheets.find(s => s.id === idle.sheetId)!;
       expect(choice!.preview).toEqual({ sheet: sheet.url, sheetWidth: sheet.width, sheetHeight: sheet.height, ...idle.rect });
-      expect(choice!.scale).toBe(0.1);
+      expect(choice!.scale).toBe(id === 'yellow-belly-creature' ? 0.11 : 0.1);
       if (id === 'photo-olive-student') {
         for (const facing of ['left', 'right']) {
           expect(manifest.clips.find(c => c.mode === 'walk' && c.facing === facing && c.action === 'move')!.frames.every(f => f.sheetId === 'walk-sides-v2')).toBe(true);

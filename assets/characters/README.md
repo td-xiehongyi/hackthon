@@ -2,7 +2,7 @@
 
 所有角色从这里查找和维护。固定角色 ID 对应一个目录，E1、E2 等阶段放在同一角色目录里。
 
-更新日期：2026-09-27。当前登记 **6 个角色**，其中 4 个人物照片角色、1 个猫照片角色、1 个临时测试角色。E1/E2 是制作阶段，不计为不同角色。
+更新日期：2026-09-27。当前登记 **7 个角色**，其中 4 个人物照片角色、1 个猫照片角色、1 个黄色圆肚角色、1 个临时测试角色。E1/E2 是制作阶段，不计为不同角色。
 
 ## 角色清单
 
@@ -14,6 +14,7 @@
 | [photo-point-cat](photo-point-cat/README.md) | 照片蓝眼长毛猫 | E3 rc.1 已接入首页；选角、移动及骑行检查通过，美术问题保留 | [接入记录](../../output/character-home-integration/接入记录.md) · [候选包 ZIP](photo-point-cat/e3/photo-point-cat-0.3.0-rc.1.zip) | 是，候选试走 |
 | [photo-olive-student](photo-olive-student/README.md) | 圆框眼镜男生 | E4 左右步态已确认；rc.2 已接入首页，完整美术及遮挡未验收 | [rc.2 候选包](photo-olive-student/e4/photo-olive-student-0.3.0-rc.2.zip) · [接入记录](../../output/character-home-integration/接入记录.md) | 是，候选试走 |
 | [temp-prototype-blob](temp-prototype-blob/README.md) | 临时测试角色 | 临时 16 状态；骑行以跑动顶替，无真实车辆 | [原始素材包](temp-prototype-blob/runtime/) · [精灵图](temp-prototype-blob/runtime/character-sheet.png) | 是，临时原型 |
+| [yellow-belly-creature](yellow-belly-creature/README.md) | 黄肚肚 | E3 rc.1 已接入首页；选角、记忆、移动及骑行检查通过，美术问题保留 | [接入记录](yellow-belly-creature/e3/SOURCE.md) · [候选包 ZIP](yellow-belly-creature/e3/yellow-belly-creature-0.3.0-rc.1.zip) | 是，候选试走 |
 
 每个角色的 README 是该角色当前状态入口。详细检查依据保存在对应阶段的 SOURCE.md、检查报告和图片中。清单中的“制作完成”不能替代“已确认”“已接入”或“验收通过”。
 

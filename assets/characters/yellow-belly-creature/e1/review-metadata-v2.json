@@ -1,0 +1,124 @@
+{
+  "stage": "E1",
+  "status": "awaiting-appearance-review",
+  "characterId": "yellow-belly-creature",
+  "image": "character-views-v2.png",
+  "width": 1536,
+  "height": 1024,
+  "anchorStatus": "candidate-visual-estimates-not-animation-validated",
+  "candidateWalkWorldHeight": 30,
+  "frames": [
+    {
+      "mode": "walk",
+      "facing": "down",
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 384,
+        "height": 512
+      },
+      "anchor": {
+        "x": 184,
+        "y": 478
+      }
+    },
+    {
+      "mode": "walk",
+      "facing": "left",
+      "rect": {
+        "x": 384,
+        "y": 0,
+        "width": 384,
+        "height": 512
+      },
+      "anchor": {
+        "x": 197,
+        "y": 487
+      }
+    },
+    {
+      "mode": "walk",
+      "facing": "right",
+      "rect": {
+        "x": 768,
+        "y": 0,
+        "width": 384,
+        "height": 512
+      },
+      "anchor": {
+        "x": 186,
+        "y": 487
+      }
+    },
+    {
+      "mode": "walk",
+      "facing": "up",
+      "rect": {
+        "x": 1152,
+        "y": 0,
+        "width": 384,
+        "height": 512
+      },
+      "anchor": {
+        "x": 199,
+        "y": 473
+      }
+    },
+    {
+      "mode": "ride",
+      "facing": "down",
+      "rect": {
+        "x": 0,
+        "y": 512,
+        "width": 340,
+        "height": 512
+      },
+      "anchor": {
+        "x": 184,
+        "y": 462
+      }
+    },
+    {
+      "mode": "ride",
+      "facing": "left",
+      "rect": {
+        "x": 340,
+        "y": 512,
+        "width": 428,
+        "height": 512
+      },
+      "anchor": {
+        "x": 210,
+        "y": 454
+      }
+    },
+    {
+      "mode": "ride",
+      "facing": "right",
+      "rect": {
+        "x": 768,
+        "y": 512,
+        "width": 428,
+        "height": 512
+      },
+      "anchor": {
+        "x": 215,
+        "y": 454
+      }
+    },
+    {
+      "mode": "ride",
+      "facing": "up",
+      "rect": {
+        "x": 1196,
+        "y": 512,
+        "width": 340,
+        "height": 512
+      },
+      "anchor": {
+        "x": 156,
+        "y": 468
+      }
+    }
+  ]
+}

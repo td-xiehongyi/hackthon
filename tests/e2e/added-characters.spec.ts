@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-test('男生修订版与猫可选择、记忆、切换进入地图并步行骑行', async ({ page }, testInfo) => {
+test('男生修订版、猫与黄肚肚可选择、记忆、切换进入地图并步行骑行', async ({ page }, testInfo) => {
   const errors: string[] = [];
   const failedAssets: string[] = [];
   const loadedAssets = new Set<string>();
@@ -11,7 +11,7 @@ test('男生修订版与猫可选择、记忆、切换进入地图并步行骑�
     else loadedAssets.add(new URL(response.url()).pathname);
   });
   await page.goto('/');
-  for (const [id, name] of [['photo-olive-student', '圆框眼镜男生'], ['photo-point-cat', '照片蓝眼长毛猫']]) {
+  for (const [id, name] of [['photo-olive-student', '圆框眼镜男生'], ['photo-point-cat', '照片蓝眼长毛猫'], ['yellow-belly-creature', '黄肚肚']]) {
     const button = page.getByRole('button', { name: `选择${name}`, exact: true });
     await button.click();
     await expect(button).toHaveAttribute('aria-pressed', 'true');
@@ -53,21 +53,26 @@ test('男生修订版与猫可选择、记忆、切换进入地图并步行骑�
     await expect(button).toHaveAttribute('aria-pressed', 'true');
   }
   await page.reload();
-  await expect(page.getByRole('button', { name: '选择照片蓝眼长毛猫', exact: true })).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByRole('button', { name: '选择黄肚肚', exact: true })).toHaveAttribute('aria-pressed', 'true');
   expect(failedAssets).toEqual([]);
   expect(errors).toEqual([]);
 });
 
-test('窄屏的两个新角色可点选及箭头切换，没有重复猫卡或横向溢出', async ({ page }, testInfo) => {
+test('窄屏七个角色可点选及箭头切换，没有重复猫卡或横向溢出', async ({ page }, testInfo) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
-  await expect(page.getByRole('group', { name: '可选角色' }).getByRole('button')).toHaveCount(6);
+  await expect(page.getByRole('group', { name: '可选角色' }).getByRole('button')).toHaveCount(7);
   await expect(page.locator('.start-character-pending')).toHaveCount(0);
   await page.getByRole('button', { name: '选择圆框眼镜男生', exact: true }).click();
   await page.getByRole('button', { name: '下一个角色', exact: true }).click();
   await expect(page.getByRole('button', { name: '选择照片蓝眼长毛猫', exact: true })).toHaveAttribute('aria-pressed', 'true');
   await page.getByRole('button', { name: '上一个角色', exact: true }).click();
   await expect(page.getByRole('button', { name: '选择圆框眼镜男生', exact: true })).toHaveAttribute('aria-pressed', 'true');
+  await page.getByRole('button', { name: '选择黄肚肚', exact: true }).click();
+  await page.getByRole('button', { name: '上一个角色', exact: true }).click();
+  await expect(page.getByRole('button', { name: '选择照片蓝眼长毛猫', exact: true })).toHaveAttribute('aria-pressed', 'true');
+  await page.getByRole('button', { name: '下一个角色', exact: true }).click();
+  await expect(page.getByRole('button', { name: '选择黄肚肚', exact: true })).toHaveAttribute('aria-pressed', 'true');
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await page.screenshot({ path: testInfo.outputPath('home-mobile.png'), fullPage: true });
 });

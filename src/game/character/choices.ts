@@ -20,6 +20,8 @@ export const CHARACTER_CHOICES: readonly CharacterChoice[] = [
     preview: { sheet: 'walk-cycle.png', sheetWidth: 1254, sheetHeight: 1254, x: 313, y: 0, width: 314, height: 317 } },
   { id: 'photo-point-cat', name: '照片蓝眼长毛猫', note: '动画候选 · 待精修', dir: '/characters/photo-point-cat', scale: 0.1, hue: 0,
     preview: { sheet: 'walk-cycle.png', sheetWidth: 1312, sheetHeight: 1199, x: 0, y: 0, width: 335, height: 299 } },
+  { id: 'yellow-belly-creature', name: '黄肚肚', note: '圆肚伙伴 · 步行与骑行', dir: '/characters/yellow-belly-creature', scale: 0.11, hue: 0,
+    preview: { sheet: 'walk-cycle.png', sheetWidth: 1254, sheetHeight: 1254, x: 314, y: 0, width: 313, height: 313 } },
   { id: 'temp-prototype-blob', name: '临时测试角色', note: '临时原型 · 非正式人物', dir: '/characters/temp-prototype', scale: 1, hue: 0,
     preview: { sheet: 'character-sheet.png', sheetWidth: 240, sheetHeight: 176, x: 0, y: 0, width: 20, height: 22 } },
 ];

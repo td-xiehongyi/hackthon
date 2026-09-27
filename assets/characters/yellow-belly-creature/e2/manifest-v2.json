@@ -1,0 +1,708 @@
+{
+  "schemaVersion": 1,
+  "characterId": "yellow-belly-creature",
+  "sheets": [
+    {
+      "id": "walk",
+      "url": "walk-cycle-v2.png",
+      "width": 1254,
+      "height": 1254
+    },
+    {
+      "id": "ride",
+      "url": "ride-cycle-v2.png",
+      "width": 1230,
+      "height": 1278
+    }
+  ],
+  "clips": [
+    {
+      "mode": "walk",
+      "facing": "down",
+      "action": "idle",
+      "loop": true,
+      "frames": [
+        {
+          "sheetId": "walk",
+          "rect": {
+            "x": 314,
+            "y": 0,
+            "width": 313,
+            "height": 313
+          },
+          "anchor": {
+            "x": 160,
+            "y": 302
+          },
+          "durationMs": 700
+        }
+      ]
+    },
+    {
+      "mode": "walk",
+      "facing": "down",
+      "action": "move",
+      "loop": true,
+      "frames": [
+        {
+          "sheetId": "walk",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 314,
+            "height": 313
+          },
+          "anchor": {
+            "x": 166,
+            "y": 301
+          },
+          "durationMs": 150
+        },
+        {
+          "sheetId": "walk",
+          "rect": {
+            "x": 314,
+            "y": 0,
+            "width": 313,
+            "height": 313
+          },
+          "anchor": {
+            "x": 160,
+            "y": 302
+          },
+          "durationMs": 150
+        },
+        {
+          "sheetId": "walk",
+          "rect": {
+            "x": 627,
+            "y": 0,
+            "width": 314,
+            "height": 313
+          },
+          "anchor": {
+            "x": 151,
+            "y": 301
+          },
+          "durationMs": 150
+        },
+        {
+          "sheetId": "walk",
+          "rect": {
+            "x": 941,
+            "y": 0,
+            "width": 313,
+            "height": 313
+          },
+          "anchor": {
+            "x": 148,
+            "y": 302
+          },
+          "durationMs": 150
+        }
+      ]
+    },
+    {
+      "mode": "walk",
+      "facing": "left",
+      "action": "idle",
+      "loop": true,
+      "frames": [
+        {
+          "sheetId": "walk",
+          "rect": {
+            "x": 314,
+            "y": 313,
+            "width": 313,
+            "height": 314
+          },
+          "anchor": {
+            "x": 154,
+            "y": 290
+          },
+          "durationMs": 700
+        }
+      ]
+    },
+    {
+      "mode": "walk",
+      "facing": "left",
+      "action": "move",
+      "loop": true,
+      "frames": [
+        {
+          "sheetId": "walk",
+          "rect": {
+            "x": 0,
+            "y": 313,
+            "width": 314,
+            "height": 314
+          },
+          "anchor": {
+            "x": 152,
+            "y": 287
+          },
+          "durationMs": 150
+        },
+        {
+          "sheetId": "walk",
+          "rect": {
+            "x": 314,
+            "y": 313,
+            "width": 313,
+            "height": 314
+          },
+          "anchor": {
+            "x": 154,
+            "y": 290
+          },
+          "durationMs": 150
+        },
+        {
+          "sheetId": "walk",
+          "rect": {
+            "x": 627,
+            "y": 313,
+            "width": 314,
+            "height": 314
+          },
+          "anchor": {
+            "x": 137,
+            "y": 291
+          },
+          "durationMs": 150
+        },
+        {
+          "sheetId": "walk",
+          "rect": {
+            "x": 941,
+            "y": 313,
+            "width": 313,
+            "height": 314
+          },
+          "anchor": {
+            "x": 137,
+            "y": 293
+          },
+          "durationMs": 150
+        }
+      ]
+    },
+    {
+      "mode": "walk",
+      "facing": "right",
+      "action": "idle",
+      "loop": true,
+      "frames": [
+        {
+          "sheetId": "walk",
+          "rect": {
+            "x": 314,
+            "y": 627,
+            "width": 313,
+            "height": 309
+          },
+          "anchor": {
+            "x": 168,
+            "y": 279
+          },
+          "durationMs": 700
+        }
+      ]
+    },
+    {
+      "mode": "walk",
+      "facing": "right",
+      "action": "move",
+      "loop": true,
+      "frames": [
+        {
+          "sheetId": "walk",
+          "rect": {
+            "x": 0,
+            "y": 627,
+            "width": 314,
+            "height": 309
+          },
+          "anchor": {
+            "x": 183,
+            "y": 280
+          },
+          "durationMs": 150
+        },
+        {
+          "sheetId": "walk",
+          "rect": {
+            "x": 314,
+            "y": 627,
+            "width": 313,
+            "height": 309
+          },
+          "anchor": {
+            "x": 168,
+            "y": 279
+          },
+          "durationMs": 150
+        },
+        {
+          "sheetId": "walk",
+          "rect": {
+            "x": 627,
+            "y": 627,
+            "width": 314,
+            "height": 309
+          },
+          "anchor": {
+            "x": 160,
+            "y": 280
+          },
+          "durationMs": 150
+        },
+        {
+          "sheetId": "walk",
+          "rect": {
+            "x": 941,
+            "y": 627,
+            "width": 313,
+            "height": 309
+          },
+          "anchor": {
+            "x": 160,
+            "y": 278
+          },
+          "durationMs": 150
+        }
+      ]
+    },
+    {
+      "mode": "walk",
+      "facing": "up",
+      "action": "idle",
+      "loop": true,
+      "frames": [
+        {
+          "sheetId": "walk",
+          "rect": {
+            "x": 314,
+            "y": 936,
+            "width": 313,
+            "height": 318
+          },
+          "anchor": {
+            "x": 156,
+            "y": 267
+          },
+          "durationMs": 700
+        }
+      ]
+    },
+    {
+      "mode": "walk",
+      "facing": "up",
+      "action": "move",
+      "loop": true,
+      "frames": [
+        {
+          "sheetId": "walk",
+          "rect": {
+            "x": 0,
+            "y": 936,
+            "width": 314,
+            "height": 318
+          },
+          "anchor": {
+            "x": 158,
+            "y": 270
+          },
+          "durationMs": 150
+        },
+        {
+          "sheetId": "walk",
+          "rect": {
+            "x": 314,
+            "y": 936,
+            "width": 313,
+            "height": 318
+          },
+          "anchor": {
+            "x": 156,
+            "y": 267
+          },
+          "durationMs": 150
+        },
+        {
+          "sheetId": "walk",
+          "rect": {
+            "x": 627,
+            "y": 936,
+            "width": 314,
+            "height": 318
+          },
+          "anchor": {
+            "x": 151,
+            "y": 271
+          },
+          "durationMs": 150
+        },
+        {
+          "sheetId": "walk",
+          "rect": {
+            "x": 941,
+            "y": 936,
+            "width": 313,
+            "height": 318
+          },
+          "anchor": {
+            "x": 155,
+            "y": 270
+          },
+          "durationMs": 150
+        }
+      ]
+    },
+    {
+      "mode": "ride",
+      "facing": "down",
+      "action": "idle",
+      "loop": true,
+      "frames": [
+        {
+          "sheetId": "ride",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 308,
+            "height": 319
+          },
+          "anchor": {
+            "x": 154,
+            "y": 307
+          },
+          "durationMs": 700
+        }
+      ]
+    },
+    {
+      "mode": "ride",
+      "facing": "down",
+      "action": "move",
+      "loop": true,
+      "frames": [
+        {
+          "sheetId": "ride",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 308,
+            "height": 319
+          },
+          "anchor": {
+            "x": 154,
+            "y": 307
+          },
+          "durationMs": 180
+        },
+        {
+          "sheetId": "ride",
+          "rect": {
+            "x": 308,
+            "y": 0,
+            "width": 307,
+            "height": 319
+          },
+          "anchor": {
+            "x": 150,
+            "y": 308
+          },
+          "durationMs": 180
+        },
+        {
+          "sheetId": "ride",
+          "rect": {
+            "x": 615,
+            "y": 0,
+            "width": 308,
+            "height": 319
+          },
+          "anchor": {
+            "x": 155,
+            "y": 307
+          },
+          "durationMs": 180
+        },
+        {
+          "sheetId": "ride",
+          "rect": {
+            "x": 923,
+            "y": 0,
+            "width": 307,
+            "height": 319
+          },
+          "anchor": {
+            "x": 152,
+            "y": 308
+          },
+          "durationMs": 180
+        }
+      ]
+    },
+    {
+      "mode": "ride",
+      "facing": "left",
+      "action": "idle",
+      "loop": true,
+      "frames": [
+        {
+          "sheetId": "ride",
+          "rect": {
+            "x": 0,
+            "y": 319,
+            "width": 308,
+            "height": 320
+          },
+          "anchor": {
+            "x": 149,
+            "y": 289
+          },
+          "durationMs": 700
+        }
+      ]
+    },
+    {
+      "mode": "ride",
+      "facing": "left",
+      "action": "move",
+      "loop": true,
+      "frames": [
+        {
+          "sheetId": "ride",
+          "rect": {
+            "x": 0,
+            "y": 319,
+            "width": 308,
+            "height": 320
+          },
+          "anchor": {
+            "x": 149,
+            "y": 289
+          },
+          "durationMs": 180
+        },
+        {
+          "sheetId": "ride",
+          "rect": {
+            "x": 308,
+            "y": 319,
+            "width": 307,
+            "height": 320
+          },
+          "anchor": {
+            "x": 148,
+            "y": 289
+          },
+          "durationMs": 180
+        },
+        {
+          "sheetId": "ride",
+          "rect": {
+            "x": 615,
+            "y": 319,
+            "width": 308,
+            "height": 320
+          },
+          "anchor": {
+            "x": 153,
+            "y": 291
+          },
+          "durationMs": 180
+        },
+        {
+          "sheetId": "ride",
+          "rect": {
+            "x": 923,
+            "y": 319,
+            "width": 307,
+            "height": 320
+          },
+          "anchor": {
+            "x": 151,
+            "y": 289
+          },
+          "durationMs": 180
+        }
+      ]
+    },
+    {
+      "mode": "ride",
+      "facing": "right",
+      "action": "idle",
+      "loop": true,
+      "frames": [
+        {
+          "sheetId": "ride",
+          "rect": {
+            "x": 0,
+            "y": 639,
+            "width": 308,
+            "height": 302
+          },
+          "anchor": {
+            "x": 164,
+            "y": 276
+          },
+          "durationMs": 700
+        }
+      ]
+    },
+    {
+      "mode": "ride",
+      "facing": "right",
+      "action": "move",
+      "loop": true,
+      "frames": [
+        {
+          "sheetId": "ride",
+          "rect": {
+            "x": 0,
+            "y": 639,
+            "width": 308,
+            "height": 302
+          },
+          "anchor": {
+            "x": 164,
+            "y": 276
+          },
+          "durationMs": 180
+        },
+        {
+          "sheetId": "ride",
+          "rect": {
+            "x": 308,
+            "y": 639,
+            "width": 307,
+            "height": 302
+          },
+          "anchor": {
+            "x": 164,
+            "y": 277
+          },
+          "durationMs": 180
+        },
+        {
+          "sheetId": "ride",
+          "rect": {
+            "x": 615,
+            "y": 639,
+            "width": 308,
+            "height": 302
+          },
+          "anchor": {
+            "x": 166,
+            "y": 277
+          },
+          "durationMs": 180
+        },
+        {
+          "sheetId": "ride",
+          "rect": {
+            "x": 923,
+            "y": 639,
+            "width": 307,
+            "height": 302
+          },
+          "anchor": {
+            "x": 167,
+            "y": 276
+          },
+          "durationMs": 180
+        }
+      ]
+    },
+    {
+      "mode": "ride",
+      "facing": "up",
+      "action": "idle",
+      "loop": true,
+      "frames": [
+        {
+          "sheetId": "ride",
+          "rect": {
+            "x": 0,
+            "y": 941,
+            "width": 308,
+            "height": 337
+          },
+          "anchor": {
+            "x": 153,
+            "y": 290
+          },
+          "durationMs": 700
+        }
+      ]
+    },
+    {
+      "mode": "ride",
+      "facing": "up",
+      "action": "move",
+      "loop": true,
+      "frames": [
+        {
+          "sheetId": "ride",
+          "rect": {
+            "x": 0,
+            "y": 941,
+            "width": 308,
+            "height": 337
+          },
+          "anchor": {
+            "x": 153,
+            "y": 290
+          },
+          "durationMs": 180
+        },
+        {
+          "sheetId": "ride",
+          "rect": {
+            "x": 308,
+            "y": 941,
+            "width": 307,
+            "height": 337
+          },
+          "anchor": {
+            "x": 150,
+            "y": 291
+          },
+          "durationMs": 180
+        },
+        {
+          "sheetId": "ride",
+          "rect": {
+            "x": 615,
+            "y": 941,
+            "width": 308,
+            "height": 337
+          },
+          "anchor": {
+            "x": 155,
+            "y": 291
+          },
+          "durationMs": 180
+        },
+        {
+          "sheetId": "ride",
+          "rect": {
+            "x": 923,
+            "y": 941,
+            "width": 307,
+            "height": 337
+          },
+          "anchor": {
+            "x": 152,
+            "y": 290
+          },
+          "durationMs": 180
+        }
+      ]
+    }
+  ]
+}

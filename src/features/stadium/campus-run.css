@@ -10,6 +10,13 @@
 .campus-run-stage { position: relative; container-type: inline-size; }
 .campus-run-board { display: block; width: 100%; height: auto; border: 2px solid #456041; background: #b7ce88; touch-action: none; box-sizing: border-box; }
 .campus-run-board:focus-visible { outline: 3px solid #b8892a; outline-offset: 3px; }
+@media (min-width: 761px) {
+  .campus-shell .place-overlay:has(.campus-run) {
+    --place-left: calc(var(--place-rail) + 24px);
+    --place-width: min(1120px, calc(100vw - var(--place-left) - 32px));
+  }
+  .campus-shell .place-overlay .stadium-panel:has(.campus-run) { padding: 16px; }
+}
 .campus-run-route { fill: none; stroke: #fff8cf88; stroke-width: 2; stroke-dasharray: 5 13; }
 .campus-run-arrows text { fill: #fffbe7; font: bold 25px sans-serif; text-anchor: middle; }
 .campus-run-checkpoint circle { fill: #fcf8e8; stroke: #465940; stroke-width: 3; }

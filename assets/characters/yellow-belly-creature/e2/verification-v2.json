@@ -1,0 +1,392 @@
+{
+  "browser": "153.0.4234.48",
+  "url": "http://127.0.0.1:5214/assets/characters/yellow-belly-creature/e2/preview.html",
+  "checks": [
+    {
+      "name": "eight-direction-animation-cards",
+      "passed": true
+    },
+    {
+      "name": "manifest-contract",
+      "passed": true
+    },
+    {
+      "name": "shift-preserves-ground-point",
+      "passed": true,
+      "details": {
+        "before": {
+          "position": {
+            "x": 565,
+            "y": 972
+          },
+          "facing": "down",
+          "mode": "walk",
+          "moving": false,
+          "canStand": true,
+          "spritePosition": {
+            "x": 565,
+            "y": 972
+          },
+          "frame": "314,0,313,313",
+          "scale": 0.11,
+          "occluders": 0
+        },
+        "ride": {
+          "position": {
+            "x": 565,
+            "y": 972
+          },
+          "facing": "down",
+          "mode": "ride",
+          "moving": false,
+          "canStand": true,
+          "spritePosition": {
+            "x": 565,
+            "y": 972
+          },
+          "frame": "0,0,308,319",
+          "scale": 0.11,
+          "occluders": 0
+        }
+      }
+    },
+    {
+      "name": "release-shift-restores-walk",
+      "passed": true
+    },
+    {
+      "name": "wasd-moves-on-map",
+      "passed": true,
+      "details": {
+        "before": {
+          "x": 565,
+          "y": 972
+        },
+        "after": {
+          "x": 586.922799999998,
+          "y": 972
+        }
+      }
+    },
+    {
+      "name": "stop-keeps-facing",
+      "passed": true
+    },
+    {
+      "name": "ride-animation-selected",
+      "passed": true
+    },
+    {
+      "name": "blur-clears-movement-and-shift",
+      "passed": true
+    },
+    {
+      "name": "sampled-movement-stays-in-walkable-area",
+      "passed": true
+    },
+    {
+      "name": "all-40-frame-references-render-correctly",
+      "passed": true,
+      "details": [
+        {
+          "clip": "walk/down/idle",
+          "index": 0,
+          "expected": "314,0,313,313",
+          "actual": "314,0,313,313",
+          "groundStable": true
+        },
+        {
+          "clip": "walk/down/move",
+          "index": 0,
+          "expected": "0,0,314,313",
+          "actual": "0,0,314,313",
+          "groundStable": true
+        },
+        {
+          "clip": "walk/down/move",
+          "index": 1,
+          "expected": "314,0,313,313",
+          "actual": "314,0,313,313",
+          "groundStable": true
+        },
+        {
+          "clip": "walk/down/move",
+          "index": 2,
+          "expected": "627,0,314,313",
+          "actual": "627,0,314,313",
+          "groundStable": true
+        },
+        {
+          "clip": "walk/down/move",
+          "index": 3,
+          "expected": "941,0,313,313",
+          "actual": "941,0,313,313",
+          "groundStable": true
+        },
+        {
+          "clip": "walk/left/idle",
+          "index": 0,
+          "expected": "314,313,313,314",
+          "actual": "314,313,313,314",
+          "groundStable": true
+        },
+        {
+          "clip": "walk/left/move",
+          "index": 0,
+          "expected": "0,313,314,314",
+          "actual": "0,313,314,314",
+          "groundStable": true
+        },
+        {
+          "clip": "walk/left/move",
+          "index": 1,
+          "expected": "314,313,313,314",
+          "actual": "314,313,313,314",
+          "groundStable": true
+        },
+        {
+          "clip": "walk/left/move",
+          "index": 2,
+          "expected": "627,313,314,314",
+          "actual": "627,313,314,314",
+          "groundStable": true
+        },
+        {
+          "clip": "walk/left/move",
+          "index": 3,
+          "expected": "941,313,313,314",
+          "actual": "941,313,313,314",
+          "groundStable": true
+        },
+        {
+          "clip": "walk/right/idle",
+          "index": 0,
+          "expected": "314,627,313,309",
+          "actual": "314,627,313,309",
+          "groundStable": true
+        },
+        {
+          "clip": "walk/right/move",
+          "index": 0,
+          "expected": "0,627,314,309",
+          "actual": "0,627,314,309",
+          "groundStable": true
+        },
+        {
+          "clip": "walk/right/move",
+          "index": 1,
+          "expected": "314,627,313,309",
+          "actual": "314,627,313,309",
+          "groundStable": true
+        },
+        {
+          "clip": "walk/right/move",
+          "index": 2,
+          "expected": "627,627,314,309",
+          "actual": "627,627,314,309",
+          "groundStable": true
+        },
+        {
+          "clip": "walk/right/move",
+          "index": 3,
+          "expected": "941,627,313,309",
+          "actual": "941,627,313,309",
+          "groundStable": true
+        },
+        {
+          "clip": "walk/up/idle",
+          "index": 0,
+          "expected": "314,936,313,318",
+          "actual": "314,936,313,318",
+          "groundStable": true
+        },
+        {
+          "clip": "walk/up/move",
+          "index": 0,
+          "expected": "0,936,314,318",
+          "actual": "0,936,314,318",
+          "groundStable": true
+        },
+        {
+          "clip": "walk/up/move",
+          "index": 1,
+          "expected": "314,936,313,318",
+          "actual": "314,936,313,318",
+          "groundStable": true
+        },
+        {
+          "clip": "walk/up/move",
+          "index": 2,
+          "expected": "627,936,314,318",
+          "actual": "627,936,314,318",
+          "groundStable": true
+        },
+        {
+          "clip": "walk/up/move",
+          "index": 3,
+          "expected": "941,936,313,318",
+          "actual": "941,936,313,318",
+          "groundStable": true
+        },
+        {
+          "clip": "ride/down/idle",
+          "index": 0,
+          "expected": "0,0,308,319",
+          "actual": "0,0,308,319",
+          "groundStable": true
+        },
+        {
+          "clip": "ride/down/move",
+          "index": 0,
+          "expected": "0,0,308,319",
+          "actual": "0,0,308,319",
+          "groundStable": true
+        },
+        {
+          "clip": "ride/down/move",
+          "index": 1,
+          "expected": "308,0,307,319",
+          "actual": "308,0,307,319",
+          "groundStable": true
+        },
+        {
+          "clip": "ride/down/move",
+          "index": 2,
+          "expected": "615,0,308,319",
+          "actual": "615,0,308,319",
+          "groundStable": true
+        },
+        {
+          "clip": "ride/down/move",
+          "index": 3,
+          "expected": "923,0,307,319",
+          "actual": "923,0,307,319",
+          "groundStable": true
+        },
+        {
+          "clip": "ride/left/idle",
+          "index": 0,
+          "expected": "0,319,308,320",
+          "actual": "0,319,308,320",
+          "groundStable": true
+        },
+        {
+          "clip": "ride/left/move",
+          "index": 0,
+          "expected": "0,319,308,320",
+          "actual": "0,319,308,320",
+          "groundStable": true
+        },
+        {
+          "clip": "ride/left/move",
+          "index": 1,
+          "expected": "308,319,307,320",
+          "actual": "308,319,307,320",
+          "groundStable": true
+        },
+        {
+          "clip": "ride/left/move",
+          "index": 2,
+          "expected": "615,319,308,320",
+          "actual": "615,319,308,320",
+          "groundStable": true
+        },
+        {
+          "clip": "ride/left/move",
+          "index": 3,
+          "expected": "923,319,307,320",
+          "actual": "923,319,307,320",
+          "groundStable": true
+        },
+        {
+          "clip": "ride/right/idle",
+          "index": 0,
+          "expected": "0,639,308,302",
+          "actual": "0,639,308,302",
+          "groundStable": true
+        },
+        {
+          "clip": "ride/right/move",
+          "index": 0,
+          "expected": "0,639,308,302",
+          "actual": "0,639,308,302",
+          "groundStable": true
+        },
+        {
+          "clip": "ride/right/move",
+          "index": 1,
+          "expected": "308,639,307,302",
+          "actual": "308,639,307,302",
+          "groundStable": true
+        },
+        {
+          "clip": "ride/right/move",
+          "index": 2,
+          "expected": "615,639,308,302",
+          "actual": "615,639,308,302",
+          "groundStable": true
+        },
+        {
+          "clip": "ride/right/move",
+          "index": 3,
+          "expected": "923,639,307,302",
+          "actual": "923,639,307,302",
+          "groundStable": true
+        },
+        {
+          "clip": "ride/up/idle",
+          "index": 0,
+          "expected": "0,941,308,337",
+          "actual": "0,941,308,337",
+          "groundStable": true
+        },
+        {
+          "clip": "ride/up/move",
+          "index": 0,
+          "expected": "0,941,308,337",
+          "actual": "0,941,308,337",
+          "groundStable": true
+        },
+        {
+          "clip": "ride/up/move",
+          "index": 1,
+          "expected": "308,941,307,337",
+          "actual": "308,941,307,337",
+          "groundStable": true
+        },
+        {
+          "clip": "ride/up/move",
+          "index": 2,
+          "expected": "615,941,308,337",
+          "actual": "615,941,308,337",
+          "groundStable": true
+        },
+        {
+          "clip": "ride/up/move",
+          "index": 3,
+          "expected": "923,941,307,337",
+          "actual": "923,941,307,337",
+          "groundStable": true
+        }
+      ]
+    },
+    {
+      "name": "all-frame-ground-points-stable",
+      "passed": true
+    },
+    {
+      "name": "no-browser-script-errors",
+      "passed": true,
+      "details": []
+    }
+  ],
+  "annotation": {
+    "occluders": 0,
+    "status": "pending"
+  },
+  "limitations": [
+    "Map occlusion layers absent; real building/tree occlusion not verified.",
+    "Weak-alpha/color fringes, side-view belly patch consistency, gait continuity and wheel motion remain art-review items.",
+    "Preview uses scale 0.11; application default scale is unchanged."
+  ]
+}

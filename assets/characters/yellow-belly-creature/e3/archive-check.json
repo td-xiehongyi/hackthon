@@ -1,0 +1,56 @@
+{
+  "entries": [
+    {
+      "file": "walk-cycle.png",
+      "bytes": 1016698,
+      "sha256": "2e322a883be420d0c588d744ed5a2740cb925911d5838473df2c10da8d3e9645",
+      "matchesSource": true
+    },
+    {
+      "file": "ride-cycle.png",
+      "bytes": 1348943,
+      "sha256": "94f236c0ed98c46de3c85e97aff4f60058af82e25e91da185098d9f0dd100afd",
+      "matchesSource": true
+    },
+    {
+      "file": "manifest.json",
+      "bytes": 13714,
+      "sha256": "dd5c199045b9dbec8930b7a8cdd81e8f29101f3ff25f98c1a2ef94b6dba6b296",
+      "matchesSource": true
+    },
+    {
+      "file": "SOURCE.md",
+      "bytes": 4176,
+      "sha256": "4d3711f94612b06cb9234e292b861913efa6e385feb74551198f2c2c0ae3848c",
+      "matchesSource": true
+    },
+    {
+      "file": "PROMPTS.md",
+      "bytes": 2426,
+      "sha256": "e0b47269b68d553d1ee1221c93ad3bddb0b52a583b14a591074b7dc6c876b523",
+      "matchesSource": true
+    },
+    {
+      "file": "VERSION.json",
+      "bytes": 1230,
+      "sha256": "b139ff09333c7ddb05dbf82f9808bec44cab6709bffebf264ee9bfe2ecc0ad4c",
+      "matchesSource": true
+    }
+  ],
+  "zip": "yellow-belly-creature-0.3.0-rc.1.zip",
+  "passed": true,
+  "runtime": [
+    {
+      "file": "walk-cycle.png",
+      "matchesSource": true
+    },
+    {
+      "file": "ride-cycle.png",
+      "matchesSource": true
+    },
+    {
+      "file": "manifest.json",
+      "matchesSource": true
+    }
+  ]
+}

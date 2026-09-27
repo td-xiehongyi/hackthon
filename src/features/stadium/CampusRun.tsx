@@ -158,7 +158,7 @@ export default function CampusRun({ characterChoice }: { characterChoice?: Chara
     </div>
     {error && <p role="alert">{error} <button onClick={() => setRetry(value => value + 1)}>重试加载</button></p>}
     <div className="campus-run-stage">
-    <svg ref={board} className="campus-run-board" viewBox="0 0 1000 562.8" role="img" aria-label="校园跑操场，逆时针沿编号打卡点跑一圈" tabIndex={0}
+    <svg ref={board} className="campus-run-board" viewBox="50 45 900 425" role="img" aria-label="校园跑操场，逆时针沿编号打卡点跑一圈" tabIndex={0}
       onBlur={clearInput} onPointerDown={() => board.current?.focus()}>
       <image href={BACKGROUND} width="1000" height="562.8" />
       <path className="campus-run-route" d="M500 420 H280 A170 150 0 0 1 280 120 H720 A170 150 0 0 1 720 420 Z" />

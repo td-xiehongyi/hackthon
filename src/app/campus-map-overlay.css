@@ -1,0 +1,29 @@
+.campus-shell .place-overlay.campus-map-overlay {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.campus-map-overlay::backdrop { background: transparent; }
+.campus-map-heading {
+  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap;
+  flex: 0 0 auto; gap: 8px; padding: 16px 20px;
+  background: #e9ecd9; border-bottom: 1px solid #d2d7be;
+}
+.campus-map-heading h2 { margin: 0; font-size: 22px; }
+.campus-map-heading button {
+  padding: 8px 12px; color: #254d3b; background: #faf7eb;
+  border: 1px solid #a8b298; cursor: pointer;
+}
+.campus-map-toolbar { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; padding: 10px 20px; flex: 0 0 auto; border-bottom: 1px solid #d2d7be; }
+.campus-map-toolbar button { padding: 7px 10px; min-width: 34px; border: 1px solid #a8b298; background: #faf7eb; color: #254d3b; font-size: 12px; cursor: pointer; }
+.campus-map-toolbar button:disabled { opacity: 0.45; cursor: default; }
+.campus-map-toolbar output { min-width: 42px; text-align: center; font-size: 12px; }
+.campus-map-image { flex: 1; min-height: 0; padding: 12px; background: #e3eadd; overflow: hidden; }
+.campus-map-image svg { display: block; width: 100%; height: 100%; cursor: grab; touch-action: none; user-select: none; }
+.campus-map-image svg:active { cursor: grabbing; }
+@media (max-width: 760px) {
+  .campus-map-heading { padding: 12px; }
+  .campus-map-toolbar { padding: 8px 12px; gap: 6px; }
+  .campus-map-heading h2 { font-size: 18px; }
+  .campus-map-image { padding: 6px; }
+}
